@@ -1,0 +1,46 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { describe, expect, it } from 'vitest'
+
+const CSS = readFileSync(resolve(process.cwd(), 'src/client/verdandi.module.css'), 'utf8')
+
+describe('verdandi compatibility guardrails', () => {
+  it('re-establishes high-contrast host tokens inside the settings dialog', () => {
+    expect(CSS).toMatch(
+      /\[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?--dsw-alias-label-primary: rgb\(15, 17, 21\)/,
+    )
+    expect(CSS).toMatch(
+      /\[data-ds-dark-theme\] \[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?--dsw-alias-label-primary: rgb\(245, 246, 247\)/,
+    )
+  })
+
+  it('releases sidebar clipping only for its active settings portal', () => {
+    expect(CSS).toMatch(
+      /\[data-pane='sidebar'\]:has\([\s\S]*?\[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?\)\s*\{[\s\S]*?overflow: visible/,
+    )
+  })
+
+  it('keeps the character inside the conversation stage instead of fixing it to the viewport', () => {
+    const figureRule = CSS.match(/\.characterFigure\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(figureRule).toContain('position: absolute')
+    expect(figureRule).not.toContain('position: fixed')
+  })
+
+  it('uses paired edge figures and a hero-to-active scale transition', () => {
+    expect(CSS).toMatch(/\.figureLeft\s*\{[\s\S]*?--vd-art-character-left/)
+    expect(CSS).toMatch(/\.figureRight\s*\{[\s\S]*?--vd-art-character-right/)
+    expect(CSS).toMatch(/\.figureLeft[\s\S]*?scale\(0\.625\)/)
+    expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?scale\(1\)/)
+  })
+
+  it('reveals the workspace scene behind both active and hero surfaces', () => {
+    expect(CSS).toMatch(/\[data-phase='active'\],[\s\S]*?\[data-phase='hero'\][\s\S]*?background-color: transparent !important/)
+  })
+
+  it('does not replace xterm foreground, background, or ANSI colors', () => {
+    const xtermRule = CSS.match(/:global\(\.xterm\)\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(xtermRule).toContain('border-radius')
+    expect(xtermRule).not.toMatch(/(?:^|[;\s])color\s*:/)
+    expect(xtermRule).not.toMatch(/background(?:-color)?\s*:/)
+  })
+})

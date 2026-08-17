@@ -1,0 +1,44 @@
+{
+  "name": "@hjbztlbr/dsh-client-ui-skin-verdandi",
+  "description": "Verdandi White Vow skin for the DSH Web GUI: deep crimson navigation, bridal-white workspace, soft-gold knight details, and scoped plugin-safe surfaces.",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./skin.json": "./skin.json",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [],
+      "platform": "web"
+    }
+  },
+  "scripts": {
+    "art:generate": "node scripts/generate-stage-art.mjs",
+    "prebuild": "pnpm art:generate",
+    "build": "tsdown",
+    "prepare": "tsdown",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "license": "MIT",
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1"
+  },
+  "devDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@types/node": "^26.2.0",
+    "jsdom": "^29.1.1",
+    "lightningcss": "^1.32.0",
+    "tsdown": "^0.22.2",
+    "typescript": "^5.9.0",
+    "vitest": "^4.1.8"
+  }
+}

@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="sidebar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8E2438"/>
+      <stop offset="1" stop-color="#651525"/>
+    </linearGradient>
+    <linearGradient id="header" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#6B1728"/>
+      <stop offset=".58" stop-color="#8E2438"/>
+      <stop offset="1" stop-color="#731B2D"/>
+    </linearGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFDFC"/>
+      <stop offset="1" stop-color="#F7F1EC"/>
+    </linearGradient>
+    <radialGradient id="rose" cx="72%" cy="12%" r="70%">
+      <stop offset="0" stop-color="#F3DDE1" stop-opacity=".7"/>
+      <stop offset="1" stop-color="#FFFDFC" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="12" stdDeviation="18" flood-color="#41101D" flood-opacity=".18"/>
+    </filter>
+    <pattern id="runes" width="54" height="18" patternUnits="userSpaceOnUse">
+      <path d="M2 9h14l5-6 6 12 6-12 5 6h14" fill="none" stroke="#D9BD82" stroke-width="1" opacity=".5"/>
+    </pattern>
+  </defs>
+
+  <rect width="1600" height="900" fill="#E9E1DC"/>
+  <rect x="34" y="40" width="1532" height="820" rx="22" fill="#201116" opacity=".18"/>
+  <rect x="28" y="32" width="1532" height="820" rx="22" fill="#FFFDFC"/>
+
+  <!-- Sidebar: deep crimson owns navigation. -->
+  <path d="M28 54Q28 32 50 32h292v820H50q-22 0-22-22z" fill="url(#sidebar)"/>
+  <rect x="42" y="46" width="286" height="792" rx="15" fill="none" stroke="#D6B873"/>
+  <path d="M42 82h286M42 735h286" stroke="#D6B873" opacity=".5"/>
+  <text x="62" y="78" fill="#FFF7EE" font-family="Segoe UI, sans-serif" font-size="26" font-weight="700">deepseek</text>
+  <rect x="216" y="58" width="76" height="24" rx="5" fill="#D6B873"/>
+  <text x="254" y="75" text-anchor="middle" fill="#681626" font-family="Segoe UI, sans-serif" font-size="12" font-weight="700">HARNESS</text>
+  <rect x="54" y="102" width="262" height="52" rx="16" fill="#FFF9F2" stroke="#D6B873" stroke-width="2"/>
+  <text x="185" y="135" text-anchor="middle" fill="#70192A" font-family="Microsoft YaHei, sans-serif" font-size="19" font-weight="700">＋ 新会话</text>
+  <g fill="#FFF7EE" font-family="Microsoft YaHei, sans-serif" font-size="17">
+    <text x="66" y="195">▣ 任务看板</text>
+    <text x="66" y="236">▧ SSH</text>
+  </g>
+  <text x="60" y="286" fill="#D9BD82" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="700">工作区</text>
+  <g font-family="Microsoft YaHei, sans-serif" font-size="16">
+    <text x="62" y="330" fill="#FFF7EE">♧ 深空之眼</text>
+    <rect x="52" y="350" width="264" height="48" rx="8" fill="#A94355" stroke="#E7D39D"/>
+    <path d="M52 350l16 24-16 24" fill="#FFF7EE" opacity=".9"/>
+    <text x="78" y="381" fill="#FFF7EE" font-weight="700">⚔ AI</text>
+    <path d="M70 410v110M70 432h12M70 472h12M70 512h12" stroke="#D9BD82" stroke-dasharray="3 5"/>
+    <text x="90" y="438" fill="#FFF7EE">搜索主题管理插件</text>
+    <text x="90" y="478" fill="#E8C8CE">薇儿丹蒂主题</text>
+    <text x="90" y="518" fill="#E8C8CE">aether story studio</text>
+  </g>
+  <path d="M56 726h258v92H56z" fill="#59111F" opacity=".72"/>
+  <text x="70" y="760" fill="#FFF7EE" font-family="Microsoft YaHei, sans-serif" font-size="15">余额 ¥28.36　 今日 ¥5.78</text>
+  <rect x="68" y="777" width="232" height="31" rx="8" fill="none" stroke="#D9BD82"/>
+  <text x="184" y="799" text-anchor="middle" fill="#FFF7EE" font-family="Microsoft YaHei, sans-serif" font-size="15">⚙ 设置　 ·　⌁ 烤肉彩蛋</text>
+
+  <!-- Main stage: white owns reading. -->
+  <rect x="342" y="32" width="1218" height="820" fill="url(#paper)"/>
+  <rect x="342" y="32" width="1218" height="820" fill="url(#rose)"/>
+  <rect x="342" y="32" width="1218" height="86" fill="url(#header)"/>
+  <rect x="342" y="32" width="1218" height="18" fill="url(#runes)"/>
+  <path d="M342 117h1218" stroke="#D6B873" stroke-width="2"/>
+  <g fill="#FFF7EE" font-family="Microsoft YaHei, sans-serif">
+    <text x="382" y="75" font-size="21" font-weight="700">⚔ 搜索 DSH 主题管理插件</text>
+    <text x="382" y="103" font-size="15" opacity=".8">对话　　轨迹</text>
+    <text x="1460" y="78" font-size="15">Session log ⤓</text>
+  </g>
+
+  <!-- Faint stage art / character placeholder. -->
+  <g opacity=".13" stroke="#8E2438" fill="none" stroke-width="5">
+    <path d="M1368 188c-65 36-104 94-99 167 5 65 53 101 37 175-16 72-83 125-105 226"/>
+    <path d="M1393 191c55 45 76 101 67 171-8 66-55 109-40 180 13 62 49 111 58 191"/>
+    <circle cx="1380" cy="250" r="66"/>
+    <path d="M1326 320l-68 262 117-51 104 54-49-264z"/>
+    <path d="M1274 583l-43 172M1459 581l52 173"/>
+  </g>
+  <text x="1375" y="790" text-anchor="middle" fill="#8E2438" opacity=".45" font-family="Microsoft YaHei, sans-serif" font-size="14">婚纱立绘舞台 · 低于内容层</text>
+
+  <!-- Reading cards. -->
+  <rect x="430" y="158" width="780" height="168" rx="15" fill="#FFFFFF" stroke="#D8C9C3" filter="url(#shadow)"/>
+  <rect x="452" y="182" width="112" height="24" rx="12" fill="#F7E9EC"/>
+  <text x="470" y="199" fill="#8E2438" font-family="Microsoft YaHei, sans-serif" font-size="13" font-weight="700">VERDANDI</text>
+  <g fill="#38242A" font-family="Microsoft YaHei, sans-serif" font-size="16">
+    <text x="452" y="238">主工作区保持婚纱白，正文使用墨褐色。</text>
+    <text x="452" y="270">角色、花瓣和圣树纹样只存在于留白区，不进入文本列。</text>
+    <text x="452" y="302">工具调用、代码块和第三方面板保留自己的颜色语义。</text>
+  </g>
+  <rect x="704" y="348" width="506" height="78" rx="15" fill="#FAEDF0" stroke="#D9A7B1"/>
+  <text x="730" y="380" fill="#4A3037" font-family="Microsoft YaHei, sans-serif" font-size="16">用户消息使用浅玫瑰白，不使用整块深红。</text>
+  <text x="730" y="407" fill="#7B5D65" font-family="Microsoft YaHei, sans-serif" font-size="14">白色负责内容，红色负责方向。</text>
+
+  <!-- Composer oath card. -->
+  <rect x="430" y="650" width="874" height="152" rx="22" fill="#FFFDFC" stroke="#8E2438" stroke-width="3" filter="url(#shadow)"/>
+  <rect x="438" y="658" width="858" height="136" rx="16" fill="none" stroke="#D6B873"/>
+  <path d="M820 650l17-17 17 17 17-17 17 17" fill="#FFFDFC" stroke="#D6B873"/>
+  <text x="854" y="647" text-anchor="middle" fill="#8E2438" font-size="18">⚔</text>
+  <text x="470" y="706" fill="#9A7A82" font-family="Microsoft YaHei, sans-serif" font-size="17">给智能体发送消息</text>
+  <circle cx="476" cy="760" r="22" fill="#FFF9F2" stroke="#D6B873"/>
+  <text x="476" y="767" text-anchor="middle" fill="#8E2438" font-size="20">＋</text>
+  <circle cx="1248" cy="760" r="24" fill="#8E2438" stroke="#D6B873"/>
+  <text x="1248" y="768" text-anchor="middle" fill="#FFFDFC" font-size="22">↑</text>
+  <text x="1188" y="765" text-anchor="end" fill="#5E444B" font-family="Segoe UI, sans-serif" font-size="14">DeepSeek · Max</text>
+
+  <!-- Zone legend. -->
+  <g transform="translate(1168 135)" font-family="Microsoft YaHei, sans-serif">
+    <rect width="346" height="116" rx="14" fill="#FFFDFC" stroke="#D8C9C3"/>
+    <circle cx="28" cy="30" r="9" fill="#8E2438"/><text x="47" y="36" fill="#38242A" font-size="14">深红：导航 / 身份 / 状态</text>
+    <circle cx="28" cy="60" r="9" fill="#FFFDFC" stroke="#C9BAB4"/><text x="47" y="66" fill="#38242A" font-size="14">婚纱白：阅读 / 编辑 / 弹窗</text>
+    <circle cx="28" cy="90" r="9" fill="#C7A86B"/><text x="47" y="96" fill="#38242A" font-size="14">柔金：边框 / 选中 / 纹章</text>
+  </g>
+</svg>
