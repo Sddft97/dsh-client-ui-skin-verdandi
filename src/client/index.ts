@@ -11,16 +11,22 @@ import {
   DETAILS_ART_DARK,
   DETAILS_ART_LIGHT,
   SACRED_TREE,
-  SIDEBAR_ART_DARK,
-  SIDEBAR_ART_LIGHT,
   SWORD_CREST,
 } from './art.js'
 import {
+  SIDEBAR_BRIDAL_CG,
   STAGE_FIGURE_LEFT,
   STAGE_FIGURE_RIGHT,
   WORKSPACE_SCENE_DARK,
   WORKSPACE_SCENE_LIGHT,
 } from './stage-art.generated.js'
+import {
+  COMPOSER_LACE,
+  HEADER_VEIL,
+  INVITATION_LACE,
+  SIDEBAR_FRAME,
+  VOW_SEAL,
+} from './ornaments.js'
 import css from './verdandi.module.css'
 
 const SKIN_ATTR = 'data-dsh-verdandi'
@@ -29,6 +35,7 @@ const MODAL_ATTR = 'data-verdandi-modal-open'
 const SIDEBAR_SIZE_ATTR = 'data-verdandi-sidebar-size'
 const CONVERSATION_PHASE_ATTR = 'data-verdandi-phase'
 const STAGE_SELECTOR = '[data-verdandi-stage]'
+const DECORATION_SELECTOR = '[data-verdandi-decoration]'
 const LEGACY_SELECTOR = '[data-verdandi-sidebar-card], [data-verdandi-wedding], [data-verdandi-chrome]'
 const OWNED_HOOKS = [
   'data-verdandi-header',
@@ -38,11 +45,15 @@ const OWNED_HOOKS = [
 ] as const
 
 const ASSET_PROPERTIES = {
-  '--vd-art-sidebar-light': SIDEBAR_ART_LIGHT,
-  '--vd-art-sidebar-dark': SIDEBAR_ART_DARK,
+  '--vd-art-sidebar-bridal': SIDEBAR_BRIDAL_CG,
   '--vd-art-workspace-light': WORKSPACE_SCENE_LIGHT,
   '--vd-art-workspace-dark': WORKSPACE_SCENE_DARK,
   '--vd-art-sword-crest': SWORD_CREST,
+  '--vd-art-header-veil': HEADER_VEIL,
+  '--vd-art-sidebar-frame': SIDEBAR_FRAME,
+  '--vd-art-invitation-lace': INVITATION_LACE,
+  '--vd-art-vow-seal': VOW_SEAL,
+  '--vd-art-composer-lace': COMPOSER_LACE,
   '--vd-art-character-left': STAGE_FIGURE_LEFT,
   '--vd-art-character-right': STAGE_FIGURE_RIGHT,
   '--vd-art-sacred-tree': SACRED_TREE,
@@ -68,6 +79,34 @@ function isRendered(element: HTMLElement | null): element is HTMLElement {
 
 function removeLegacyNodes(): void {
   for (const node of document.querySelectorAll<HTMLElement>(LEGACY_SELECTOR)) node.remove()
+}
+
+function ensureDecoration(parent: HTMLElement | null, part: string): HTMLElement | null {
+  if (!parent) return null
+  let decoration = parent.querySelector<HTMLElement>(`:scope > [data-verdandi-decoration='${part}']`)
+  if (decoration) return decoration
+
+  decoration = document.createElement('div')
+  decoration.dataset.verdandiDecoration = part
+  decoration.setAttribute('aria-hidden', 'true')
+  parent.append(decoration)
+  return decoration
+}
+
+function ensureWeddingDecorations(sidebar: HTMLElement | null, conversation: HTMLElement | null): void {
+  ensureDecoration(
+    sidebar?.querySelector<HTMLElement>("[data-slot='sidebar']") ?? sidebar,
+    'sidebar-portrait',
+  )
+  ensureDecoration(conversation, 'workspace-lace')
+  ensureDecoration(
+    conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null,
+    'header-veil',
+  )
+  ensureDecoration(
+    conversation?.querySelector<HTMLElement>('[data-composer-card]') ?? null,
+    'composer-seal',
+  )
 }
 
 function ensureCharacterStage(conversation: HTMLElement): HTMLElement {
@@ -217,6 +256,7 @@ export function apply(ctx: Context): void {
     body.toggleAttribute(WORKSPACE_ATTR, workspaceVisible)
     body.toggleAttribute(MODAL_ATTR, Boolean(document.querySelector("[role='dialog'][aria-modal='true']")))
     setSidebarSize(body, sidebar)
+    ensureWeddingDecorations(sidebar, workspaceVisible ? conversation : null)
 
     if (workspaceVisible) {
       const stage = ensureCharacterStage(conversation)
@@ -265,6 +305,7 @@ export function apply(ctx: Context): void {
     window.visualViewport?.removeEventListener('resize', scheduleSync)
 
     clearOwnedHooks()
+    for (const decoration of document.querySelectorAll<HTMLElement>(DECORATION_SELECTOR)) decoration.remove()
     for (const stage of document.querySelectorAll<HTMLElement>(STAGE_SELECTOR)) stage.remove()
     for (const conversation of document.querySelectorAll<HTMLElement>("[data-pane='conversation']")) {
       for (const property of layoutProperties) conversation.style.removeProperty(property)

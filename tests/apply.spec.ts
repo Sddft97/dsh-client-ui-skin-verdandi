@@ -72,10 +72,15 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(conversation?.querySelector("[data-verdandi-figure='right']")).not.toBeNull()
     expect(conversation?.getAttribute('data-verdandi-phase')).toBe('active')
     expect(document.body.hasAttribute('data-verdandi-workspace')).toBe(true)
+    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-portrait']")).not.toBeNull()
+    expect(conversation?.querySelector(":scope > [data-verdandi-decoration='workspace-lace']")).not.toBeNull()
+    expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil']")).not.toBeNull()
+    expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-seal']")).not.toBeNull()
 
     ctx.disposeAll()
     expect(document.querySelector('[data-verdandi-sidebar-card]')).toBeNull()
     expect(document.querySelector('[data-verdandi-stage]')).toBeNull()
+    expect(document.querySelector('[data-verdandi-decoration]')).toBeNull()
   })
 
   it('adds semantic hooks without replacing host controls', () => {
@@ -93,11 +98,14 @@ describe('verdandi skin apply/dispose contract', () => {
 
   it('restores pre-existing asset properties on dispose', () => {
     document.body.style.setProperty('--vd-art-character-right', 'url(previous.png)')
+    document.body.style.setProperty('--vd-art-sidebar-bridal', 'url(previous-sidebar.png)')
     apply(ctx as never)
     expect(document.body.style.getPropertyValue('--vd-art-character-right')).toContain('data:image/webp')
+    expect(document.body.style.getPropertyValue('--vd-art-sidebar-bridal')).toContain('data:image/webp')
 
     ctx.disposeAll()
     expect(document.body.style.getPropertyValue('--vd-art-character-right')).toBe('url(previous.png)')
+    expect(document.body.style.getPropertyValue('--vd-art-sidebar-bridal')).toBe('url(previous-sidebar.png)')
     expect(document.querySelector('[data-pane="conversation"]')?.hasAttribute('data-verdandi-phase')).toBe(false)
   })
 })

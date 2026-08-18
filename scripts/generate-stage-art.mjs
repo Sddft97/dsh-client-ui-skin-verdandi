@@ -8,6 +8,7 @@ const entries = [
   ['STAGE_FIGURE_RIGHT', 'assets/generated/verdandi-white-knight.webp'],
   ['WORKSPACE_SCENE_LIGHT', 'assets/generated/verdandi-library-day.webp'],
   ['WORKSPACE_SCENE_DARK', 'assets/generated/verdandi-library-night.webp'],
+  ['SIDEBAR_BRIDAL_CG', 'assets/generated/verdandi-bridal-cg-portrait.webp'],
 ]
 
 const output = [

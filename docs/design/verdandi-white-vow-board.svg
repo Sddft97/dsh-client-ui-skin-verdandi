@@ -5,9 +5,9 @@
       <stop offset="1" stop-color="#651525"/>
     </linearGradient>
     <linearGradient id="header" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#6B1728"/>
-      <stop offset=".58" stop-color="#8E2438"/>
-      <stop offset="1" stop-color="#731B2D"/>
+      <stop offset="0" stop-color="#FFFDFC"/>
+      <stop offset=".5" stop-color="#FFF9F4"/>
+      <stop offset="1" stop-color="#F6EAE5"/>
     </linearGradient>
     <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
       <stop offset="0" stop-color="#FFFDFC"/>
@@ -45,40 +45,53 @@
   <text x="60" y="286" fill="#D9BD82" font-family="Microsoft YaHei, sans-serif" font-size="16" font-weight="700">工作区</text>
   <g font-family="Microsoft YaHei, sans-serif" font-size="16">
     <text x="62" y="330" fill="#FFF7EE">♧ 深空之眼</text>
-    <rect x="52" y="350" width="264" height="48" rx="8" fill="#A94355" stroke="#E7D39D"/>
-    <path d="M52 350l16 24-16 24" fill="#FFF7EE" opacity=".9"/>
-    <text x="78" y="381" fill="#FFF7EE" font-weight="700">⚔ AI</text>
+    <rect x="52" y="350" width="264" height="48" rx="8" fill="#FFF9F2" stroke="#E7D39D"/>
+    <path d="M52 350l16 24-16 24" fill="#681626" opacity=".95"/>
+    <text x="78" y="381" fill="#681626" font-weight="700">⚔ AI</text>
     <path d="M70 410v110M70 432h12M70 472h12M70 512h12" stroke="#D9BD82" stroke-dasharray="3 5"/>
     <text x="90" y="438" fill="#FFF7EE">搜索主题管理插件</text>
     <text x="90" y="478" fill="#E8C8CE">薇儿丹蒂主题</text>
     <text x="90" y="518" fill="#E8C8CE">aether story studio</text>
   </g>
+  <!-- Portrait bridal CG is cropped into the sidebar instead of becoming a floating card. -->
+  <path d="M62 555Q62 520 94 520h184q32 0 32 35v164H62z" fill="#6A192A" stroke="#D6B873"/>
+  <path d="M130 704c7-62 17-103 56-130 39 27 49 68 56 130z" fill="#F5E6E8" opacity=".32"/>
+  <circle cx="186" cy="579" r="29" fill="#F4C9CC" opacity=".42"/>
+  <path d="M118 552q68-68 136 0M103 710h166" fill="none" stroke="#FFFDFC" opacity=".4"/>
   <path d="M56 726h258v92H56z" fill="#59111F" opacity=".72"/>
   <text x="70" y="760" fill="#FFF7EE" font-family="Microsoft YaHei, sans-serif" font-size="15">余额 ¥28.36　 今日 ¥5.78</text>
   <rect x="68" y="777" width="232" height="31" rx="8" fill="none" stroke="#D9BD82"/>
   <text x="184" y="799" text-anchor="middle" fill="#FFF7EE" font-family="Microsoft YaHei, sans-serif" font-size="15">⚙ 设置　 ·　⌁ 烤肉彩蛋</text>
 
   <!-- Main stage: white owns reading. -->
-  <rect x="342" y="32" width="1218" height="820" fill="url(#paper)"/>
-  <rect x="342" y="32" width="1218" height="820" fill="url(#rose)"/>
+  <rect x="342" y="32" width="1218" height="820" fill="#D9C8B5"/>
+  <path d="M342 118h1218v734H342z" fill="#7C6757" opacity=".14"/>
+  <path d="M342 120h400v732H342zM1208 120h352v732h-352z" fill="#A8794D" opacity=".18"/>
+  <path d="M742 118h466v734H742z" fill="#FFFDFC" opacity=".12"/>
   <rect x="342" y="32" width="1218" height="86" fill="url(#header)"/>
-  <rect x="342" y="32" width="1218" height="18" fill="url(#runes)"/>
+  <rect x="342" y="32" width="1218" height="8" fill="#8E2438"/>
+  <rect x="342" y="40" width="1218" height="2" fill="#D6B873"/>
   <path d="M342 117h1218" stroke="#D6B873" stroke-width="2"/>
-  <g fill="#FFF7EE" font-family="Microsoft YaHei, sans-serif">
-    <text x="382" y="75" font-size="21" font-weight="700">⚔ 搜索 DSH 主题管理插件</text>
+  <g fill="#38242A" font-family="Microsoft YaHei, sans-serif">
+    <text x="382" y="75" font-size="21" font-weight="700">搜索 DSH 主题管理插件</text>
     <text x="382" y="103" font-size="15" opacity=".8">对话　　轨迹</text>
     <text x="1460" y="78" font-size="15">Session log ⤓</text>
   </g>
-
-  <!-- Faint stage art / character placeholder. -->
-  <g opacity=".13" stroke="#8E2438" fill="none" stroke-width="5">
-    <path d="M1368 188c-65 36-104 94-99 167 5 65 53 101 37 175-16 72-83 125-105 226"/>
-    <path d="M1393 191c55 45 76 101 67 171-8 66-55 109-40 180 13 62 49 111 58 191"/>
-    <circle cx="1380" cy="250" r="66"/>
-    <path d="M1326 320l-68 262 117-51 104 54-49-264z"/>
-    <path d="M1274 583l-43 172M1459 581l52 173"/>
+  <!-- Veil, bouquet, rings and ribbons remain behind the real header controls. -->
+  <g transform="translate(935 65)">
+    <path d="M-500 15Q-260-26 0-2Q260-26 500 15" fill="none" stroke="#E3D4CC" stroke-width="3"/>
+    <circle cx="-12" cy="-5" r="11" fill="none" stroke="#C7A86B" stroke-width="4"/>
+    <circle cx="12" cy="-5" r="11" fill="none" stroke="#C7A86B" stroke-width="4"/>
+    <path d="M-34 4q-28 10-42 34q28-14 48-9M34 4q28 10 42 34q-28-14-48-9" fill="#8E2438"/>
+    <circle cx="0" cy="6" r="8" fill="#8E2438"/><circle cx="-18" cy="10" r="7" fill="#B94A60"/><circle cx="18" cy="10" r="7" fill="#B94A60"/>
   </g>
-  <text x="1375" y="790" text-anchor="middle" fill="#8E2438" opacity=".45" font-family="Microsoft YaHei, sans-serif" font-size="14">婚纱立绘舞台 · 低于内容层</text>
+
+  <!-- Paired stage figures: lively barbecue left, white knight right. -->
+  <g opacity=".48" stroke="#8E2438" fill="#F5DADF" stroke-width="4">
+    <circle cx="500" cy="280" r="52"/><path d="M454 332l-58 210 100 52 87-68-42-194z"/><path d="M412 558l-26 156M556 548l24 165"/>
+    <circle cx="1390" cy="250" r="58"/><path d="M1342 309l-72 272 116-50 106 54-49-276z"/><path d="M1290 580l-38 174M1470 580l45 174"/>
+  </g>
+  <text x="1375" y="790" text-anchor="middle" fill="#8E2438" opacity=".62" font-family="Microsoft YaHei, sans-serif" font-size="14">双人物舞台 · hero 80% → active 50%</text>
 
   <!-- Reading cards. -->
   <rect x="430" y="158" width="780" height="168" rx="15" fill="#FFFFFF" stroke="#D8C9C3" filter="url(#shadow)"/>
@@ -96,8 +109,8 @@
   <!-- Composer oath card. -->
   <rect x="430" y="650" width="874" height="152" rx="22" fill="#FFFDFC" stroke="#8E2438" stroke-width="3" filter="url(#shadow)"/>
   <rect x="438" y="658" width="858" height="136" rx="16" fill="none" stroke="#D6B873"/>
-  <path d="M820 650l17-17 17 17 17-17 17 17" fill="#FFFDFC" stroke="#D6B873"/>
-  <text x="854" y="647" text-anchor="middle" fill="#8E2438" font-size="18">⚔</text>
+  <path d="M810 650q22-26 44 0q22-26 44 0v22q-22-13-44 1q-22-14-44-1z" fill="#FFFDFC" stroke="#D6B873"/>
+  <circle cx="846" cy="646" r="9" fill="none" stroke="#8E2438" stroke-width="3"/><circle cx="862" cy="646" r="9" fill="none" stroke="#8E2438" stroke-width="3"/>
   <text x="470" y="706" fill="#9A7A82" font-family="Microsoft YaHei, sans-serif" font-size="17">给智能体发送消息</text>
   <circle cx="476" cy="760" r="22" fill="#FFF9F2" stroke="#D6B873"/>
   <text x="476" y="767" text-anchor="middle" fill="#8E2438" font-size="20">＋</text>

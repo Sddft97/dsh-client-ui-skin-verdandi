@@ -35,6 +35,15 @@ describe('verdandi compatibility guardrails', () => {
 
   it('reveals the workspace scene behind both active and hero surfaces', () => {
     expect(CSS).toMatch(/\[data-phase='active'\],[\s\S]*?\[data-phase='hero'\][\s\S]*?background-color: transparent !important/)
+    const conversationRule = CSS.match(/\[data-pane='conversation'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(conversationRule).not.toContain('linear-gradient(90deg')
+  })
+
+  it('uses bridal ornaments without creating interactive overlays', () => {
+    expect(CSS).toMatch(/data-verdandi-decoration='sidebar-portrait'[\s\S]*?--vd-art-sidebar-bridal/)
+    expect(CSS).toMatch(/data-verdandi-decoration='header-veil'[\s\S]*?--vd-art-header-veil/)
+    expect(CSS).toMatch(/data-verdandi-decoration='composer-seal'[\s\S]*?--vd-art-vow-seal/)
+    expect(CSS).toMatch(/data-verdandi-decoration='workspace-lace'[\s\S]*?pointer-events: none/)
   })
 
   it('does not replace xterm foreground, background, or ANSI colors', () => {

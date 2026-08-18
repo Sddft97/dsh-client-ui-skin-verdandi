@@ -1,6 +1,6 @@
 # Verdandi stage artwork
 
-The four source PNG files in `source/` were supplied by the user for this local skin iteration.
+The five source PNG files in `source/` were supplied by the user for this local skin iteration.
 Their original URLs, authors, official/fan-work status, and redistribution permissions have not yet
 been verified. They are suitable for local visual testing, but those fields must be completed before
 the package is published or redistributed.
@@ -11,6 +11,7 @@ the package is published or redistributed.
 - `verdandi-white-knight.webp`: right character, white-vow / guardian motif.
 - `verdandi-library-day.webp`: light-theme workspace scene.
 - `verdandi-library-night.webp`: dark-theme workspace scene.
+- `verdandi-bridal-cg-portrait.webp`: portrait bridal CG integrated into the lower sidebar arch.
 
 Run `pnpm art:generate` after replacing a generated image. The command rebuilds
 `src/client/stage-art.generated.ts`, keeping the runtime plugin self-contained.
