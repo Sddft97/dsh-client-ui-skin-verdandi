@@ -29,8 +29,21 @@ describe('verdandi compatibility guardrails', () => {
   it('uses paired edge figures and a hero-to-active scale transition', () => {
     expect(CSS).toMatch(/\.figureLeft\s*\{[\s\S]*?--vd-art-character-left/)
     expect(CSS).toMatch(/\.figureRight\s*\{[\s\S]*?--vd-art-character-right/)
-    expect(CSS).toMatch(/\.figureLeft[\s\S]*?scale\(0\.625\)/)
-    expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?scale\(1\)/)
+    expect(CSS).toMatch(/\.figureLeft[\s\S]*?scale\(0\.55\)/)
+    expect(CSS).toMatch(/\.figureRight[\s\S]*?scale\(0\.64\)/)
+    expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?scale\(0\.94\)/)
+    expect(CSS).not.toMatch(/data-verdandi-modal-open[^}]*\.characterFigure[\s\S]*?opacity:\s*0/)
+  })
+
+  it('hides the composer on the trace tab and keeps its seat transparent', () => {
+    expect(CSS).toMatch(/data-verdandi-view='trace'[\s\S]*?\[data-composer-seat\][\s\S]*?display: none !important/)
+    expect(CSS).toMatch(/\[data-composer-seat\]\s*\{[\s\S]*?background: transparent !important/)
+  })
+
+  it('pads markdown cards without painting the whole user row', () => {
+    expect(CSS).toMatch(/\[class\*='_markdown_'\][\s\S]*?padding: 14px 16px/)
+    expect(CSS).toMatch(/\[class\*='_userRow'\][\s\S]*?background: transparent !important/)
+    expect(CSS).toMatch(/\[class\*='_userRow'\] \[class\*='_bubble'\][\s\S]*?border:/)
   })
 
   it('reveals the workspace scene behind both active and hero surfaces', () => {

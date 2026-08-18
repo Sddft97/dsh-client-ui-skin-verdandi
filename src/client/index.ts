@@ -34,6 +34,7 @@ const WORKSPACE_ATTR = 'data-verdandi-workspace'
 const MODAL_ATTR = 'data-verdandi-modal-open'
 const SIDEBAR_SIZE_ATTR = 'data-verdandi-sidebar-size'
 const CONVERSATION_PHASE_ATTR = 'data-verdandi-phase'
+const CONVERSATION_VIEW_ATTR = 'data-verdandi-view'
 const STAGE_SELECTOR = '[data-verdandi-stage]'
 const DECORATION_SELECTOR = '[data-verdandi-decoration]'
 const LEGACY_SELECTOR = '[data-verdandi-sidebar-card], [data-verdandi-wedding], [data-verdandi-chrome]'
@@ -200,6 +201,16 @@ function setStageWidth(stage: HTMLElement, conversation: HTMLElement): void {
   stage.dataset.verdandiWidth = width >= 1440 ? 'wide' : width >= 980 ? 'medium' : 'compact'
 }
 
+function setConversationView(conversation: HTMLElement): 'chat' | 'trace' {
+  const selectedTab = conversation.querySelector<HTMLElement>(
+    "[data-slot='conversation.session.header'] [role='tab'][aria-selected='true']",
+  )
+  const label = (selectedTab?.textContent ?? '').trim()
+  const view = /^(轨迹|Trace)$/i.test(label) ? 'trace' : 'chat'
+  conversation.setAttribute(CONVERSATION_VIEW_ATTR, view)
+  return view
+}
+
 function restoreAttribute(element: HTMLElement, name: string, previous: string | null): void {
   if (previous === null) element.removeAttribute(name)
   else element.setAttribute(name, previous)
@@ -261,6 +272,7 @@ export function apply(ctx: Context): void {
     if (workspaceVisible) {
       const stage = ensureCharacterStage(conversation)
       const phase = conversation.querySelector<HTMLElement>('[data-phase]')?.getAttribute('data-phase') ?? 'active'
+      setConversationView(conversation)
       stage.dataset.verdandiPhase = phase
       conversation.setAttribute(CONVERSATION_PHASE_ATTR, phase)
       measureConversation(conversation)
@@ -269,6 +281,7 @@ export function apply(ctx: Context): void {
       for (const stage of document.querySelectorAll<HTMLElement>(STAGE_SELECTOR)) stage.remove()
       for (const pane of document.querySelectorAll<HTMLElement>("[data-pane='conversation']")) {
         pane.removeAttribute(CONVERSATION_PHASE_ATTR)
+        pane.removeAttribute(CONVERSATION_VIEW_ATTR)
       }
     }
 
@@ -310,6 +323,7 @@ export function apply(ctx: Context): void {
     for (const conversation of document.querySelectorAll<HTMLElement>("[data-pane='conversation']")) {
       for (const property of layoutProperties) conversation.style.removeProperty(property)
       conversation.removeAttribute(CONVERSATION_PHASE_ATTR)
+      conversation.removeAttribute(CONVERSATION_VIEW_ATTR)
     }
 
     for (const [property, previous] of previousAssetProperties) {

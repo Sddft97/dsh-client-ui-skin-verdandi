@@ -24,7 +24,10 @@ describe('verdandi skin apply/dispose contract', () => {
           <div role="treeitem" aria-selected="true">Current session</div>
         </div>
         <div data-pane="conversation">
-          <div data-slot="conversation.session.header"><header></header></div>
+          <div data-slot="conversation.session.header"><header>
+            <button role="tab" aria-selected="true">对话</button>
+            <button role="tab" aria-selected="false">轨迹</button>
+          </header></div>
           <div data-phase="active"></div>
           <div data-composer-seat><div data-composer-card></div></div>
         </div>
@@ -71,6 +74,7 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(conversation?.querySelector("[data-verdandi-figure='left']")).not.toBeNull()
     expect(conversation?.querySelector("[data-verdandi-figure='right']")).not.toBeNull()
     expect(conversation?.getAttribute('data-verdandi-phase')).toBe('active')
+    expect(conversation?.getAttribute('data-verdandi-view')).toBe('chat')
     expect(document.body.hasAttribute('data-verdandi-workspace')).toBe(true)
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-portrait']")).not.toBeNull()
     expect(conversation?.querySelector(":scope > [data-verdandi-decoration='workspace-lace']")).not.toBeNull()
@@ -107,5 +111,6 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(document.body.style.getPropertyValue('--vd-art-character-right')).toBe('url(previous.png)')
     expect(document.body.style.getPropertyValue('--vd-art-sidebar-bridal')).toBe('url(previous-sidebar.png)')
     expect(document.querySelector('[data-pane="conversation"]')?.hasAttribute('data-verdandi-phase')).toBe(false)
+    expect(document.querySelector('[data-pane="conversation"]')?.hasAttribute('data-verdandi-view')).toBe(false)
   })
 })
