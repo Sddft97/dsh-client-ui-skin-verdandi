@@ -151,8 +151,7 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='sidebar'] [data-slot='si
 }
 
 body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::before,
-body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::after,
-body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait'] {
+body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::after {
   opacity: 0;
 }
 
