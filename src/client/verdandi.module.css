@@ -364,6 +364,12 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar.footer.action'
   backdrop-filter: blur(5px);
 }
 
+body[data-dsh-verdandi] [data-pane='sidebar'] [class~='cm-bal-err'],
+body[data-dsh-verdandi] [data-pane='sidebar'] [class~='cm-bal-err'] * {
+  color: #fff1d6 !important;
+  text-shadow: 0 1px 2px rgba(52, 7, 19, 0.7);
+}
+
 body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar.settings'] > button {
   color: var(--vd-crimson-deep);
   background:
@@ -732,6 +738,26 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] {
   position: relative;
   z-index: 2;
   color: var(--vd-ink);
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_openError'] {
+  margin: 12px clamp(12px, 8vw, 110px) 8px;
+  padding: 10px 14px;
+  color: var(--vd-crimson-deep) !important;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+  background: rgba(255, 253, 251, 0.94);
+  border: 1px solid rgba(142, 36, 56, 0.28);
+  border-left: 4px solid var(--vd-crimson);
+  border-radius: 10px;
+  box-shadow: 0 5px 16px rgba(66, 18, 31, 0.12);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] [class*='_openError'] {
+  color: #ffd9df !important;
+  background: rgba(43, 25, 31, 0.95);
+  border-color: rgba(225, 154, 169, 0.35);
+  border-left-color: #d5788b;
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_'] {

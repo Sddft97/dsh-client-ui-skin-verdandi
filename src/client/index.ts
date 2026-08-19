@@ -216,7 +216,7 @@ function measureConversation(conversation: HTMLElement): void {
 
 function setStageWidth(stage: HTMLElement, conversation: HTMLElement): void {
   const width = conversation.getBoundingClientRect().width || conversation.offsetWidth || 0
-  stage.dataset.verdandiWidth = width >= 1440 ? 'wide' : width >= 980 ? 'medium' : 'compact'
+  stage.dataset.verdandiWidth = width >= 1360 ? 'wide' : width >= 840 ? 'medium' : 'compact'
 }
 
 function setConversationView(conversation: HTMLElement): 'chat' | 'trace' {

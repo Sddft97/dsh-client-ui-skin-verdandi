@@ -80,4 +80,10 @@ describe('verdandi compatibility guardrails', () => {
     expect(xtermRule).not.toMatch(/(?:^|[;\s])color\s*:/)
     expect(xtermRule).not.toMatch(/background(?:-color)?\s*:/)
   })
+
+  it('keeps host load errors readable over scenic backgrounds', () => {
+    expect(CSS).toMatch(/data-pane='conversation'[^{}]*class\*='_openError'[^{}]*\{[^}]*background:/)
+    expect(CSS).toMatch(/class\*='_openError'[^{}]*\{[^}]*border-left:/)
+    expect(CSS).toMatch(/data-pane='sidebar'[^{}]*class~='cm-bal-err'[^{}]*\{[^}]*color:/)
+  })
 })
