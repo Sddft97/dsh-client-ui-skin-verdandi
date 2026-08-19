@@ -58,8 +58,20 @@ describe('verdandi compatibility guardrails', () => {
       /data-verdandi-modal-open[^{}]*data-verdandi-decoration='sidebar-portrait'[^{}]*\{[^}]*opacity:\s*0/,
     )
     expect(CSS).toMatch(/data-verdandi-decoration='header-veil'[\s\S]*?--vd-art-header-veil/)
+    expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-vow-avatar-frame/)
+    expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-wedding-avatar/)
+    expect(CSS).toMatch(/data-verdandi-decoration='composer-seal'[\s\S]*?--vd-art-vow-rings/)
     expect(CSS).toMatch(/data-verdandi-decoration='composer-seal'[\s\S]*?--vd-art-vow-seal/)
     expect(CSS).toMatch(/data-verdandi-decoration='workspace-lace'[\s\S]*?pointer-events: none/)
+  })
+
+  it('uses official art only in scoped structural and hero decorations', () => {
+    expect(CSS).toMatch(/sidebar-sacred-tree[\s\S]*?--vd-art-official-sacred-tree/)
+    expect(CSS).toMatch(/aria-selected='true'[\s\S]*?--vd-art-vow-namecard/)
+    expect(CSS).toMatch(/aria-selected='true'\]::after[\s\S]*?--vd-art-ring-tag/)
+    expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?hero-chibi/)
+    expect(CSS).toMatch(/hero-chibi-left'[\s\S]*?--vd-art-hero-chibi-left/)
+    expect(CSS).toMatch(/hero-chibi-right'[\s\S]*?--vd-art-hero-chibi-right/)
   })
 
   it('does not replace xterm foreground, background, or ANSI colors', () => {

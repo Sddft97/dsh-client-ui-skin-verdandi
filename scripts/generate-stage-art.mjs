@@ -9,6 +9,14 @@ const entries = [
   ['WORKSPACE_SCENE_LIGHT', 'assets/generated/verdandi-library-day.webp'],
   ['WORKSPACE_SCENE_DARK', 'assets/generated/verdandi-library-night.webp'],
   ['SIDEBAR_BRIDAL_CG', 'assets/generated/verdandi-bridal-cg-portrait.webp'],
+  ['VOW_AVATAR_FRAME', 'assets/generated/verdandi-vow-avatar-frame.webp'],
+  ['RING_TAG', 'assets/generated/verdandi-ring-tag.webp'],
+  ['VOW_RINGS', 'assets/generated/verdandi-vow-rings.webp'],
+  ['OFFICIAL_SACRED_TREE', 'assets/generated/verdandi-sacred-tree-white.webp'],
+  ['HERO_CHIBI_LEFT', 'assets/generated/verdandi-chibi-left.webp'],
+  ['HERO_CHIBI_RIGHT', 'assets/generated/verdandi-chibi-right.webp'],
+  ['VOW_NAMECARD', 'assets/generated/verdandi-vow-namecard.webp'],
+  ['WEDDING_AVATAR', 'assets/generated/verdandi-wedding-avatar.webp'],
 ]
 
 const output = [

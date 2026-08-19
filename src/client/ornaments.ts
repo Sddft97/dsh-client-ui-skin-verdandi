@@ -22,16 +22,6 @@ export const HEADER_VEIL = svgDataUri(`
   <path d="M0 7c168 0 242 34 408 34 150 0 244-23 392-23s242 23 392 23c166 0 240-34 408-34v69H0z" fill="url(#veil)"/>
   <path d="M0 7c168 0 242 34 408 34 150 0 244-23 392-23s242 23 392 23c166 0 240-34 408-34" fill="none" stroke="#c7a86b" stroke-width="1.4" opacity=".82"/>
   <path d="M0 60h1600v16H0z" fill="url(#lace)" opacity=".9"/>
-  <g transform="translate(800 26)" filter="url(#shadow)">
-    <path d="M-46 18c14-15 28-22 46-22s32 7 46 22" fill="none" stroke="#70845b" stroke-width="3" stroke-linecap="round"/>
-    <path d="M-34 10c-14-12-25-6-31 3 13 0 23 5 31 16M34 10c14-12 25-6 31 3-13 0-23 5-31 16" fill="#8e2438" opacity=".92"/>
-    <path d="M-16 18-42 50-7 30M16 18 42 50 7 30" fill="#8e2438" opacity=".82"/>
-    <g stroke="#c7a86b" stroke-width="1.8">
-      <circle cx="-18" cy="5" r="10" fill="#8e2438"/><circle cx="0" cy="0" r="12" fill="#fffdfb"/><circle cx="19" cy="6" r="10" fill="#9f354a"/>
-      <path d="M-22 5c4-5 9-2 7 3-3 5-9 3-7-3ZM-5 0c4-7 12-4 10 3-3 7-11 5-10-3ZM15 6c4-5 10-2 7 4-3 4-9 2-7-4Z" fill="none"/>
-    </g>
-    <path d="M-28 19c-11 0-18 5-24 14 11 1 20-3 24-14ZM28 19c11 0 18 5 24 14-11 1-20-3-24-14Z" fill="#70845b" stroke="#c7a86b" stroke-width="1"/>
-  </g>
 </svg>`)
 
 export const SIDEBAR_FRAME = svgDataUri(`
@@ -64,10 +54,6 @@ export const VOW_SEAL = svgDataUri(`
   <g filter="url(#s)">
     <path d="M9 25c17-7 31-5 47 5 16-10 30-12 47-5v34c-18-6-32-3-47 7-15-10-29-13-47-7z" fill="#fffdfb" stroke="#c7a86b" stroke-width="2"/>
     <path d="M56 30v36M17 33c13-3 24-1 33 5M95 33c-13-3-24-1-33 5" fill="none" stroke="#d9c69a" stroke-width="1.3"/>
-    <circle cx="50" cy="21" r="10" fill="none" stroke="#c7a86b" stroke-width="3"/>
-    <circle cx="63" cy="21" r="10" fill="none" stroke="#8e2438" stroke-width="3"/>
-    <path d="M27 15c7-9 15-8 20 0-7 6-13 8-20 0Z" fill="#8e2438"/>
-    <path d="M35 16c-7 7-13 13-18 22M78 14c9 1 15 6 18 14-9 0-16-4-18-14Z" fill="none" stroke="#8e2438" stroke-width="2.4" stroke-linecap="round"/>
   </g>
 </svg>`)
 

@@ -77,9 +77,13 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(conversation?.getAttribute('data-verdandi-view')).toBe('chat')
     expect(document.body.hasAttribute('data-verdandi-workspace')).toBe(true)
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-portrait']")).not.toBeNull()
+    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-sacred-tree']")).not.toBeNull()
     expect(conversation?.querySelector(":scope > [data-verdandi-decoration='workspace-lace']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil']")).not.toBeNull()
+    expect(conversation?.querySelector("header > [data-verdandi-decoration='header-vow-crest']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-seal']")).not.toBeNull()
+    expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-left']")).not.toBeNull()
+    expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-right']")).not.toBeNull()
 
     ctx.disposeAll()
     expect(document.querySelector('[data-verdandi-sidebar-card]')).toBeNull()

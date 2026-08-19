@@ -10,13 +10,20 @@ import {
   BARBECUE_CHARM,
   DETAILS_ART_DARK,
   DETAILS_ART_LIGHT,
-  SACRED_TREE,
   SWORD_CREST,
 } from './art.js'
 import {
+  HERO_CHIBI_LEFT,
+  HERO_CHIBI_RIGHT,
+  OFFICIAL_SACRED_TREE,
+  RING_TAG,
   SIDEBAR_BRIDAL_CG,
   STAGE_FIGURE_LEFT,
   STAGE_FIGURE_RIGHT,
+  VOW_AVATAR_FRAME,
+  VOW_NAMECARD,
+  VOW_RINGS,
+  WEDDING_AVATAR,
   WORKSPACE_SCENE_DARK,
   WORKSPACE_SCENE_LIGHT,
 } from './stage-art.generated.js'
@@ -57,7 +64,14 @@ const ASSET_PROPERTIES = {
   '--vd-art-composer-lace': COMPOSER_LACE,
   '--vd-art-character-left': STAGE_FIGURE_LEFT,
   '--vd-art-character-right': STAGE_FIGURE_RIGHT,
-  '--vd-art-sacred-tree': SACRED_TREE,
+  '--vd-art-official-sacred-tree': OFFICIAL_SACRED_TREE,
+  '--vd-art-vow-avatar-frame': VOW_AVATAR_FRAME,
+  '--vd-art-wedding-avatar': WEDDING_AVATAR,
+  '--vd-art-vow-rings': VOW_RINGS,
+  '--vd-art-ring-tag': RING_TAG,
+  '--vd-art-vow-namecard': VOW_NAMECARD,
+  '--vd-art-hero-chibi-left': HERO_CHIBI_LEFT,
+  '--vd-art-hero-chibi-right': HERO_CHIBI_RIGHT,
   '--vd-art-barbecue': BARBECUE_CHARM,
   '--vd-art-details-light': DETAILS_ART_LIGHT,
   '--vd-art-details-dark': DETAILS_ART_DARK,
@@ -99,15 +113,19 @@ function ensureWeddingDecorations(sidebar: HTMLElement | null, conversation: HTM
     sidebar?.querySelector<HTMLElement>("[data-slot='sidebar']") ?? sidebar,
     'sidebar-portrait',
   )
+  ensureDecoration(
+    sidebar?.querySelector<HTMLElement>("[data-slot='sidebar']") ?? sidebar,
+    'sidebar-sacred-tree',
+  )
   ensureDecoration(conversation, 'workspace-lace')
-  ensureDecoration(
-    conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null,
-    'header-veil',
-  )
-  ensureDecoration(
-    conversation?.querySelector<HTMLElement>('[data-composer-card]') ?? null,
-    'composer-seal',
-  )
+  const header = conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null
+  ensureDecoration(header, 'header-veil')
+  ensureDecoration(header, 'header-vow-crest')
+
+  const composer = conversation?.querySelector<HTMLElement>('[data-composer-card]') ?? null
+  ensureDecoration(composer, 'composer-seal')
+  ensureDecoration(composer, 'hero-chibi-left')
+  ensureDecoration(composer, 'hero-chibi-right')
 }
 
 function ensureCharacterStage(conversation: HTMLElement): HTMLElement {
