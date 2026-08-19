@@ -31,6 +31,7 @@ describe('verdandi skin apply/dispose contract', () => {
           <div data-phase="active"></div>
           <div data-composer-seat><div data-composer-card></div></div>
         </div>
+        <aside data-pane="details"><div data-slot="details">详情点击消息流中的工具行查看详情</div></aside>
       </div>`
     ctx = new MockContext()
   })
@@ -78,17 +79,37 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(document.body.hasAttribute('data-verdandi-workspace')).toBe(true)
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-portrait']")).not.toBeNull()
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-sacred-tree']")).not.toBeNull()
+    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-rail-avatar']")).not.toBeNull()
     expect(conversation?.querySelector(":scope > [data-verdandi-decoration='workspace-lace']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-vow-crest']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-seal']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-left']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-right']")).not.toBeNull()
+    expect(document.querySelector("[data-pane='details'][data-verdandi-details-empty]")).not.toBeNull()
+    expect(document.querySelector("[data-pane='details'] > [data-verdandi-decoration='details-record']")).not.toBeNull()
 
     ctx.disposeAll()
     expect(document.querySelector('[data-verdandi-sidebar-card]')).toBeNull()
     expect(document.querySelector('[data-verdandi-stage]')).toBeNull()
     expect(document.querySelector('[data-verdandi-decoration]')).toBeNull()
+  })
+
+  it('marks an empty trajectory without changing the host timeline content', () => {
+    const conversation = document.querySelector('[data-pane="conversation"]')
+    conversation?.querySelector('[role="tab"][aria-selected="true"]')?.setAttribute('aria-selected', 'false')
+    const traceTab = Array.from(conversation?.querySelectorAll('[role="tab"]') ?? [])
+      .find((tab) => tab.textContent === '轨迹')
+    traceTab?.setAttribute('aria-selected', 'true')
+    conversation?.insertAdjacentHTML(
+      'beforeend',
+      '<section aria-label="Trajectory timeline">No timing data</section>',
+    )
+
+    apply(ctx as never)
+
+    expect(conversation?.getAttribute('data-verdandi-view')).toBe('trace')
+    expect(conversation?.querySelector('[data-verdandi-trace-empty]')?.textContent).toBe('No timing data')
   })
 
   it('adds semantic hooks without replacing host controls', () => {

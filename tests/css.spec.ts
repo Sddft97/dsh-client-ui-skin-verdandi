@@ -74,6 +74,14 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/hero-chibi-right'[\s\S]*?--vd-art-hero-chibi-right/)
   })
 
+  it('reserves the second-round artwork for low-frequency interface states', () => {
+    expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
+    expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-q-avatar/)
+    expect(CSS).toMatch(/data-verdandi-details-empty[\s\S]*?details-record'[\s\S]*?--vd-art-childhood-record/)
+    expect(CSS).toMatch(/aria-label='Trajectory timeline'[\s\S]*?--vd-art-sequence-sword/)
+    expect(CSS).toMatch(/aria-label='发送消息'[\s\S]*?--vd-art-sequence-sword/)
+  })
+
   it('does not replace xterm foreground, background, or ANSI colors', () => {
     const xtermRule = CSS.match(/:global\(\.xterm\)\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(xtermRule).toContain('border-radius')

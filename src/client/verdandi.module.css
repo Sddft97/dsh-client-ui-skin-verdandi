@@ -165,6 +165,11 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verd
   pointer-events: none;
 }
 
+body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-decoration='sidebar-rail-avatar'] {
+  display: none;
+  pointer-events: none;
+}
+
 body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::before,
 body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::after {
   opacity: 0;
@@ -395,6 +400,22 @@ body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar']
 
 body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-sacred-tree'] {
   display: none;
+}
+
+body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar'] [data-verdandi-decoration='sidebar-rail-avatar'] {
+  display: block;
+  position: absolute;
+  z-index: 8;
+  right: 5px;
+  bottom: 154px;
+  left: 5px;
+  aspect-ratio: 1;
+  background:
+    var(--vd-art-vow-avatar-frame) center / contain no-repeat,
+    var(--vd-art-q-avatar) center 48% / 74% auto no-repeat,
+    radial-gradient(circle, #fffdfb 0 48%, rgba(255, 253, 251, 0.38) 49% 55%, transparent 57%);
+  filter: drop-shadow(0 4px 8px rgba(43, 5, 15, 0.3));
+  pointer-events: none;
 }
 
 body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar']::before {
@@ -674,7 +695,33 @@ body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='head
     var(--vd-art-wedding-avatar) center 36% / 84% auto no-repeat,
     radial-gradient(circle, rgba(255, 253, 251, 0.96) 0 52%, transparent 54%);
   filter: drop-shadow(0 3px 5px rgba(66, 18, 31, 0.2));
+  isolation: isolate;
   pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-vow-crest']::before,
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-vow-crest']::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: 23px;
+  width: 88px;
+  height: 27px;
+  background:
+    radial-gradient(circle at 50% 4px, #fffdfb 0 2px, transparent 2.5px) 0 0 / 13px 9px repeat-x,
+    linear-gradient(180deg, #a52e46 0 43%, #74172a 45% 100%);
+  border: 1px solid rgba(199, 168, 107, 0.92);
+  box-shadow: inset 0 0 0 2px rgba(255, 253, 251, 0.14), 0 3px 7px rgba(67, 16, 30, 0.16);
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-vow-crest']::before {
+  right: 47px;
+  clip-path: polygon(0 14%, 86% 0, 100% 50%, 86% 100%, 0 86%, 12% 50%);
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-vow-crest']::after {
+  left: 47px;
+  clip-path: polygon(0 50%, 14% 0, 100% 14%, 88% 50%, 100% 86%, 14% 100%);
 }
 
 body[data-dsh-verdandi] [data-verdandi-header] > :not([data-verdandi-decoration]) {
@@ -694,7 +741,12 @@ body[data-dsh-verdandi] [data-verdandi-header] :is(button, [role='tab']) {
 body[data-dsh-verdandi] [data-verdandi-header] button {
   border-color: rgba(199, 168, 107, 0.62);
   border-radius: 999px;
-  background: rgba(255, 253, 251, 0.58);
+  background:
+    radial-gradient(circle at 10px 50%, rgba(255, 255, 255, 0.9) 0 2px, transparent 2.5px),
+    rgba(255, 253, 251, 0.66);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 2px 6px rgba(67, 16, 30, 0.07);
 }
 
 body[data-dsh-verdandi] [data-verdandi-header] button:hover {
@@ -761,6 +813,8 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] [class*='
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_'] {
+  position: relative;
+  overflow: hidden;
   color: var(--vd-ink);
   background: color-mix(in srgb, var(--vd-paper-solid) 91%, transparent);
   border: 1px solid color-mix(in srgb, var(--vd-gold) 44%, transparent);
@@ -769,6 +823,29 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
   box-sizing: border-box;
   box-shadow: 0 8px 24px rgba(62, 17, 29, 0.08);
   backdrop-filter: blur(5px);
+}
+
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_']::before {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border: 1px solid color-mix(in srgb, var(--vd-gold) 32%, transparent);
+  border-radius: 10px;
+  pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_']::after {
+  content: '';
+  position: absolute;
+  right: 7px;
+  bottom: 7px;
+  width: 78px;
+  height: 78px;
+  background: var(--vd-crimson);
+  -webkit-mask: var(--vd-art-official-sacred-tree) center / contain no-repeat;
+  mask: var(--vd-art-official-sacred-tree) center / contain no-repeat;
+  opacity: 0.035;
+  pointer-events: none;
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] > [class*='_userRow'] {
@@ -781,8 +858,14 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] > [class*='_userRow
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] > [class*='_userRow'] [class*='_bubble'] {
+  position: relative;
+  overflow: hidden;
+  padding: 10px 14px;
   color: var(--vd-ink);
+  background:
+    linear-gradient(90deg, rgba(255, 253, 251, 0.96), rgba(250, 237, 240, 0.94)) !important;
   border: 1px solid color-mix(in srgb, var(--vd-crimson) 26%, var(--vd-gold) 22%);
+  border-right: 3px solid var(--vd-crimson);
   box-shadow: 0 5px 16px rgba(62, 17, 29, 0.07);
 }
 
@@ -793,11 +876,7 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-slot='conversation.chat.node']
   border-color: color-mix(in srgb, var(--vd-gold) 35%, transparent);
 }
 
-body[data-dsh-verdandi] [data-slot='conversation.chat.node'] :is(
-  [data-variant='think'],
-  [class*='_callRow'],
-  [class*='_retryRow']
-) {
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [data-variant='think'] {
   color: var(--vd-ink) !important;
   background: color-mix(in srgb, var(--vd-paper-solid) 78%, transparent);
   border-left: 2px solid color-mix(in srgb, var(--vd-gold) 72%, var(--vd-crimson) 28%);
@@ -805,6 +884,86 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] :is(
   padding: 5px 9px;
   box-sizing: border-box;
   backdrop-filter: blur(4px);
+}
+
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] :is(
+  [class*='_callRow'],
+  [class*='_retryRow']
+) {
+  color: #fff8f4 !important;
+  background: linear-gradient(90deg, rgba(78, 15, 29, 0.93), rgba(104, 22, 38, 0.84));
+  border: 1px solid rgba(230, 213, 169, 0.42);
+  border-left: 3px solid var(--vd-gold);
+  border-radius: 7px;
+  padding: 6px 10px;
+  box-sizing: border-box;
+  box-shadow: 0 4px 12px rgba(58, 16, 28, 0.12);
+  --dsw-alias-label-primary: #fff8f4;
+  --dsw-alias-label-secondary: #f0dce1;
+  --dsw-alias-label-tertiary: #dcbfc7;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'] {
+  position: relative;
+  min-height: clamp(210px, 28vh, 320px);
+  overflow: hidden;
+  color: var(--vd-ink);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--vd-paper-solid) 76%, transparent), transparent 52%),
+    radial-gradient(circle at 12% 34%, rgba(199, 168, 107, 0.11), transparent 28%);
+  border: 1px solid color-mix(in srgb, var(--vd-gold) 34%, transparent);
+  border-radius: 15px;
+  box-shadow: inset 3px 0 0 var(--vd-crimson), 0 8px 24px rgba(62, 17, 29, 0.06);
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline']::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: clamp(42px, 14%, 110px);
+  left: clamp(20px, 4vw, 64px);
+  width: 92px;
+  height: 136px;
+  transform: rotate(-8deg);
+  background: var(--vd-art-sequence-sword) center / contain no-repeat;
+  filter: drop-shadow(0 7px 12px rgba(142, 36, 56, 0.15));
+  opacity: 0.28;
+  pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline']::after {
+  content: 'SEQUENCE · OATH';
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  color: color-mix(in srgb, var(--vd-crimson) 76%, var(--vd-ink) 24%);
+  font: 600 10px/1.2 Georgia, serif;
+  letter-spacing: 0.18em;
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'][data-verdandi-trace-empty]::after {
+  content: '时序档案 · SEQUENCE ARCHIVE';
+  top: auto;
+  right: 22px;
+  bottom: 18px;
+  left: auto;
+  color: color-mix(in srgb, var(--vd-crimson) 82%, var(--vd-ink) 18%);
+  letter-spacing: 0.12em;
+  opacity: 0.82;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'] > * {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'] button {
+  color: var(--vd-crimson-deep);
+  background: color-mix(in srgb, var(--vd-paper-solid) 88%, var(--vd-gold) 12%);
+  border: 1px solid color-mix(in srgb, var(--vd-gold) 62%, transparent);
+  border-radius: 999px;
 }
 
 body[data-dsh-verdandi] [data-slot='tool.call.toolview'] {
@@ -970,6 +1129,9 @@ body[data-dsh-verdandi] [data-composer-card] :is(
   button[aria-label='发送消息'],
   button[aria-label='Send message']
 ) {
+  position: relative;
+  isolation: isolate;
+  overflow: visible;
   color: #fff !important;
   background: var(--vd-crimson) !important;
   border-color: var(--vd-gold) !important;
@@ -979,8 +1141,40 @@ body[data-dsh-verdandi] [data-composer-card] :is(
 body[data-dsh-verdandi] [data-composer-card] :is(
   button[aria-label='发送消息'],
   button[aria-label='Send message']
+)::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: -10px;
+  transform: rotate(-38deg) scale(0.9);
+  background: var(--vd-art-sequence-sword) center / contain no-repeat;
+  filter: brightness(1.22) drop-shadow(0 2px 4px rgba(255, 229, 177, 0.42));
+  opacity: 0.38;
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 180ms ease;
+}
+
+body[data-dsh-verdandi] [data-composer-card] :is(
+  button[aria-label='发送消息'],
+  button[aria-label='Send message']
+) > * {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-dsh-verdandi] [data-composer-card] :is(
+  button[aria-label='发送消息'],
+  button[aria-label='Send message']
 ):hover:not(:disabled) {
   background: var(--vd-crimson-soft) !important;
+}
+
+body[data-dsh-verdandi] [data-composer-card] :is(
+  button[aria-label='发送消息'],
+  button[aria-label='Send message']
+):hover:not(:disabled)::before {
+  transform: rotate(-31deg) scale(1.02);
+  opacity: 0.58;
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > * {
@@ -1029,6 +1223,48 @@ body[data-dsh-verdandi] [data-pane='details']::after {
   mask: var(--vd-art-official-sacred-tree) center / contain no-repeat;
   opacity: 0.065;
   pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-pane='details'] > [data-verdandi-decoration='details-record'] {
+  display: none;
+  pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
+  display: block;
+  position: absolute;
+  z-index: 0;
+  top: clamp(112px, 25%, 220px);
+  left: 50%;
+  width: min(55%, 164px);
+  aspect-ratio: 1;
+  transform: translateX(-50%) rotate(-2deg);
+  background: var(--vd-art-childhood-record) center / contain no-repeat;
+  filter: drop-shadow(0 14px 22px rgba(55, 18, 27, 0.16));
+  opacity: 0.72;
+}
+
+body[data-dsh-verdandi] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
+  content: '誓约档案 · VOW ARCHIVE';
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  width: max-content;
+  transform: translateX(-50%);
+  color: var(--vd-crimson-deep);
+  font: 600 11px/1.2 Georgia, 'Noto Serif SC', serif;
+  letter-spacing: 0.14em;
+  text-shadow: 0 1px 0 rgba(255, 253, 251, 0.8);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
+  filter: brightness(0.78) saturate(0.78) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.34));
+  opacity: 0.62;
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
+  color: var(--vd-gold-light);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
 body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='details'] {

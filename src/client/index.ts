@@ -13,10 +13,13 @@ import {
   SWORD_CREST,
 } from './art.js'
 import {
+  CHILDHOOD_RECORD,
   HERO_CHIBI_LEFT,
   HERO_CHIBI_RIGHT,
   OFFICIAL_SACRED_TREE,
+  Q_AVATAR,
   RING_TAG,
+  SEQUENCE_SWORD,
   SIDEBAR_BRIDAL_CG,
   STAGE_FIGURE_LEFT,
   STAGE_FIGURE_RIGHT,
@@ -42,6 +45,8 @@ const MODAL_ATTR = 'data-verdandi-modal-open'
 const SIDEBAR_SIZE_ATTR = 'data-verdandi-sidebar-size'
 const CONVERSATION_PHASE_ATTR = 'data-verdandi-phase'
 const CONVERSATION_VIEW_ATTR = 'data-verdandi-view'
+const DETAILS_EMPTY_ATTR = 'data-verdandi-details-empty'
+const TRACE_EMPTY_ATTR = 'data-verdandi-trace-empty'
 const STAGE_SELECTOR = '[data-verdandi-stage]'
 const DECORATION_SELECTOR = '[data-verdandi-decoration]'
 const LEGACY_SELECTOR = '[data-verdandi-sidebar-card], [data-verdandi-wedding], [data-verdandi-chrome]'
@@ -50,6 +55,8 @@ const OWNED_HOOKS = [
   'data-verdandi-new-session',
   'data-verdandi-nav-entry',
   'data-verdandi-sidebar-action',
+  DETAILS_EMPTY_ATTR,
+  TRACE_EMPTY_ATTR,
 ] as const
 
 const ASSET_PROPERTIES = {
@@ -72,6 +79,9 @@ const ASSET_PROPERTIES = {
   '--vd-art-vow-namecard': VOW_NAMECARD,
   '--vd-art-hero-chibi-left': HERO_CHIBI_LEFT,
   '--vd-art-hero-chibi-right': HERO_CHIBI_RIGHT,
+  '--vd-art-childhood-record': CHILDHOOD_RECORD,
+  '--vd-art-sequence-sword': SEQUENCE_SWORD,
+  '--vd-art-q-avatar': Q_AVATAR,
   '--vd-art-barbecue': BARBECUE_CHARM,
   '--vd-art-details-light': DETAILS_ART_LIGHT,
   '--vd-art-details-dark': DETAILS_ART_DARK,
@@ -108,15 +118,15 @@ function ensureDecoration(parent: HTMLElement | null, part: string): HTMLElement
   return decoration
 }
 
-function ensureWeddingDecorations(sidebar: HTMLElement | null, conversation: HTMLElement | null): void {
-  ensureDecoration(
-    sidebar?.querySelector<HTMLElement>("[data-slot='sidebar']") ?? sidebar,
-    'sidebar-portrait',
-  )
-  ensureDecoration(
-    sidebar?.querySelector<HTMLElement>("[data-slot='sidebar']") ?? sidebar,
-    'sidebar-sacred-tree',
-  )
+function ensureWeddingDecorations(
+  sidebar: HTMLElement | null,
+  conversation: HTMLElement | null,
+  details: HTMLElement | null,
+): void {
+  const sidebarRoot = sidebar?.querySelector<HTMLElement>("[data-slot='sidebar']") ?? sidebar
+  ensureDecoration(sidebarRoot, 'sidebar-portrait')
+  ensureDecoration(sidebarRoot, 'sidebar-sacred-tree')
+  ensureDecoration(sidebarRoot, 'sidebar-rail-avatar')
   ensureDecoration(conversation, 'workspace-lace')
   const header = conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null
   ensureDecoration(header, 'header-veil')
@@ -126,6 +136,7 @@ function ensureWeddingDecorations(sidebar: HTMLElement | null, conversation: HTM
   ensureDecoration(composer, 'composer-seal')
   ensureDecoration(composer, 'hero-chibi-left')
   ensureDecoration(composer, 'hero-chibi-right')
+  ensureDecoration(details, 'details-record')
 }
 
 function ensureCharacterStage(conversation: HTMLElement): HTMLElement {
@@ -171,6 +182,12 @@ function decorateStableRegions(): void {
 
   const header = firstElement<HTMLElement>("[data-slot='conversation.session.header'] > header")
   header?.setAttribute('data-verdandi-header', '')
+
+  const details = firstElement<HTMLElement>("[data-pane='details']")
+  const detailsText = (details?.textContent ?? '').replace(/\s+/g, ' ').trim()
+  if (/点击消息流中的工具行查看详情|select.+tool.+row.+details/i.test(detailsText)) {
+    details?.setAttribute(DETAILS_EMPTY_ATTR, '')
+  }
 
   const sidebar = firstElement<HTMLElement>("[data-pane='sidebar']")
   if (!sidebar) return
@@ -226,6 +243,10 @@ function setConversationView(conversation: HTMLElement): 'chat' | 'trace' {
   const label = (selectedTab?.textContent ?? '').trim()
   const view = /^(轨迹|Trace)$/i.test(label) ? 'trace' : 'chat'
   conversation.setAttribute(CONVERSATION_VIEW_ATTR, view)
+  const timeline = conversation.querySelector<HTMLElement>("[aria-label='Trajectory timeline']")
+  if (/No timing data|暂无(?:计时|轨迹|时序)数据/i.test(timeline?.textContent ?? '')) {
+    timeline?.setAttribute(TRACE_EMPTY_ATTR, '')
+  }
   return view
 }
 
@@ -280,12 +301,13 @@ export function apply(ctx: Context): void {
 
     const sidebar = firstElement<HTMLElement>("[data-pane='sidebar']")
     const conversation = firstElement<HTMLElement>("[data-pane='conversation']")
+    const details = firstElement<HTMLElement>("[data-pane='details']")
     const workspaceVisible = isRendered(conversation)
 
     body.toggleAttribute(WORKSPACE_ATTR, workspaceVisible)
     body.toggleAttribute(MODAL_ATTR, Boolean(document.querySelector("[role='dialog'][aria-modal='true']")))
     setSidebarSize(body, sidebar)
-    ensureWeddingDecorations(sidebar, workspaceVisible ? conversation : null)
+    ensureWeddingDecorations(sidebar, workspaceVisible ? conversation : null, details)
 
     if (workspaceVisible) {
       const stage = ensureCharacterStage(conversation)
@@ -306,6 +328,7 @@ export function apply(ctx: Context): void {
     syncResizeTargets([
       sidebar,
       conversation,
+      details,
       conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null,
       conversation?.querySelector<HTMLElement>("[data-composer-seat], [data-slot='conversation.input.dock']") ?? null,
     ])
