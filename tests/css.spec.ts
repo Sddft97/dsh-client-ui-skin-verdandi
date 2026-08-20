@@ -20,6 +20,12 @@ describe('verdandi compatibility guardrails', () => {
     )
   })
 
+  it('does not leak sidebar button foreground into the settings portal', () => {
+    expect(CSS).toMatch(
+      /\[data-pane='sidebar'\] button:not\([\s\S]*?\[data-slot='sidebar\.settings'\] \*[\s\S]*?\)\s*\{[\s\S]*?color: inherit/,
+    )
+  })
+
   it('keeps the character inside the conversation stage instead of fixing it to the viewport', () => {
     const figureRule = CSS.match(/\.characterFigure\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(figureRule).toContain('position: absolute')
@@ -80,6 +86,20 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/data-verdandi-details-empty[\s\S]*?details-record'[\s\S]*?--vd-art-childhood-record/)
     expect(CSS).toMatch(/aria-label='Trajectory timeline'[\s\S]*?--vd-art-sequence-sword/)
     expect(CSS).toMatch(/aria-label='发送消息'[\s\S]*?--vd-art-sequence-sword/)
+  })
+
+  it('keeps populated trajectory compact and reserves artwork height for its empty state', () => {
+    const timelineRule = CSS.match(/\[aria-label='Trajectory timeline'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(timelineRule).toContain('min-height: 0')
+    expect(timelineRule).not.toMatch(/28vh|320px/)
+    expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]\[data-verdandi-trace-empty\]\s*\{[\s\S]*?min-height: clamp\(116px, 14vh, 168px\)/)
+    expect(CSS).toMatch(/\[data-verdandi-trace-empty\]::before[\s\S]*?--vd-art-sequence-sword/)
+  })
+
+  it('groups composer statistics into one compact ribbon', () => {
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?display: grid !important/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \*[\s\S]*?margin: 0 !important/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \*[\s\S]*?background: transparent !important/)
   })
 
   it('does not replace xterm foreground, background, or ANSI colors', () => {

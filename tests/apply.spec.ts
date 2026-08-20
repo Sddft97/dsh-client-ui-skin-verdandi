@@ -1,8 +1,12 @@
-import { describe, expect, it, beforeEach, afterEach } from 'vitest'
+import { describe, expect, it, beforeEach, afterEach, vi } from 'vitest'
 import { apply } from '../src/client/index.js'
 
 class MockContext {
   private disposers: Array<() => void> = []
+  constructor(private services: Record<string, unknown> = {}) {}
+  get(name: string): unknown {
+    return this.services[name]
+  }
   effect(fn: () => () => void): void {
     this.disposers.push(fn())
   }
@@ -52,6 +56,24 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(document.body.getAttribute('data-dsh-verdandi')).toBe('')
     ctx.disposeAll()
     expect(document.body.getAttribute('data-dsh-verdandi')).toBe('previous')
+  })
+
+  it('uses and disposes the official theme token extension when available', () => {
+    const disposeTheme = vi.fn()
+    const overrideTokens = vi.fn(() => disposeTheme)
+    ctx = new MockContext({ theme: { overrideTokens } })
+
+    apply(ctx as never)
+
+    expect(overrideTokens).toHaveBeenCalledWith(
+      '@hjbztlbr/dsh-client-ui-skin-verdandi',
+      expect.objectContaining({
+        '--dsw-alias-brand-primary': { light: '#8e2438', dark: '#e4cfa0' },
+        '--dsw-alias-button-primary-fill': { light: '#8e2438', dark: '#e4cfa0' },
+      }),
+    )
+    ctx.disposeAll()
+    expect(disposeTheme).toHaveBeenCalledOnce()
   })
 
   it('removes legacy fixed decorations and mounts the character stage inside conversation', () => {

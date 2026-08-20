@@ -50,6 +50,7 @@ const TRACE_EMPTY_ATTR = 'data-verdandi-trace-empty'
 const STAGE_SELECTOR = '[data-verdandi-stage]'
 const DECORATION_SELECTOR = '[data-verdandi-decoration]'
 const LEGACY_SELECTOR = '[data-verdandi-sidebar-card], [data-verdandi-wedding], [data-verdandi-chrome]'
+const THEME_SOURCE = '@hjbztlbr/dsh-client-ui-skin-verdandi'
 const OWNED_HOOKS = [
   'data-verdandi-header',
   'data-verdandi-new-session',
@@ -58,6 +59,23 @@ const OWNED_HOOKS = [
   DETAILS_EMPTY_ATTR,
   TRACE_EMPTY_ATTR,
 ] as const
+
+type ThemeTokenPair = {
+  light: string
+  dark: string
+}
+
+type ThemeRuntimeLike = {
+  overrideTokens(source: string, tokens: Record<string, ThemeTokenPair>): () => void
+}
+
+const THEME_TOKENS: Record<string, ThemeTokenPair> = {
+  '--dsw-alias-brand-primary': { light: '#8e2438', dark: '#e4cfa0' },
+  '--dsw-alias-button-primary-fill': { light: '#8e2438', dark: '#e4cfa0' },
+  '--dsw-alias-button-primary-fill-active': { light: '#651a2b', dark: '#c6a767' },
+  '--dsw-alias-button-primary-fill-hover': { light: '#752033', dark: '#f0ddb1' },
+  '--dsw-alias-label-primary-inverted': { light: '#fffdfb', dark: '#25151b' },
+}
 
 const ASSET_PROPERTIES = {
   '--vd-art-sidebar-bridal': SIDEBAR_BRIDAL_CG,
@@ -257,6 +275,13 @@ function restoreAttribute(element: HTMLElement, name: string, previous: string |
 
 export function apply(ctx: Context): void {
   const body = document.body
+  const theme = ctx.get('theme') as ThemeRuntimeLike | undefined
+  if (typeof theme?.overrideTokens === 'function') {
+    ctx.effect(
+      () => theme.overrideTokens(THEME_SOURCE, THEME_TOKENS),
+      'ui-skin-verdandi: official theme token layer',
+    )
+  }
   const previousAttributes = new Map<string, string | null>([
     [SKIN_ATTR, body.getAttribute(SKIN_ATTR)],
     [WORKSPACE_ATTR, body.getAttribute(WORKSPACE_ATTR)],
