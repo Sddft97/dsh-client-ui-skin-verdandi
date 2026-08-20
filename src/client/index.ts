@@ -163,7 +163,10 @@ function ensureCharacterStage(conversation: HTMLElement): HTMLElement {
     stage
     && stage.querySelector("[data-verdandi-figure='left']")
     && stage.querySelector("[data-verdandi-figure='right']")
-  ) return stage
+  ) {
+    ensureDecoration(stage, 'hero-supply')
+    return stage
+  }
 
   stage?.remove()
 
@@ -183,6 +186,7 @@ function ensureCharacterStage(conversation: HTMLElement): HTMLElement {
   rightFigure.className = `${css.characterFigure ?? 'verdandiCharacterFigure'} ${css.figureRight ?? 'verdandiFigureRight'}`
 
   stage.append(leftFigure, rightFigure)
+  ensureDecoration(stage, 'hero-supply')
   conversation.prepend(stage)
   return stage
 }

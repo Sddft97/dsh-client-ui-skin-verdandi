@@ -555,6 +555,64 @@ body[data-dsh-verdandi] .characterStage[data-verdandi-phase='hero'] .figureRight
   transform: scale(0.94);
 }
 
+.characterStage > [data-verdandi-decoration='hero-supply'] {
+  display: none;
+  position: absolute;
+  z-index: 3;
+  bottom: calc(var(--vd-character-floor, 154px) + 18px);
+  left: clamp(104px, 11vw, 210px);
+  grid-template-columns: 34px auto;
+  align-items: center;
+  width: 116px;
+  min-height: 38px;
+  padding: 4px 10px 4px 5px;
+  color: var(--vd-crimson-deep);
+  background: linear-gradient(105deg, rgba(255, 253, 249, 0.96), rgba(246, 232, 224, 0.92));
+  border: 1px solid color-mix(in srgb, var(--vd-gold) 72%, var(--vd-crimson) 28%);
+  border-radius: 9px 14px 14px 9px;
+  box-shadow: 0 7px 16px rgba(63, 16, 29, 0.16);
+  box-sizing: border-box;
+  font: 600 10px/1.15 Georgia, 'Noto Serif SC', serif;
+  letter-spacing: 0.06em;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.characterStage > [data-verdandi-decoration='hero-supply']::before {
+  content: '';
+  width: 32px;
+  height: 28px;
+  background: var(--vd-art-barbecue) center / contain no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(73, 19, 31, 0.18));
+}
+
+.characterStage > [data-verdandi-decoration='hero-supply']::after {
+  content: '补给已备好';
+  white-space: nowrap;
+}
+
+body[data-dsh-verdandi] .characterStage[data-verdandi-phase='hero'] > [data-verdandi-decoration='hero-supply'] {
+  display: grid;
+  animation: verdandi-supply-arrive 520ms 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] .characterStage > [data-verdandi-decoration='hero-supply'] {
+  color: var(--vd-gold-light);
+  background: linear-gradient(105deg, rgba(52, 30, 37, 0.96), rgba(35, 20, 26, 0.94));
+  box-shadow: 0 7px 18px rgba(0, 0, 0, 0.32);
+}
+
+@keyframes verdandi-supply-arrive {
+  from {
+    opacity: 0;
+    transform: translate(-10px, 8px) rotate(-2deg);
+  }
+  to {
+    opacity: 0.92;
+    transform: translate(0, 0) rotate(-2deg);
+  }
+}
+
 .characterStage[data-verdandi-width='medium'] .figureLeft {
   left: 8px;
   transform: scale(0.5);
@@ -580,6 +638,10 @@ body[data-dsh-verdandi] .characterStage[data-verdandi-width='medium'][data-verda
 .characterStage[data-verdandi-width='compact'] .figureLeft {
   opacity: 0 !important;
   transform: scale(0.46);
+}
+
+.characterStage[data-verdandi-width='compact'] > [data-verdandi-decoration='hero-supply'] {
+  display: none !important;
 }
 
 .characterStage[data-verdandi-width='compact'] .figureRight {
@@ -918,14 +980,26 @@ body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timel
   box-shadow: inset 3px 0 0 var(--vd-crimson), 0 8px 24px rgba(62, 17, 29, 0.06);
 }
 
+body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline']::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 8px;
+  left: 4px;
+  width: 18px;
+  height: 36px;
+  transform: rotate(-5deg);
+  background: var(--vd-art-sequence-sword) center / contain no-repeat;
+  filter: drop-shadow(0 3px 5px rgba(142, 36, 56, 0.16));
+  opacity: 0.2;
+  pointer-events: none;
+}
+
 body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'][data-verdandi-trace-empty] {
   min-height: clamp(116px, 14vh, 168px);
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'][data-verdandi-trace-empty]::before {
-  content: '';
-  position: absolute;
-  z-index: 0;
   top: clamp(42px, 14%, 110px);
   left: clamp(20px, 4vw, 64px);
   width: 92px;
@@ -1174,12 +1248,15 @@ body[data-dsh-verdandi] [data-composer-card] :is(
 
 body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] {
   display: grid !important;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   grid-template-columns: minmax(0, 1fr) auto;
   align-self: center;
   width: min(100%, 780px);
   box-sizing: border-box;
   margin: -1px auto 0;
-  padding: 7px 14px 8px;
+  padding: 7px 14px 8px 42px;
   color: var(--vd-ink-muted);
   background: color-mix(in srgb, var(--vd-paper-solid) 92%, transparent);
   border: 1px solid color-mix(in srgb, var(--vd-gold) 42%, var(--vd-line));
@@ -1190,7 +1267,38 @@ body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] {
   line-height: 1.45;
 }
 
+body[data-dsh-verdandi] [data-slot='conversation.composer.dock']::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 9px;
+  left: 10px;
+  width: 23px;
+  height: 23px;
+  background: var(--vd-art-ring-tag) center / contain no-repeat;
+  filter: drop-shadow(0 2px 3px rgba(63, 17, 29, 0.16));
+  opacity: 0.86;
+  pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-slot='conversation.composer.dock']::after {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  right: 24px;
+  bottom: -10px;
+  width: 56px;
+  height: 56px;
+  background: var(--vd-crimson);
+  -webkit-mask: var(--vd-art-official-sacred-tree) center / contain no-repeat;
+  mask: var(--vd-art-official-sacred-tree) center / contain no-repeat;
+  opacity: 0.035;
+  pointer-events: none;
+}
+
 body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > * {
+  position: relative;
+  z-index: 2;
   width: auto !important;
   min-width: 0;
   margin: 0 !important;
@@ -1291,6 +1399,25 @@ body[data-dsh-verdandi] [data-pane='details'][data-verdandi-details-empty] > [da
   font: 600 11px/1.2 Georgia, 'Noto Serif SC', serif;
   letter-spacing: 0.14em;
   text-shadow: 0 1px 0 rgba(255, 253, 251, 0.8);
+}
+
+body[data-dsh-verdandi]:has(
+  [data-pane='conversation'][data-verdandi-view='trace']
+) [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
+  width: min(42%, 112px);
+  aspect-ratio: 163 / 183;
+  transform: translateX(-50%) rotate(2deg);
+  background:
+    var(--vd-art-sequence-sword) center / contain no-repeat,
+    radial-gradient(circle, rgba(255, 253, 251, 0.9), transparent 68%);
+  filter: drop-shadow(0 14px 22px rgba(78, 18, 33, 0.18));
+  opacity: 0.78;
+}
+
+body[data-dsh-verdandi]:has(
+  [data-pane='conversation'][data-verdandi-view='trace']
+) [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
+  content: '时序之剑 · SEQUENCE RELIC';
 }
 
 body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
@@ -1400,7 +1527,14 @@ body[data-dsh-verdandi] [role='tooltip'] {
 
   body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] {
     grid-template-columns: 1fr;
-    padding-inline: 8px;
+    padding-right: 8px;
+    padding-left: 34px;
+  }
+
+  body[data-dsh-verdandi] [data-slot='conversation.composer.dock']::before {
+    left: 7px;
+    width: 20px;
+    height: 20px;
   }
 
   body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :nth-child(2),

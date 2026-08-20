@@ -96,6 +96,7 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(conversation?.querySelectorAll('[data-verdandi-figure]')).toHaveLength(2)
     expect(conversation?.querySelector("[data-verdandi-figure='left']")).not.toBeNull()
     expect(conversation?.querySelector("[data-verdandi-figure='right']")).not.toBeNull()
+    expect(conversation?.querySelector("[data-verdandi-stage] > [data-verdandi-decoration='hero-supply']")).not.toBeNull()
     expect(conversation?.getAttribute('data-verdandi-phase')).toBe('active')
     expect(conversation?.getAttribute('data-verdandi-view')).toBe('chat')
     expect(document.body.hasAttribute('data-verdandi-workspace')).toBe(true)

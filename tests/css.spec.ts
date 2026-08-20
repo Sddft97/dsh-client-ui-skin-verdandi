@@ -78,6 +78,8 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?hero-chibi/)
     expect(CSS).toMatch(/hero-chibi-left'[\s\S]*?--vd-art-hero-chibi-left/)
     expect(CSS).toMatch(/hero-chibi-right'[\s\S]*?--vd-art-hero-chibi-right/)
+    expect(CSS).toMatch(/hero-supply'[\s\S]*?--vd-art-barbecue/)
+    expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?hero-supply/)
   })
 
   it('reserves the second-round artwork for low-frequency interface states', () => {
@@ -94,12 +96,20 @@ describe('verdandi compatibility guardrails', () => {
     expect(timelineRule).not.toMatch(/28vh|320px/)
     expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]\[data-verdandi-trace-empty\]\s*\{[\s\S]*?min-height: clamp\(116px, 14vh, 168px\)/)
     expect(CSS).toMatch(/\[data-verdandi-trace-empty\]::before[\s\S]*?--vd-art-sequence-sword/)
+    expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]::before[\s\S]*?width: 18px/)
   })
 
   it('groups composer statistics into one compact ribbon', () => {
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?display: grid !important/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \*[\s\S]*?margin: 0 !important/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \*[\s\S]*?background: transparent !important/)
+    expect(CSS).toMatch(/conversation\.composer\.dock'\]::before[\s\S]*?--vd-art-ring-tag/)
+    expect(CSS).toMatch(/conversation\.composer\.dock'\]::after[\s\S]*?--vd-art-official-sacred-tree/)
+  })
+
+  it('switches the empty details relic to the sequence sword on the trace view', () => {
+    expect(CSS).toMatch(/data-verdandi-view='trace'[\s\S]*?details-record'[\s\S]*?--vd-art-sequence-sword/)
+    expect(CSS).toMatch(/data-verdandi-view='trace'[\s\S]*?SEQUENCE RELIC/)
   })
 
   it('does not replace xterm foreground, background, or ANSI colors', () => {
