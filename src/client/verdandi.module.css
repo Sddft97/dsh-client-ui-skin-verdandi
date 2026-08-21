@@ -918,57 +918,6 @@ body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timel
   box-shadow: inset 3px 0 0 var(--vd-crimson), 0 8px 24px rgba(62, 17, 29, 0.06);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline']::before {
-  content: '';
-  position: absolute;
-  z-index: 2;
-  top: 4px;
-  left: 50px;
-  width: 26px;
-  height: 42px;
-  transform: rotate(-5deg);
-  background:
-    var(--vd-art-sequence-sword) center / 42px 42px no-repeat,
-    radial-gradient(ellipse at center, rgba(255, 253, 251, 0.94) 0 40%, rgba(142, 36, 56, 0.18) 58%, transparent 74%);
-  filter: drop-shadow(0 3px 5px rgba(142, 36, 56, 0.34));
-  opacity: 0.9;
-  pointer-events: none;
-}
-
-body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'][data-verdandi-trace-empty] {
-  min-height: clamp(116px, 14vh, 168px);
-}
-
-body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'][data-verdandi-trace-empty]::before {
-  z-index: 0;
-  top: clamp(42px, 14%, 110px);
-  left: clamp(20px, 4vw, 64px);
-  width: 92px;
-  height: 136px;
-  transform: rotate(-8deg);
-  background: var(--vd-art-sequence-sword) center / contain no-repeat;
-  filter: drop-shadow(0 7px 12px rgba(142, 36, 56, 0.15));
-  opacity: 0.28;
-  pointer-events: none;
-}
-
-body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'][data-verdandi-trace-empty]::after {
-  content: '时序档案 · SEQUENCE ARCHIVE';
-  position: absolute;
-  right: 22px;
-  bottom: 18px;
-  color: color-mix(in srgb, var(--vd-crimson) 82%, var(--vd-ink) 18%);
-  font: 600 10px/1.2 Georgia, serif;
-  letter-spacing: 0.12em;
-  opacity: 0.82;
-  pointer-events: none;
-}
-
-body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'] > * {
-  position: relative;
-  z-index: 1;
-}
-
 body[data-dsh-verdandi] [data-pane='conversation'] [aria-label='Trajectory timeline'] button {
   color: var(--vd-crimson-deep);
   background: color-mix(in srgb, var(--vd-paper-solid) 88%, var(--vd-gold) 12%);

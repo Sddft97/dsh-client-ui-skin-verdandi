@@ -45,7 +45,6 @@ const SIDEBAR_SIZE_ATTR = 'data-verdandi-sidebar-size'
 const CONVERSATION_PHASE_ATTR = 'data-verdandi-phase'
 const CONVERSATION_VIEW_ATTR = 'data-verdandi-view'
 const DETAILS_EMPTY_ATTR = 'data-verdandi-details-empty'
-const TRACE_EMPTY_ATTR = 'data-verdandi-trace-empty'
 const STAGE_SELECTOR = '[data-verdandi-stage]'
 const DECORATION_SELECTOR = '[data-verdandi-decoration]'
 const LEGACY_SELECTOR = '[data-verdandi-sidebar-card], [data-verdandi-wedding], [data-verdandi-chrome]'
@@ -56,7 +55,6 @@ const OWNED_HOOKS = [
   'data-verdandi-nav-entry',
   'data-verdandi-sidebar-action',
   DETAILS_EMPTY_ATTR,
-  TRACE_EMPTY_ATTR,
 ] as const
 
 type ThemeTokenPair = {
@@ -261,10 +259,6 @@ function setConversationView(conversation: HTMLElement): 'chat' | 'trace' {
   const label = (selectedTab?.textContent ?? '').trim()
   const view = /^(轨迹|Trace)$/i.test(label) ? 'trace' : 'chat'
   conversation.setAttribute(CONVERSATION_VIEW_ATTR, view)
-  const timeline = conversation.querySelector<HTMLElement>("[aria-label='Trajectory timeline']")
-  if (/No timing data|暂无(?:计时|轨迹|时序)数据/i.test(timeline?.textContent ?? '')) {
-    timeline?.setAttribute(TRACE_EMPTY_ATTR, '')
-  }
   return view
 }
 

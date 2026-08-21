@@ -118,7 +118,7 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(document.querySelector('[data-verdandi-decoration]')).toBeNull()
   })
 
-  it('marks an empty trajectory without changing the host timeline content', () => {
+  it('selects the trajectory view without tagging host timeline content', () => {
     const conversation = document.querySelector('[data-pane="conversation"]')
     conversation?.querySelector('[role="tab"][aria-selected="true"]')?.setAttribute('aria-selected', 'false')
     const traceTab = Array.from(conversation?.querySelectorAll('[role="tab"]') ?? [])
@@ -132,7 +132,8 @@ describe('verdandi skin apply/dispose contract', () => {
     apply(ctx as never)
 
     expect(conversation?.getAttribute('data-verdandi-view')).toBe('trace')
-    expect(conversation?.querySelector('[data-verdandi-trace-empty]')?.textContent).toBe('No timing data')
+    expect(conversation?.querySelector("[aria-label='Trajectory timeline']")?.textContent).toBe('No timing data')
+    expect(conversation?.querySelector('[data-verdandi-trace-empty]')).toBeNull()
   })
 
   it('adds semantic hooks without replacing host controls', () => {

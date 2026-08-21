@@ -85,18 +85,15 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
     expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-q-avatar/)
     expect(CSS).toMatch(/data-verdandi-details-empty[\s\S]*?details-record'[\s\S]*?--vd-art-childhood-record/)
-    expect(CSS).toMatch(/aria-label='Trajectory timeline'[\s\S]*?--vd-art-sequence-sword/)
     expect(CSS).toMatch(/aria-label='发送消息'[\s\S]*?--vd-art-sequence-sword/)
   })
 
-  it('keeps populated trajectory compact and reserves artwork height for its empty state', () => {
+  it('keeps the trajectory compact without decorative artwork overlays', () => {
     const timelineRule = CSS.match(/\[aria-label='Trajectory timeline'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(timelineRule).toContain('min-height: 0')
     expect(timelineRule).not.toMatch(/28vh|320px/)
-    expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]\[data-verdandi-trace-empty\]\s*\{[\s\S]*?min-height: clamp\(116px, 14vh, 168px\)/)
-    expect(CSS).toMatch(/\[data-verdandi-trace-empty\]::before[\s\S]*?--vd-art-sequence-sword/)
-    expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]::before[\s\S]*?z-index: 2[\s\S]*?left: 50px[\s\S]*?width: 26px/)
-    expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]::before[\s\S]*?opacity: 0\.9/)
+    expect(CSS).not.toMatch(/data-verdandi-trace-empty|SEQUENCE ARCHIVE/)
+    expect(CSS).not.toMatch(/\[aria-label='Trajectory timeline'\]::(?:before|after)/)
   })
 
   it('groups composer statistics into one compact ribbon', () => {

@@ -18,7 +18,7 @@ the package is published or redistributed.
 - `verdandi-sacred-tree-white.webp`: white-alpha Sacred Tree emblem used as a tinted watermark.
 - `verdandi-chibi-left.webp` + `verdandi-chibi-right.webp`: hero-only composer corner mascots.
 - `verdandi-childhood-record.webp`: childhood record used only in the empty vow-archive details state.
-- `verdandi-sequence-sword.webp`: Sequence Sword motif for the trajectory timeline and send action.
+- `verdandi-sequence-sword.webp`: Sequence Sword motif reserved for the send action and trace-view details relic.
 - `verdandi-q-avatar.webp`: compact Q-style portrait shown only when the sidebar is collapsed to rail mode.
 
 Run `pnpm art:generate` after replacing a generated image. The command rebuilds
