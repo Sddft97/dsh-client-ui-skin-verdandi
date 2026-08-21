@@ -27,6 +27,9 @@ describe('verdandi compatibility guardrails', () => {
   })
 
   it('keeps the character inside the conversation stage instead of fixing it to the viewport', () => {
+    const stageRule = CSS.match(/\.characterStage\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(stageRule).toContain('display: block !important')
+    expect(CSS).toMatch(/data-pane='conversation'\] > \.characterStage\s*\{[\s\S]*?display: block !important/)
     const figureRule = CSS.match(/\.characterFigure\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(figureRule).toContain('position: absolute')
     expect(figureRule).not.toContain('position: fixed')
@@ -69,9 +72,12 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-wedding-avatar/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-namecard'[\s\S]*?--vd-art-vow-namecard/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-bridal-corners'[\s\S]*?--vd-art-bridal-floral-corner/)
+    expect(CSS).toMatch(/data-verdandi-decoration='header-veil-corners'[\s\S]*?--vd-art-bridal-veil-corner/)
     expect(CSS).toMatch(/data-verdandi-decoration='composer-seal'[\s\S]*?--vd-art-vow-rings/)
     expect(CSS).toMatch(/data-verdandi-decoration='composer-seal'[\s\S]*?--vd-art-vow-seal/)
     expect(CSS).toMatch(/data-verdandi-decoration='composer-bridal-corners'[\s\S]*?--vd-art-bridal-floral-corner/)
+    expect(CSS).toMatch(/data-verdandi-decoration='composer-veil-inner'[\s\S]*?--vd-art-bridal-veil-corner/)
+    expect(CSS).toMatch(/data-verdandi-decoration='sidebar-veil-corners-top'[\s\S]*?--vd-art-bridal-veil-corner/)
     expect(CSS).toMatch(/data-verdandi-decoration='workspace-lace'[\s\S]*?pointer-events: none/)
   })
 
@@ -79,6 +85,7 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/sidebar-sacred-tree[\s\S]*?--vd-art-official-sacred-tree/)
     expect(CSS).toMatch(/aria-selected='true'[\s\S]*?--vd-art-vow-namecard/)
     expect(CSS).toMatch(/role='treeitem'\]\[aria-expanded\]::before[\s\S]*?--vd-art-vow-namecard/)
+    expect(CSS).toMatch(/role='treeitem'\]\[aria-expanded\] > :first-child[\s\S]*?--vd-art-vow-folder/)
     expect(CSS).toMatch(/aria-selected='true'\]::after[\s\S]*?--vd-art-ring-tag/)
     expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?hero-chibi/)
     expect(CSS).toMatch(/hero-chibi-left'[\s\S]*?--vd-art-hero-chibi-left/)
@@ -86,10 +93,26 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).not.toMatch(/hero-supply|补给已备好|--vd-art-barbecue/)
   })
 
-  it('mounts a framed wedding portrait inside assistant message cards only', () => {
+  it('mounts the framed wedding portrait outside the assistant paper card', () => {
     expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
     expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-wedding-avatar/)
+    expect(CSS).toMatch(/conversation\.chat\.node'\] \[class\*='_markdown_'\]:has\([\s\S]*?assistant-avatar'[\s\S]*?margin-left: 58px/)
+    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?left: -53px/)
+    expect(CSS).not.toMatch(/assistant-avatar'[\s\S]*?padding-left: 76px/)
     expect(CSS).toMatch(/max-width: 840px[\s\S]*?assistant-avatar'[\s\S]*?display: none/)
+  })
+
+  it('aligns sidebar navigation and removes the selected-session wedge', () => {
+    expect(CSS).toMatch(/data-verdandi-nav-entry[\s\S]*?align-items: center/)
+    expect(CSS).toMatch(/data-verdandi-nav-entry[\s\S]*?> :first-child[\s\S]*?flex: 0 0 24px/)
+    expect(CSS).not.toMatch(/aria-selected='true'\]::before[\s\S]*?clip-path: polygon/)
+    expect(CSS).not.toContain('left: -7px')
+  })
+
+  it('keeps header tabs flat and gives the composer a roomier bridal interior', () => {
+    expect(CSS).toMatch(/data-verdandi-header[\s\S]*?\[role='tab'\][\s\S]*?background: transparent !important/)
+    expect(CSS).toMatch(/data-verdandi-header[\s\S]*?\[role='tab'\][\s\S]*?border-radius: 0 !important/)
+    expect(CSS).toMatch(/\[data-composer-card\]\s*\{[\s\S]*?min-height: 112px/)
   })
 
   it('reserves the second-round artwork for low-frequency interface states', () => {

@@ -13,6 +13,7 @@ import {
 } from './art.js'
 import {
   BRIDAL_FLORAL_CORNER,
+  BRIDAL_VEIL_CORNER,
   CHILDHOOD_RECORD,
   HERO_CHIBI_LEFT,
   HERO_CHIBI_RIGHT,
@@ -24,6 +25,7 @@ import {
   STAGE_FIGURE_LEFT,
   STAGE_FIGURE_RIGHT,
   VOW_AVATAR_FRAME,
+  VOW_FOLDER_ICON,
   VOW_NAMECARD,
   VOW_RINGS,
   WEDDING_AVATAR,
@@ -99,6 +101,8 @@ const ASSET_PROPERTIES = {
   '--vd-art-sequence-sword': SEQUENCE_SWORD,
   '--vd-art-q-avatar': Q_AVATAR,
   '--vd-art-bridal-floral-corner': BRIDAL_FLORAL_CORNER,
+  '--vd-art-bridal-veil-corner': BRIDAL_VEIL_CORNER,
+  '--vd-art-vow-folder': VOW_FOLDER_ICON,
   '--vd-art-details-light': DETAILS_ART_LIGHT,
   '--vd-art-details-dark': DETAILS_ART_DARK,
 } as const
@@ -143,16 +147,20 @@ function ensureWeddingDecorations(
   ensureDecoration(sidebarRoot, 'sidebar-portrait')
   ensureDecoration(sidebarRoot, 'sidebar-sacred-tree')
   ensureDecoration(sidebarRoot, 'sidebar-rail-avatar')
+  ensureDecoration(sidebarRoot, 'sidebar-veil-corners-top')
+  ensureDecoration(sidebarRoot, 'sidebar-veil-corners-bottom')
   ensureDecoration(conversation, 'workspace-lace')
   const header = conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null
   ensureDecoration(header, 'header-veil')
   ensureDecoration(header, 'header-namecard')
   ensureDecoration(header, 'header-bridal-corners')
+  ensureDecoration(header, 'header-veil-corners')
   ensureDecoration(header, 'header-vow-crest')
 
   const composer = conversation?.querySelector<HTMLElement>('[data-composer-card]') ?? null
   ensureDecoration(composer, 'composer-seal')
   ensureDecoration(composer, 'composer-bridal-corners')
+  ensureDecoration(composer, 'composer-veil-inner')
   ensureDecoration(composer, 'hero-chibi-left')
   ensureDecoration(composer, 'hero-chibi-right')
   ensureDecoration(details, 'details-record')
@@ -224,7 +232,7 @@ function decorateStableRegions(): void {
     const text = (button.textContent ?? '').trim()
 
     if (/^(新会话|New session)$/i.test(text)) button.dataset.verdandiNewSession = ''
-    if (/^(任务看板|Task board|SSH)$/i.test(text)) button.dataset.verdandiNavEntry = ''
+    if (/^(任务看板|Task board|SSH|技能中心|Skill center)$/i.test(text)) button.dataset.verdandiNavEntry = ''
     if (/搜索会话|Search sessions|视图选项|View options|添加工作区|Add workspace/i.test(label)) {
       button.dataset.verdandiSidebarAction = ''
     }
@@ -261,6 +269,10 @@ function measureConversation(conversation: HTMLElement): void {
 function setStageWidth(stage: HTMLElement, conversation: HTMLElement): void {
   const width = conversation.getBoundingClientRect().width || conversation.offsetWidth || 0
   stage.dataset.verdandiWidth = width >= 1360 ? 'wide' : width >= 840 ? 'medium' : 'compact'
+  // The host's alternate work surfaces apply an important aria-hidden rule to
+  // decorative children. This is our own node, so an owned inline declaration
+  // is the narrowest reliable way to keep it visible on usable widths.
+  stage.style.setProperty('display', width >= 840 ? 'block' : 'none', 'important')
 }
 
 function setConversationView(conversation: HTMLElement): 'chat' | 'trace' {

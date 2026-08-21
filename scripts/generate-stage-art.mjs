@@ -21,6 +21,8 @@ const entries = [
   ['SEQUENCE_SWORD', 'assets/generated/verdandi-sequence-sword.webp'],
   ['Q_AVATAR', 'assets/generated/verdandi-q-avatar.webp'],
   ['BRIDAL_FLORAL_CORNER', 'assets/generated/verdandi-bridal-floral-corner.webp'],
+  ['BRIDAL_VEIL_CORNER', 'assets/generated/verdandi-bridal-veil-corner.webp'],
+  ['VOW_FOLDER_ICON', 'assets/generated/verdandi-vow-folder.webp'],
 ]
 
 const output = [

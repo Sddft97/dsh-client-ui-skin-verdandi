@@ -18,9 +18,13 @@ the package is published or redistributed.
 - `verdandi-sacred-tree-white.webp`: white-alpha Sacred Tree emblem used as a tinted watermark.
 - `verdandi-chibi-left.webp` + `verdandi-chibi-right.webp`: hero-only composer corner mascots.
 - `verdandi-bridal-floral-corner.webp`: original transparent white-lily, burgundy-rose, veil, and ribbon corner ornament generated for this skin; mirrored at header and composer edges.
+- `verdandi-bridal-veil-corner.webp`: original layered white-tulle, lace, pearl, and burgundy-ribbon corner generated for this skin; used at the sidebar frame, header, and inside the composer.
+- `verdandi-vow-folder.webp`: original ivory invitation-folder icon with burgundy ribbon and ring clasp generated for this skin; replaces the host folder glyph without changing its hitbox.
 - `verdandi-childhood-record.webp`: childhood record used only in the empty vow-archive details state.
 - `verdandi-sequence-sword.webp`: Sequence Sword motif reserved for the send action and trace-view details relic.
 - `verdandi-q-avatar.webp`: compact Q-style portrait shown only when the sidebar is collapsed to rail mode.
 
 Run `pnpm art:generate` after replacing a generated image. The command rebuilds
 `src/client/stage-art.generated.ts`, keeping the runtime plugin self-contained.
+
+The two generated bridal assets above were created for this repository from text prompts and do not contain third-party character artwork. Their source PNGs are retained beside the user-supplied source assets so future crops and WebP settings remain reproducible.

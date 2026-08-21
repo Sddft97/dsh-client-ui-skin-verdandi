@@ -23,6 +23,8 @@ describe('verdandi skin apply/dispose contract', () => {
         <div data-pane="sidebar">
           <button aria-label="新建会话">新会话</button>
           <button>任务看板</button>
+          <button>SSH</button>
+          <button>技能中心</button>
           <button aria-label="搜索会话"></button>
           <div role="treeitem" aria-expanded="true">AI</div>
           <div role="treeitem" aria-selected="true">Current session</div>
@@ -100,19 +102,24 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(conversation?.querySelector("[data-verdandi-figure='left']")).not.toBeNull()
     expect(conversation?.querySelector("[data-verdandi-figure='right']")).not.toBeNull()
     expect(conversation?.querySelector("[data-verdandi-stage] > [data-verdandi-decoration='hero-supply']")).toBeNull()
+    expect((conversation?.querySelector('[data-verdandi-stage]') as HTMLElement | null)?.style.getPropertyPriority('display')).toBe('important')
     expect(conversation?.getAttribute('data-verdandi-phase')).toBe('active')
     expect(conversation?.getAttribute('data-verdandi-view')).toBe('chat')
     expect(document.body.hasAttribute('data-verdandi-workspace')).toBe(true)
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-portrait']")).not.toBeNull()
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-sacred-tree']")).not.toBeNull()
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-rail-avatar']")).not.toBeNull()
+    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-veil-corners-top']")).not.toBeNull()
+    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-veil-corners-bottom']")).not.toBeNull()
     expect(conversation?.querySelector(":scope > [data-verdandi-decoration='workspace-lace']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-namecard']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-bridal-corners']")).not.toBeNull()
+    expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil-corners']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-vow-crest']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-seal']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-bridal-corners']")).not.toBeNull()
+    expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-veil-inner']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-left']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-right']")).not.toBeNull()
     expect(document.querySelector("[data-pane='details'][data-verdandi-details-empty]")).not.toBeNull()
@@ -147,7 +154,11 @@ describe('verdandi skin apply/dispose contract', () => {
     apply(ctx as never)
 
     expect(document.querySelector('button[data-verdandi-new-session]')?.textContent).toBe('新会话')
-    expect(document.querySelector('button[data-verdandi-nav-entry]')?.textContent).toBe('任务看板')
+    expect(Array.from(document.querySelectorAll('button[data-verdandi-nav-entry]')).map((button) => button.textContent)).toEqual([
+      '任务看板',
+      'SSH',
+      '技能中心',
+    ])
     expect(document.querySelector('button[data-verdandi-sidebar-action]')?.getAttribute('aria-label')).toBe('搜索会话')
     expect(document.querySelector('[data-verdandi-header]')).not.toBeNull()
 
