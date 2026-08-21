@@ -78,8 +78,7 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?hero-chibi/)
     expect(CSS).toMatch(/hero-chibi-left'[\s\S]*?--vd-art-hero-chibi-left/)
     expect(CSS).toMatch(/hero-chibi-right'[\s\S]*?--vd-art-hero-chibi-right/)
-    expect(CSS).toMatch(/hero-supply'[\s\S]*?--vd-art-barbecue/)
-    expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?hero-supply/)
+    expect(CSS).not.toMatch(/hero-supply|补给已备好|--vd-art-barbecue/)
   })
 
   it('reserves the second-round artwork for low-frequency interface states', () => {
@@ -96,13 +95,17 @@ describe('verdandi compatibility guardrails', () => {
     expect(timelineRule).not.toMatch(/28vh|320px/)
     expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]\[data-verdandi-trace-empty\]\s*\{[\s\S]*?min-height: clamp\(116px, 14vh, 168px\)/)
     expect(CSS).toMatch(/\[data-verdandi-trace-empty\]::before[\s\S]*?--vd-art-sequence-sword/)
-    expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]::before[\s\S]*?width: 18px/)
+    expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]::before[\s\S]*?z-index: 2[\s\S]*?left: 50px[\s\S]*?width: 26px/)
+    expect(CSS).toMatch(/\[aria-label='Trajectory timeline'\]::before[\s\S]*?opacity: 0\.9/)
   })
 
   it('groups composer statistics into one compact ribbon', () => {
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?display: grid !important/)
-    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \*[\s\S]*?margin: 0 !important/)
-    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \*[\s\S]*?background: transparent !important/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?margin: 3px auto 0[\s\S]*?border-radius: 12px 12px 14px 14px/)
+    expect(CSS).not.toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[^}]*?border-top: 0/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > :not\(\[role='tooltip'\]\)[\s\S]*?margin: 0 !important/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > :not\(\[role='tooltip'\]\)[\s\S]*?background: transparent !important/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \[role='tooltip'\][\s\S]*?z-index: 30/)
     expect(CSS).toMatch(/conversation\.composer\.dock'\]::before[\s\S]*?--vd-art-ring-tag/)
     expect(CSS).toMatch(/conversation\.composer\.dock'\]::after[\s\S]*?--vd-art-official-sacred-tree/)
   })

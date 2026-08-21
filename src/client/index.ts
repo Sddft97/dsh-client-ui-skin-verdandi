@@ -7,7 +7,6 @@
  */
 import type { Context } from '@deepseek-ai/cordis'
 import {
-  BARBECUE_CHARM,
   DETAILS_ART_DARK,
   DETAILS_ART_LIGHT,
   SWORD_CREST,
@@ -100,7 +99,6 @@ const ASSET_PROPERTIES = {
   '--vd-art-childhood-record': CHILDHOOD_RECORD,
   '--vd-art-sequence-sword': SEQUENCE_SWORD,
   '--vd-art-q-avatar': Q_AVATAR,
-  '--vd-art-barbecue': BARBECUE_CHARM,
   '--vd-art-details-light': DETAILS_ART_LIGHT,
   '--vd-art-details-dark': DETAILS_ART_DARK,
 } as const
@@ -164,7 +162,6 @@ function ensureCharacterStage(conversation: HTMLElement): HTMLElement {
     && stage.querySelector("[data-verdandi-figure='left']")
     && stage.querySelector("[data-verdandi-figure='right']")
   ) {
-    ensureDecoration(stage, 'hero-supply')
     return stage
   }
 
@@ -186,7 +183,6 @@ function ensureCharacterStage(conversation: HTMLElement): HTMLElement {
   rightFigure.className = `${css.characterFigure ?? 'verdandiCharacterFigure'} ${css.figureRight ?? 'verdandiFigureRight'}`
 
   stage.append(leftFigure, rightFigure)
-  ensureDecoration(stage, 'hero-supply')
   conversation.prepend(stage)
   return stage
 }
