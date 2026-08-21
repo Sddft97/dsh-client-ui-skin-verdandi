@@ -12,6 +12,7 @@ import {
   SWORD_CREST,
 } from './art.js'
 import {
+  BRIDAL_FLORAL_CORNER,
   CHILDHOOD_RECORD,
   HERO_CHIBI_LEFT,
   HERO_CHIBI_RIGHT,
@@ -97,6 +98,7 @@ const ASSET_PROPERTIES = {
   '--vd-art-childhood-record': CHILDHOOD_RECORD,
   '--vd-art-sequence-sword': SEQUENCE_SWORD,
   '--vd-art-q-avatar': Q_AVATAR,
+  '--vd-art-bridal-floral-corner': BRIDAL_FLORAL_CORNER,
   '--vd-art-details-light': DETAILS_ART_LIGHT,
   '--vd-art-details-dark': DETAILS_ART_DARK,
 } as const
@@ -144,13 +146,22 @@ function ensureWeddingDecorations(
   ensureDecoration(conversation, 'workspace-lace')
   const header = conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null
   ensureDecoration(header, 'header-veil')
+  ensureDecoration(header, 'header-namecard')
+  ensureDecoration(header, 'header-bridal-corners')
   ensureDecoration(header, 'header-vow-crest')
 
   const composer = conversation?.querySelector<HTMLElement>('[data-composer-card]') ?? null
   ensureDecoration(composer, 'composer-seal')
+  ensureDecoration(composer, 'composer-bridal-corners')
   ensureDecoration(composer, 'hero-chibi-left')
   ensureDecoration(composer, 'hero-chibi-right')
   ensureDecoration(details, 'details-record')
+
+  for (const markdown of conversation?.querySelectorAll<HTMLElement>(
+    "[data-chat-flow-kind='assistant-step'] [data-slot='conversation.chat.node'] [class*='_markdown_']",
+  ) ?? []) {
+    ensureDecoration(markdown, 'assistant-avatar')
+  }
 }
 
 function ensureCharacterStage(conversation: HTMLElement): HTMLElement {

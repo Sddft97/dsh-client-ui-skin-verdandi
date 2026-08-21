@@ -33,6 +33,9 @@ describe('verdandi skin apply/dispose contract', () => {
             <button role="tab" aria-selected="false">轨迹</button>
           </header></div>
           <div data-phase="active"></div>
+          <div data-chat-flow-kind="assistant-step"><div data-slot="conversation.chat.node">
+            <div class="host-assistant-card"><div class="host_markdown_body"><p>Assistant response</p></div></div>
+          </div></div>
           <div data-composer-seat><div data-composer-card></div></div>
         </div>
         <aside data-pane="details"><div data-slot="details">详情点击消息流中的工具行查看详情</div></aside>
@@ -105,12 +108,16 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-rail-avatar']")).not.toBeNull()
     expect(conversation?.querySelector(":scope > [data-verdandi-decoration='workspace-lace']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil']")).not.toBeNull()
+    expect(conversation?.querySelector("header > [data-verdandi-decoration='header-namecard']")).not.toBeNull()
+    expect(conversation?.querySelector("header > [data-verdandi-decoration='header-bridal-corners']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-vow-crest']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-seal']")).not.toBeNull()
+    expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-bridal-corners']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-left']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-right']")).not.toBeNull()
     expect(document.querySelector("[data-pane='details'][data-verdandi-details-empty]")).not.toBeNull()
     expect(document.querySelector("[data-pane='details'] > [data-verdandi-decoration='details-record']")).not.toBeNull()
+    expect(conversation?.querySelector("[class*='_markdown_'] > [data-verdandi-decoration='assistant-avatar']")).not.toBeNull()
 
     ctx.disposeAll()
     expect(document.querySelector('[data-verdandi-sidebar-card]')).toBeNull()

@@ -50,6 +50,7 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/\[class\*='_markdown_'\][\s\S]*?padding: 14px 16px/)
     expect(CSS).toMatch(/\[class\*='_userRow'\][\s\S]*?background: transparent !important/)
     expect(CSS).toMatch(/\[class\*='_userRow'\] \[class\*='_bubble'\][\s\S]*?border:/)
+    expect(CSS).toMatch(/data-ds-dark-theme[^{}]*\[class\*='_userRow'\] \[class\*='_bubble'\][\s\S]*?background: rgba\(43, 25, 31, 0\.96\) !important/)
   })
 
   it('reveals the workspace scene behind both active and hero surfaces', () => {
@@ -66,19 +67,29 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/data-verdandi-decoration='header-veil'[\s\S]*?--vd-art-header-veil/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-vow-avatar-frame/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-wedding-avatar/)
+    expect(CSS).toMatch(/data-verdandi-decoration='header-namecard'[\s\S]*?--vd-art-vow-namecard/)
+    expect(CSS).toMatch(/data-verdandi-decoration='header-bridal-corners'[\s\S]*?--vd-art-bridal-floral-corner/)
     expect(CSS).toMatch(/data-verdandi-decoration='composer-seal'[\s\S]*?--vd-art-vow-rings/)
     expect(CSS).toMatch(/data-verdandi-decoration='composer-seal'[\s\S]*?--vd-art-vow-seal/)
+    expect(CSS).toMatch(/data-verdandi-decoration='composer-bridal-corners'[\s\S]*?--vd-art-bridal-floral-corner/)
     expect(CSS).toMatch(/data-verdandi-decoration='workspace-lace'[\s\S]*?pointer-events: none/)
   })
 
   it('uses official art only in scoped structural and hero decorations', () => {
     expect(CSS).toMatch(/sidebar-sacred-tree[\s\S]*?--vd-art-official-sacred-tree/)
     expect(CSS).toMatch(/aria-selected='true'[\s\S]*?--vd-art-vow-namecard/)
+    expect(CSS).toMatch(/role='treeitem'\]\[aria-expanded\]::before[\s\S]*?--vd-art-vow-namecard/)
     expect(CSS).toMatch(/aria-selected='true'\]::after[\s\S]*?--vd-art-ring-tag/)
     expect(CSS).toMatch(/data-verdandi-phase='hero'[\s\S]*?hero-chibi/)
     expect(CSS).toMatch(/hero-chibi-left'[\s\S]*?--vd-art-hero-chibi-left/)
     expect(CSS).toMatch(/hero-chibi-right'[\s\S]*?--vd-art-hero-chibi-right/)
     expect(CSS).not.toMatch(/hero-supply|补给已备好|--vd-art-barbecue/)
+  })
+
+  it('mounts a framed wedding portrait inside assistant message cards only', () => {
+    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
+    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-wedding-avatar/)
+    expect(CSS).toMatch(/max-width: 840px[\s\S]*?assistant-avatar'[\s\S]*?display: none/)
   })
 
   it('reserves the second-round artwork for low-frequency interface states', () => {

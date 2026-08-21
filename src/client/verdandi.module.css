@@ -290,6 +290,30 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'] {
   transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
 }
 
+body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'] > * {
+  position: relative;
+  z-index: 1;
+}
+
+body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded]::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  inset: 2px;
+  background:
+    linear-gradient(90deg, rgba(70, 12, 27, 0.28), rgba(92, 20, 37, 0.72)),
+    var(--vd-art-vow-namecard) 66% center / cover no-repeat;
+  border-radius: 7px;
+  opacity: 0.23;
+  filter: saturate(0.72) contrast(0.92);
+  pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded='true']::before {
+  opacity: 0.38;
+  filter: saturate(0.88) contrast(1.04);
+}
+
 body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem']:hover {
   background: rgba(255, 255, 255, 0.095);
   border-color: rgba(230, 213, 169, 0.28);
@@ -684,6 +708,63 @@ body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='head
   pointer-events: none;
 }
 
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-namecard'],
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-bridal-corners'] {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-namecard']::before,
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-namecard']::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  bottom: 10px;
+  width: min(38%, 430px);
+  background:
+    linear-gradient(90deg, rgba(255, 253, 251, 0.12), rgba(255, 253, 251, 0.68)),
+    var(--vd-art-vow-namecard) center / cover no-repeat;
+  opacity: 0.22;
+  filter: saturate(0.82) contrast(0.92);
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-namecard']::before {
+  left: 0;
+  -webkit-mask-image: linear-gradient(90deg, #000 0 60%, transparent);
+  mask-image: linear-gradient(90deg, #000 0 60%, transparent);
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-namecard']::after {
+  right: 0;
+  transform: scaleX(-1);
+  -webkit-mask-image: linear-gradient(90deg, #000 0 60%, transparent);
+  mask-image: linear-gradient(90deg, #000 0 60%, transparent);
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-bridal-corners']::before,
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-bridal-corners']::after {
+  content: '';
+  position: absolute;
+  top: -24px;
+  width: 184px;
+  height: 142px;
+  background: var(--vd-art-bridal-floral-corner) left top / 150px auto no-repeat;
+  opacity: 0.31;
+  filter: drop-shadow(0 2px 4px rgba(82, 25, 39, 0.16));
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-bridal-corners']::before {
+  left: -32px;
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-bridal-corners']::after {
+  right: -32px;
+  transform: scaleX(-1);
+}
+
 body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-vow-crest'] {
   position: absolute;
   z-index: 4;
@@ -780,6 +861,16 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] > [data-verda
   filter: brightness(1.7) saturate(0.6);
 }
 
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] > [data-verdandi-decoration='header-namecard'] {
+  opacity: 0.34;
+  filter: brightness(0.72) saturate(0.7);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] > [data-verdandi-decoration='header-bridal-corners'] {
+  opacity: 0.72;
+  filter: brightness(0.9) saturate(0.82);
+}
+
 body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] > [data-verdandi-decoration='header-vow-crest'] {
   filter: brightness(0.9) saturate(0.82) drop-shadow(0 3px 7px rgba(0, 0, 0, 0.46));
 }
@@ -850,6 +941,29 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
   pointer-events: none;
 }
 
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_']:has(
+  > [data-verdandi-decoration='assistant-avatar']
+) {
+  min-height: 66px;
+  padding-left: 76px;
+}
+
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_'] > [data-verdandi-decoration='assistant-avatar'] {
+  position: absolute;
+  z-index: 2;
+  top: 11px;
+  left: 13px;
+  width: 48px;
+  height: 48px;
+  background:
+    var(--vd-art-vow-avatar-frame) center / contain no-repeat,
+    var(--vd-art-wedding-avatar) center 29% / 78% auto no-repeat,
+    radial-gradient(circle, #fffdfb 0 55%, rgba(255, 253, 251, 0.18) 57%, transparent 59%);
+  border-radius: 50%;
+  filter: drop-shadow(0 3px 5px rgba(66, 18, 31, 0.2));
+  pointer-events: none;
+}
+
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] > [class*='_userRow'] {
   color: var(--vd-ink);
   background: transparent !important;
@@ -876,6 +990,13 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-slot='conversation.chat.node']
   color: var(--vd-ink);
   background: color-mix(in srgb, var(--vd-paper-solid) 88%, transparent);
   border-color: color-mix(in srgb, var(--vd-gold) 35%, transparent);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-slot='conversation.chat.node'] > [class*='_userRow'] [class*='_bubble'] {
+  color: #f7ecef;
+  background: rgba(43, 25, 31, 0.96) !important;
+  border-color: color-mix(in srgb, var(--vd-gold) 46%, transparent);
+  border-right-color: #d5788b;
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [data-variant='think'] {
@@ -1010,6 +1131,35 @@ body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='compos
     var(--vd-art-vow-seal) center bottom / 92px 59px no-repeat;
   filter: drop-shadow(0 2px 3px rgba(70, 19, 32, 0.18));
   pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-bridal-corners'] {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  overflow: visible;
+  pointer-events: none;
+}
+
+body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-bridal-corners']::before,
+body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-bridal-corners']::after {
+  content: '';
+  position: absolute;
+  top: -27px;
+  width: 90px;
+  height: 90px;
+  background: var(--vd-art-bridal-floral-corner) left top / contain no-repeat;
+  opacity: 0.76;
+  filter: drop-shadow(0 3px 5px rgba(72, 16, 31, 0.19));
+}
+
+body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-bridal-corners']::before {
+  left: -31px;
+}
+
+body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-bridal-corners']::after {
+  right: -31px;
+  transform: scaleX(-1);
 }
 
 body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration^='hero-chibi-'] {
@@ -1412,8 +1562,18 @@ body[data-dsh-verdandi] [role='tooltip'] {
   .characterStage,
   body[data-dsh-verdandi] [data-pane='sidebar']::after,
   body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-vow-crest'],
+  body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-bridal-corners'],
+  body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-bridal-corners'],
+  body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_'] > [data-verdandi-decoration='assistant-avatar'],
   body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration^='hero-chibi-'] {
     display: none;
+  }
+
+  body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_']:has(
+    > [data-verdandi-decoration='assistant-avatar']
+  ) {
+    min-height: 0;
+    padding-left: 16px;
   }
 
   body[data-dsh-verdandi] [data-composer-card] {

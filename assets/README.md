@@ -17,6 +17,7 @@ the package is published or redistributed.
 - `verdandi-ring-tag.webp` + `verdandi-vow-namecard.webp`: selected-conversation identity treatment.
 - `verdandi-sacred-tree-white.webp`: white-alpha Sacred Tree emblem used as a tinted watermark.
 - `verdandi-chibi-left.webp` + `verdandi-chibi-right.webp`: hero-only composer corner mascots.
+- `verdandi-bridal-floral-corner.webp`: original transparent white-lily, burgundy-rose, veil, and ribbon corner ornament generated for this skin; mirrored at header and composer edges.
 - `verdandi-childhood-record.webp`: childhood record used only in the empty vow-archive details state.
 - `verdandi-sequence-sword.webp`: Sequence Sword motif reserved for the send action and trace-view details relic.
 - `verdandi-q-avatar.webp`: compact Q-style portrait shown only when the sidebar is collapsed to rail mode.
