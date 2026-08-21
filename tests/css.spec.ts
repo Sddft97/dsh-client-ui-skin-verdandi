@@ -67,6 +67,9 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).not.toMatch(
       /data-verdandi-modal-open[^{}]*data-verdandi-decoration='sidebar-portrait'[^{}]*\{[^}]*opacity:\s*0/,
     )
+    expect(CSS).not.toMatch(
+      /data-verdandi-modal-open[^{}]*data-verdandi-decoration\^='sidebar-veil-corners-'[^{}]*\{[^}]*opacity:\s*0/,
+    )
     expect(CSS).toMatch(/data-verdandi-decoration='header-veil'[\s\S]*?--vd-art-header-veil/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-vow-avatar-frame/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-wedding-avatar/)
@@ -77,6 +80,9 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/data-verdandi-decoration='composer-seal'[\s\S]*?--vd-art-vow-seal/)
     expect(CSS).toMatch(/data-verdandi-decoration='composer-bridal-corners'[\s\S]*?--vd-art-bridal-floral-corner/)
     expect(CSS).toMatch(/data-verdandi-decoration='composer-veil-inner'[\s\S]*?--vd-art-bridal-veil-corner/)
+    expect(CSS).toMatch(
+      /data-verdandi-decoration='composer-veil-inner'\]::before,[\s\S]*?bottom:\s*-8px;[\s\S]*?width:\s*156px;[\s\S]*?opacity:\s*0\.68/,
+    )
     expect(CSS).toMatch(/data-verdandi-decoration='sidebar-veil-corners-top'[\s\S]*?--vd-art-bridal-veil-corner/)
     expect(CSS).toMatch(/data-verdandi-decoration='workspace-lace'[\s\S]*?pointer-events: none/)
   })

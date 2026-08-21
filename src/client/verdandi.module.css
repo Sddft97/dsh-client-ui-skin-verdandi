@@ -225,8 +225,7 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-decoration='sidebar
 }
 
 body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::before,
-body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::after,
-body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar'] [data-verdandi-decoration^='sidebar-veil-corners-'] {
+body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::after {
   opacity: 0;
 }
 
@@ -1283,21 +1282,21 @@ body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='compos
 body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-veil-inner']::after {
   content: '';
   position: absolute;
-  bottom: -25px;
-  width: 104px;
-  height: 96px;
+  bottom: -8px;
+  width: 156px;
+  height: 132px;
   background: var(--vd-art-bridal-veil-corner) left top / contain no-repeat;
-  opacity: 0.38;
-  filter: saturate(0.82) drop-shadow(0 2px 3px rgba(83, 23, 38, 0.12));
+  opacity: 0.68;
+  filter: saturate(1.02) contrast(1.08) drop-shadow(0 2px 4px rgba(83, 23, 38, 0.18));
 }
 
 body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-veil-inner']::before {
-  left: -26px;
+  left: -20px;
   transform: scaleY(-1);
 }
 
 body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-veil-inner']::after {
-  right: -26px;
+  right: -20px;
   transform: scale(-1);
 }
 
