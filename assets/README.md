@@ -1,30 +1,30 @@
 # Verdandi stage artwork
 
-The source PNG files in `source/` were supplied by the user for this local skin iteration.
-Their original URLs, authors, official/fan-work status, and redistribution permissions have not yet
-been verified. They are suitable for local visual testing, but those fields must be completed before
-the package is published or redistributed.
+`source/` 保存可复现构建所需的 PNG 源文件，`generated/` 保存浏览器 bundle 使用的 WebP 版本。运行 `pnpm art:generate` 会更新 `src/client/stage-art.generated.ts`，使插件在运行时不依赖外部图片请求。
 
-`generated/` contains WebP derivatives used by the browser bundle:
+## 游戏内素材
 
-- `verdandi-barbecue-seated.webp`: left character, lively / barbecue motif.
-- `verdandi-white-knight.webp`: right character, white-vow / guardian motif.
-- `verdandi-library-day.webp`: light-theme workspace scene.
-- `verdandi-library-night.webp`: dark-theme workspace scene.
-- `verdandi-bridal-cg-portrait.webp`: portrait bridal CG integrated into the lower sidebar arch.
-- `verdandi-vow-avatar-frame.webp` + `verdandi-wedding-avatar.webp`: formal vow crest in the conversation header.
-- `verdandi-vow-rings.webp`: official ring art layered over the composer vow book.
-- `verdandi-ring-tag.webp` + `verdandi-vow-namecard.webp`: selected-conversation identity treatment.
-- `verdandi-sacred-tree-white.webp`: white-alpha Sacred Tree emblem used as a tinted watermark.
-- `verdandi-chibi-left.webp` + `verdandi-chibi-right.webp`: hero-only composer corner mascots.
-- `verdandi-bridal-floral-corner.webp`: original transparent white-lily, burgundy-rose, veil, and ribbon corner ornament generated for this skin; mirrored at header and composer edges.
-- `verdandi-bridal-veil-corner.webp`: original layered white-tulle, lace, pearl, and burgundy-ribbon corner generated for this skin; used at the sidebar frame, header, and inside the composer.
-- `verdandi-vow-folder.webp`: original ivory invitation-folder icon with burgundy ribbon and ring clasp generated for this skin; replaces the host folder glyph without changing its hitbox.
-- `verdandi-childhood-record.webp`: childhood record used only in the empty vow-archive details state.
-- `verdandi-sequence-sword.webp`: Sequence Sword motif reserved for the send action and trace-view details relic.
-- `verdandi-q-avatar.webp`: compact Q-style portrait shown only when the sidebar is collapsed to rail mode.
+项目维护者确认，以下素材直接取自《深空之眼》游戏内资源。它们及其裁切、缩放、透明度处理或 WebP 编码版本的权利归原权利人所有，不属于仓库 MIT License 的授权范围：
 
-Run `pnpm art:generate` after replacing a generated image. The command rebuilds
-`src/client/stage-art.generated.ts`, keeping the runtime plugin self-contained.
+- `verdandi-barbecue-seated`: 左侧人物立绘与烤肉主题。
+- `verdandi-white-knight`: 右侧白骑士人物立绘。
+- `verdandi-library-day`、`verdandi-library-night`: 亮色与暗色工作区场景。
+- `verdandi-bridal-cg-portrait`: 侧边栏下方婚纱 CG。
+- `verdandi-vow-avatar-frame`、`verdandi-wedding-avatar`: 助手消息头像组合。
+- `verdandi-vow-rings`: 输入区中央戒指装饰。
+- `verdandi-ring-tag`、`verdandi-vow-namecard`: 会话与工作区选中态。
+- `verdandi-sacred-tree-white`: 圣树水印。
+- `verdandi-chibi-left`、`verdandi-chibi-right`: 新会话输入区 Q 版装饰。
+- `verdandi-childhood-record`: 详情栏空状态彩蛋。
+- `verdandi-sequence-sword`: 时序之剑主题元素。
+- `verdandi-q-avatar`: 侧边栏 rail 模式头像。
 
-The two generated bridal assets above were created for this repository from text prompts and do not contain third-party character artwork. Their source PNGs are retained beside the user-supplied source assets so future crops and WebP settings remain reproducible.
+## 项目原创通用装饰
+
+以下素材由本项目自行绘制或生成，不包含第三方角色图像，按仓库 MIT License 提供：
+
+- `verdandi-bridal-floral-corner`: 白百合、深红玫瑰、头纱与丝带角饰。
+- `verdandi-bridal-veil-corner`: 白纱、蕾丝、珍珠与深红丝带角饰。
+- `verdandi-vow-folder`: 象牙白邀请函文件夹图标。
+
+完整的权利边界与非官方声明见仓库根目录 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)。

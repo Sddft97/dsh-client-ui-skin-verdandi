@@ -1358,11 +1358,14 @@ body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='hero-c
 
 body[data-dsh-verdandi] [data-composer-card] textarea {
   color: var(--vd-ink);
+  -webkit-text-fill-color: currentColor;
   background: transparent !important;
 }
 
 body[data-dsh-verdandi] [data-composer-card] textarea::placeholder {
   color: var(--vd-ink-muted);
+  -webkit-text-fill-color: currentColor;
+  opacity: 1;
   font-family: Georgia, 'Noto Serif SC', 'Songti SC', serif;
   letter-spacing: 0.035em;
 }
@@ -1534,6 +1537,10 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-composer-card] {
     0 0 0 4px var(--vd-crimson),
     0 0 0 5px rgba(208, 178, 118, 0.72),
     var(--vd-shadow);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-composer-card] textarea::placeholder {
+  color: #eadce0;
 }
 
 /* -------------------------------------------------------------------------- */
