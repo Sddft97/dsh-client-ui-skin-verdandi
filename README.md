@@ -29,7 +29,7 @@ dsh plugin --profile web add @hjbztlbr/dsh-client-ui-skin-verdandi
 ### 从 GitHub 安装
 
 ```powershell
-dsh plugin --profile web add github:hjbztlbr/dsh-client-ui-skin-verdandi
+dsh plugin --profile web add github:Sddft97/dsh-client-ui-skin-verdandi
 ```
 
 安装后在 DSH 的皮肤管理界面启用“薇儿丹蒂 · 纯白圣誓”，再按 `Ctrl+F5` 强制刷新页面。多个皮肤会同时修改相同界面区域，请一次只启用一个完整皮肤。

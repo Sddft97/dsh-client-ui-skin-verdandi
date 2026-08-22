@@ -6,11 +6,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hjbztlbr/dsh-client-ui-skin-verdandi.git"
+    "url": "git+https://github.com/Sddft97/dsh-client-ui-skin-verdandi.git"
   },
-  "homepage": "https://github.com/hjbztlbr/dsh-client-ui-skin-verdandi#readme",
+  "homepage": "https://github.com/Sddft97/dsh-client-ui-skin-verdandi#readme",
   "bugs": {
-    "url": "https://github.com/hjbztlbr/dsh-client-ui-skin-verdandi/issues"
+    "url": "https://github.com/Sddft97/dsh-client-ui-skin-verdandi/issues"
   },
   "keywords": [
     "deepseek-harness",

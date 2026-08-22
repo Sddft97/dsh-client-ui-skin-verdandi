@@ -29,7 +29,7 @@ dsh plugin --profile web add @hjbztlbr/dsh-client-ui-skin-verdandi
 ### Install from GitHub
 
 ```powershell
-dsh plugin --profile web add github:hjbztlbr/dsh-client-ui-skin-verdandi
+dsh plugin --profile web add github:Sddft97/dsh-client-ui-skin-verdandi
 ```
 
 After installation, enable “Verdandi · White Vow” in the DSH skin manager and press `Ctrl+F5` to force-refresh the page. Full skins modify many of the same host surfaces, so keep only one enabled at a time.

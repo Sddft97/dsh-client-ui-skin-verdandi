@@ -14,7 +14,7 @@ Confirm that the package contains only `lib/index.js`, `lib/client.js`, the DSH 
 
 ## 2. GitHub release
 
-1. Create `hjbztlbr/dsh-client-ui-skin-verdandi` as a public repository.
+1. Create `Sddft97/dsh-client-ui-skin-verdandi` as a public repository.
 2. Add the GitHub topic `dsh-plugin`.
 3. Enable GitHub Issues so users and rights holders have the contact path documented in the public notices.
 4. Push the full history and confirm that CI passes. Before submitting to the DSH catalog, the public repository must be at least one day old and contain at least ten commits.
@@ -34,11 +34,11 @@ After publishing, verify that the package page is public and that its `repositor
 
 ## 4. DSH plugin market
 
-Submit one YAML entry at `data/plugins/hjbztlbr__dsh-client-ui-skin-verdandi.yml` in `awesome-dsh-plugin`:
+Submit one YAML entry at `data/plugins/Sddft97__dsh-client-ui-skin-verdandi.yml` in `awesome-dsh-plugin`:
 
 ```yaml
-url: https://github.com/hjbztlbr/dsh-client-ui-skin-verdandi
-name: hjbztlbr/dsh-client-ui-skin-verdandi
+url: https://github.com/Sddft97/dsh-client-ui-skin-verdandi
+name: Sddft97/dsh-client-ui-skin-verdandi
 category: theme
 description:
   en: An Aether Gazer Verdandi-inspired skin for the DeepSeek Harness Web UI.
