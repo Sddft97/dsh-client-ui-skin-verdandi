@@ -1675,16 +1675,26 @@ body[data-dsh-verdandi] [data-slot='sidebar.settings'] [role='dialog'][aria-moda
   background: rgba(142, 36, 56, 0.09);
 }
 
-body[data-dsh-verdandi] :is([data-dsh-better-sidebar], [data-cordis-panel]) {
+body[data-dsh-verdandi] [data-cordis-panel] {
   color: var(--dsw-alias-label-primary, var(--vd-ink));
   background: var(--dsw-alias-bg-base, var(--vd-paper-solid));
   border: 1px solid var(--vd-line);
   border-radius: 11px;
 }
 
-body[data-dsh-verdandi] :is([data-dsh-better-sidebar], [data-cordis-panel]):focus-within {
+body[data-dsh-verdandi] [data-cordis-panel]:focus-within {
   border-color: var(--vd-gold);
   box-shadow: 0 0 0 2px rgba(199, 168, 107, 0.14);
+}
+
+/* better-sidebar mounts a zero-height host after #root. A border on that host
+   creates document overflow and exposes the browser's page scrollbar. */
+body[data-dsh-verdandi] [data-dsh-better-sidebar] {
+  color: var(--dsw-alias-label-primary, var(--vd-ink));
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 /* Preserve xterm's ANSI palette and renderer background; only frame its host. */

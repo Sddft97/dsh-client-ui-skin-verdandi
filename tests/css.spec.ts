@@ -11,6 +11,14 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/body\[data-dsh-verdandi\] > \[id='root'\]\s*\{[^}]*background:\s*transparent/)
   })
 
+  it('keeps the zero-height better-sidebar host from creating page overflow', () => {
+    const hostRule = CSS.match(/body\[data-dsh-verdandi\] \[data-dsh-better-sidebar\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(hostRule).toMatch(/background:\s*transparent/)
+    expect(hostRule).toMatch(/border:\s*0/)
+    expect(hostRule).toMatch(/box-shadow:\s*none/)
+    expect(CSS).not.toMatch(/:is\(\[data-dsh-better-sidebar\], \[data-cordis-panel\]\)/)
+  })
+
   it('re-establishes high-contrast host tokens inside the settings dialog', () => {
     expect(CSS).toMatch(
       /\[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?--dsw-alias-label-primary: rgb\(15, 17, 21\)/,
