@@ -1054,7 +1054,7 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
   > [data-verdandi-decoration='assistant-avatar']
 ) {
   position: relative;
-  margin-left: 58px;
+  margin-left: 0;
   overflow: visible;
 }
 
@@ -1062,7 +1062,7 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
   position: absolute;
   z-index: 2;
   top: 7px;
-  left: -53px;
+  left: -60px;
   width: 48px;
   height: 48px;
   background:

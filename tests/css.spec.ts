@@ -99,11 +99,12 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).not.toMatch(/hero-supply|补给已备好|--vd-art-barbecue/)
   })
 
-  it('mounts the framed wedding portrait outside the assistant paper card', () => {
+  it('hangs the framed wedding portrait in a responsive gutter without shortening the paper card', () => {
     expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
     expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-wedding-avatar/)
-    expect(CSS).toMatch(/conversation\.chat\.node'\] \[class\*='_markdown_'\]:has\([\s\S]*?assistant-avatar'[\s\S]*?margin-left: 58px/)
-    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?left: -53px/)
+    expect(CSS).toMatch(/conversation\.chat\.node'\] \[class\*='_markdown_'\]:has\([\s\S]*?assistant-avatar'[\s\S]*?margin-left: 0/)
+    expect(CSS).not.toMatch(/assistant-avatar'[\s\S]*?margin-left:\s*[1-9]\d*px/)
+    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?left: -60px/)
     expect(CSS).not.toMatch(/assistant-avatar'[\s\S]*?padding-left: 76px/)
     expect(CSS).toMatch(/max-width: 840px[\s\S]*?assistant-avatar'[\s\S]*?display: none/)
   })
