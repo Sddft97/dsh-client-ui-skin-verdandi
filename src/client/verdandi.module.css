@@ -23,6 +23,7 @@ body[data-dsh-verdandi] {
   --vd-shadow: 0 14px 34px rgba(67, 16, 30, 0.13);
   --dsw-font-family: 'Avenir Next', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --dsw-font-family-code: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
+  background-color: #f8f2ed;
 }
 
 body[data-dsh-verdandi][data-ds-dark-theme] {
@@ -42,6 +43,11 @@ body[data-dsh-verdandi][data-ds-dark-theme] {
   --vd-paper: rgba(34, 21, 26, 0.96);
   --vd-paper-solid: #24171c;
   --vd-shadow: 0 16px 38px rgba(0, 0, 0, 0.34);
+  background-color: #171015;
+}
+
+body[data-dsh-verdandi] > [id='root'] {
+  background: transparent;
 }
 
 body[data-dsh-verdandi] :focus-visible {

@@ -5,6 +5,12 @@ import { describe, expect, it } from 'vitest'
 const CSS = readFileSync(resolve(process.cwd(), 'src/client/verdandi.module.css'), 'utf8')
 
 describe('verdandi compatibility guardrails', () => {
+  it('paints the host root behind its transparent scrollbar gutter in both palettes', () => {
+    expect(CSS).toMatch(/body\[data-dsh-verdandi\]\s*\{[\s\S]*?background-color:\s*#f8f2ed/)
+    expect(CSS).toMatch(/body\[data-dsh-verdandi\]\[data-ds-dark-theme\]\s*\{[\s\S]*?background-color:\s*#171015/)
+    expect(CSS).toMatch(/body\[data-dsh-verdandi\] > \[id='root'\]\s*\{[^}]*background:\s*transparent/)
+  })
+
   it('re-establishes high-contrast host tokens inside the settings dialog', () => {
     expect(CSS).toMatch(
       /\[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?--dsw-alias-label-primary: rgb\(15, 17, 21\)/,
