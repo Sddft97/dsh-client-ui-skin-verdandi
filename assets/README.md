@@ -27,4 +27,4 @@
 - `verdandi-bridal-veil-corner`: 白纱、蕾丝、珍珠与深红丝带角饰。
 - `verdandi-vow-folder`: 象牙白邀请函文件夹图标。
 
-完整的权利边界与非官方声明见仓库根目录 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)。
+完整的权利边界与非官方声明见仓库根目录的[中文素材与权利说明](../THIRD_PARTY_NOTICES.zh-CN.md)，英文规范文本见 [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)。
