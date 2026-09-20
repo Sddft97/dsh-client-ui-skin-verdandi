@@ -4,6 +4,16 @@ import { describe, expect, it } from 'vitest'
 
 const CSS = readFileSync(resolve(process.cwd(), 'src/client/verdandi.module.css'), 'utf8')
 
+/**
+ * Linear-luminance extremes of the artwork band the running status floats in,
+ * measured on the real scenes with the pane veil applied (design note §15.7).
+ * The status has no surface, so this band — not a slip — is its backing.
+ */
+const STATUS_BAND: Record<string, [number, number]> = {
+  light: [0.245, 0.708],
+  dark: [0.062, 0.423],
+}
+
 describe('verdandi compatibility guardrails', () => {
   it('paints the host root behind its transparent scrollbar gutter in both palettes', () => {
     expect(CSS).toMatch(/body\[data-dsh-verdandi\]\s*\{[\s\S]*?background-color:\s*#f8f2ed/)
@@ -224,27 +234,47 @@ describe('verdandi compatibility guardrails', () => {
     )
   })
 
-  it('re-tints the running-status shimmer without breaking its text clip', () => {
-    // The status is gradient-clipped shimmer text, so it is re-tinted and
-    // haloed instead of surfaced.
-    expect(CSS).toMatch(
-      /\[class\*='_turnStatus'\]:not\(\s*\[class\*='_turnStatusClock'\]\s*\)\s*\{[^}]*background-image: linear-gradient/,
-    )
-    // The `background` shorthand resets `background-clip` to border-box, which
-    // paints the gradient as a blue box over the HUD.
-    const retint = CSS.match(
-      /\[class\*='_turnStatus'\]:not\(\s*\[class\*='_turnStatusClock'\]\s*\)\s*\{([^}]*)\}/,
+  it('runs the status on plain ink with motion on a hairline', () => {
+    // No surface, no halo, no outline, no clipped fill: every decoration here
+    // was measured or reviewed down. What is left must stay plain.
+    const status = CSS.match(
+      /\[class\*='_turnStatus'\]\s*\{([^}]*)\}/,
     )?.[1] ?? ''
-    expect(retint).not.toMatch(/(?:^|[;\s])background:/)
-    expect(CSS).toMatch(/\[class\*='_turnStatus'\]\s*\{[^}]*text-shadow:/)
-    expect(CSS).toMatch(/\[class\*='_turnStatusClock'\]\s*\{[^}]*--vd-ink-meta/)
+    expect(status).toContain('background-image: none')
+    expect(status).toContain('text-shadow: none')
+    expect(status).toContain('-webkit-text-fill-color: currentColor')
+    expect(status).toContain('animation: none')
+    // The rejected halo was a multi-layer glow in the paper colour.
+    expect(CSS).not.toMatch(/text-shadow:[^;]*var\(--vd-slip-solid\)/)
+    expect(CSS).not.toMatch(/\[data-pane='conversation'\]::(?:before|after)/)
+    expect(CSS).not.toMatch(/-webkit-text-stroke/)
 
-    // Accessibility modes must not leave a clipped transparent fill behind.
+    // Motion lives on a gold hairline, which cannot touch contrast.
     expect(CSS).toMatch(
-      /@media \(prefers-contrast: more\)[\s\S]*?_turnStatus'\][\s\S]*?background-image: none/,
+      /\[class\*='_turnStatus'\]::after\s*\{[^}]*--vd-gold-light[^}]*verdandi-status-sweep/,
     )
+    expect(CSS).toMatch(/@keyframes verdandi-status-sweep/)
+
+    // The theme states its own line; the host's localized string survives in the
+    // accessibility tree, so the swap is visual only and must stay reversible.
+    const swap = CSS.match(
+      /\[class\*='_turnStatus'\]:not\(\s*\[class\*='_turnStatusClock'\]\s*\)::before\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(swap).toContain("content: '薇儿烧烤中...'")
+    expect(swap).toContain('font-size: 14px')
+    // The host's own text node is collapsed, not removed.
     expect(CSS).toMatch(
-      /@media \(forced-colors: active\)[\s\S]*?_turnStatus'\][\s\S]*?-webkit-text-fill-color: CanvasText/,
+      /\[class\*='_turnStatus'\]:not\(\s*\[class\*='_turnStatusClock'\]\s*\)\s*\{[^}]*font-size: 0/,
+    )
+    expect(CSS).toMatch(/html:lang\(en\)[\s\S]*?_turnStatusClock'\]\s*\)::before\s*\{[^}]*Verdandi is grilling/)
+
+    // The clock shares the label's ink: --vd-ink-meta does not clear the floor
+    // on the dark band, so hierarchy comes from size and weight only.
+    const clock = CSS.match(/\[class\*='_turnStatusClock'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(clock).toContain('color: var(--vd-status-ink)')
+
+    expect(CSS).toMatch(
+      /@media \(forced-colors: active\)[\s\S]*?_turnStatus'\]::after[\s\S]*?display: none/,
     )
   })
 
@@ -339,10 +369,6 @@ describe('verdandi legibility contrast floor', () => {
         ['ink-meta', hex(token(block, '--vd-ink-meta'))],
         ['danger', hex(token(block, '--vd-danger'))],
         ['warn', hex(token(block, '--vd-warn'))],
-        // The running-status shimmer is read against its halo, i.e. the solid
-        // slip colour, so its stops belong to the same floor.
-        ['shimmer-base', hex(token(block, '--vd-shimmer-base'))],
-        ['shimmer-peak', hex(token(block, '--vd-shimmer-peak'))],
       ]
 
       for (const [label, background] of EXTREMES) {
@@ -356,6 +382,26 @@ describe('verdandi legibility contrast floor', () => {
             `${palette} ${inkName} on solid slip fallback`,
           ).toBeGreaterThanOrEqual(4.5)
         }
+      }
+
+      // The running status sits on the artwork with no surface at all, so it is
+      // checked against the band it actually floats in. Those extremes are
+      // measured on the real scenes (design note §15.7), in linear luminance.
+      const [bandMin, bandMax] = STATUS_BAND[palette] ?? [0, 0]
+      const ratioOf = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
+      const statusInk = luminance(hex(token(block, '--vd-status-ink')))
+      const worst = statusInk <= bandMin
+        ? ratioOf(statusInk, bandMin)
+        : statusInk >= bandMax
+          ? ratioOf(statusInk, bandMax)
+          : Math.min(ratioOf(statusInk, bandMin), ratioOf(statusInk, bandMax))
+
+      if (palette === 'light') {
+        expect(worst, 'light status ink over the measured band').toBeGreaterThanOrEqual(4.5)
+      } else {
+        // Dark cannot reach AA here: over that band the best possible single ink
+        // measures 2.05:1, so this pins the regression floor rather than a pass.
+        expect(worst, 'dark status ink over the measured band').toBeGreaterThanOrEqual(1.9)
       }
     })
   }

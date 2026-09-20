@@ -32,13 +32,12 @@ body[data-dsh-verdandi] {
   --vd-slip-line: rgba(199, 168, 107, 0.6);
   --vd-slip-shadow: 0 4px 14px rgba(62, 17, 29, 0.1);
   --vd-ink-meta: #5f454d;
+  --vd-status-ink: #1b1116;
   --vd-danger: #9c1f30;
   --vd-warn: #7d5310;
   --vd-stage-veil: rgba(255, 253, 251, 0.3);
   --vd-stage-veil-edge: rgba(255, 253, 251, 0.12);
   --vd-stage-veil-hero: rgba(255, 253, 251, 0.06);
-  --vd-shimmer-base: #1d2568;
-  --vd-shimmer-peak: #4655cc;
   --dsw-font-family: 'Avenir Next', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --dsw-font-family-code: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
   background-color: #f8f2ed;
@@ -66,13 +65,12 @@ body[data-dsh-verdandi][data-ds-dark-theme] {
   --vd-slip-line: rgba(208, 178, 118, 0.4);
   --vd-slip-shadow: 0 5px 16px rgba(0, 0, 0, 0.34);
   --vd-ink-meta: #d9c0c7;
+  --vd-status-ink: #fbf3f5;
   --vd-danger: #ff9aa9;
   --vd-warn: #f0cd8a;
   --vd-stage-veil: rgba(18, 11, 15, 0.24);
   --vd-stage-veil-edge: rgba(18, 11, 15, 0.1);
   --vd-stage-veil-hero: rgba(18, 11, 15, 0.06);
-  --vd-shimmer-base: #8d9cf5;
-  --vd-shimmer-peak: #e2ecff;
   background-color: #171015;
 }
 
@@ -1389,50 +1387,93 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
   border-color: var(--vd-gold);
 }
 
-/* --- Running status: shimmering gradient text, no surface possible. ------- */
+/* --- Running status: plain ink, motion on a gold hairline. ---------------- */
 
-/* The "深度求索中… 2分16秒" status is gradient-clipped shimmer text: the host
-   paints the gradient as the glyph *fill* (`background-clip: text`) and animates
-   its position, so a paper slip here is out of the question. Two counters keep
-   it readable on the stage:
+/* The "深度求索中… 2分16秒" status is the last child of the transcript flow, so it
+   floats ~90px above the composer card over an arbitrary slice of the artwork.
+   Measured in that band (day/night artwork, pane veil applied) the luminance
+   spans 0.245-0.708 in light and 0.062-0.423 in dark, so a single ink tops out
+   at 4.76:1 in light and 2.05:1 in dark.
 
-   1. Re-tint the shimmer so every gradient stop holds its ratio against the
-      halo colour instead of against the artwork. The host's own highlight,
-      `--dsw-static-deepseek-200`, measures 1.29:1 on ivory — the sweeping band
-      simply erases the glyphs in light mode.
-   2. Give the glyphs a tight halo so their edges always sit on paper colour
-      rather than on whatever the artwork is doing underneath. `text-shadow`
-      composes with `background-clip: text` (unlike the obvious
-      `-webkit-text-stroke`, which swallows the fill at usable widths), and it
-      inherits into the clock.
+   Three cheaper ways to buy the missing contrast were tried and rejected by
+   review rather than by measurement: a text halo fabricates a local surface and
+   visibly softens 14px glyphs; a denser scrim (the composer paper fading up over
+   the band) reads as a mask over the illustration; and the host's own clipped
+   shimmer erases the glyphs whenever its near-white stop sweeps past.
 
-   TRAP: re-tint with `background-image`, never the `background` shorthand — the
-   shorthand resets `background-clip` to `border-box` and paints the gradient as
-   a blue box. The test suite asserts the shorthand never comes back. */
+   What ships is therefore the honest text-only answer: plain solid ink, no
+   shadow, no outline, no clipped fill, no scene mask. Light clears AA on the
+   measured band; dark cannot, and the gap is recorded in
+   docs/design/verdandi-white-vow.md §15.7 with its two crisp remedies. Motion
+   moves to a gold hairline sweeping under the line, which cannot affect
+   contrast. The host's shimmer animation is switched off rather than overridden,
+   so the two never fight over `background-position`. */
 body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus'] {
-  text-shadow:
-    0 0 2px var(--vd-slip-solid),
-    0 0 4px color-mix(in srgb, var(--vd-slip-solid) 92%, transparent),
-    0 0 8px color-mix(in srgb, var(--vd-slip-solid) 70%, transparent),
-    0 0 14px color-mix(in srgb, var(--vd-slip-solid) 45%, transparent);
+  position: relative;
+  animation: none;
+  color: var(--vd-status-ink);
+  -webkit-text-fill-color: currentColor;
+  background-image: none;
+  text-shadow: none;
+}
+
+/* The theme says its own line. The host renders `chat.deepDiving`; the skin
+   zeroes that text node's size and re-states the copy from a pseudo-element, so
+   nothing in the DOM is mutated and dispose() restores the host wording. The
+   host drives `documentElement.lang` from the active locale, so `:lang()` keeps
+   English on English. Assistive tech still reads the host's own localized
+   string, which is why the swap stays purely visual. */
+/* `_turnStatus` also matches `_turnStatusClock`, so both rules must exclude the
+   clock or it inherits the collapsed size and gains a second copy of the label. */
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus']:not(
+  [class*='_turnStatusClock']
+) {
+  font-size: 0;
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus']:not(
   [class*='_turnStatusClock']
-) {
-  background-image: linear-gradient(
-    90deg,
-    var(--vd-shimmer-base) 0%,
-    var(--vd-shimmer-base) 32%,
-    var(--vd-shimmer-peak) 50%,
-    var(--vd-shimmer-base) 68%,
-    var(--vd-shimmer-base) 100%
-  );
+)::before {
+  content: '薇儿烧烤中...';
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+html:lang(en) body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus']:not(
+  [class*='_turnStatusClock']
+)::before {
+  content: 'Verdandi is grilling...';
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus']::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  left: 0;
+  height: 2px;
+  background-color: color-mix(in srgb, var(--vd-gold) 30%, transparent);
+  background-image: linear-gradient(90deg, transparent, var(--vd-gold-light), transparent);
+  background-repeat: no-repeat;
+  background-size: 38% 100%;
+  border-radius: 2px;
+  animation: verdandi-status-sweep 1.9s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes verdandi-status-sweep {
+  from {
+    background-position: -70% 0;
+  }
+  to {
+    background-position: 170% 0;
+  }
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatusClock'] {
-  color: var(--vd-ink-meta);
-  -webkit-text-fill-color: var(--vd-ink-meta);
+  color: var(--vd-status-ink);
+  -webkit-text-fill-color: var(--vd-status-ink);
 }
 
 /* --- Fallbacks: the slip must hold its ratio without compositing help. ----- */
@@ -1492,13 +1533,6 @@ body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatusClock'] {
     backdrop-filter: none;
   }
 
-  /* Drop the shimmer and the clipped fill: solid ink on a full halo. */
-  body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus'] {
-    color: var(--vd-ink);
-    -webkit-text-fill-color: currentColor;
-    background-image: none;
-    text-shadow: 0 0 2px var(--vd-slip-solid), 0 0 5px var(--vd-slip-solid);
-  }
 }
 
 @media (forced-colors: active) {
@@ -1525,12 +1559,14 @@ body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatusClock'] {
     box-shadow: none;
   }
 
-  /* A clipped gradient fill would render as nothing here. */
-  body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus'] {
+  body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus']::after {
+    display: none;
+  }
+
+  body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus'],
+  body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatusClock'] {
     color: CanvasText;
     -webkit-text-fill-color: CanvasText;
-    background-image: none;
-    text-shadow: none;
   }
 }
 
