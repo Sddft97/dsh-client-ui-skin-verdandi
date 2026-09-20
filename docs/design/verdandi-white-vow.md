@@ -191,3 +191,60 @@
 - 顶栏两侧叠加低透明度头纱角饰，但 tabs 改为透明平面样式，避免圆形按钮背景和文字宽度冲突。
 - 助手婚纱头像使用独立外侧挂槽，不缩短消息书页且保持各类消息左边界对齐；840 px 以下隐藏头像。Composer 提升至 112 px 最小高度，并在内侧下角加入头纱/裙摆装饰。
 - 人物舞台通过皮肤级 `display` 保护保持挂载；任务看板和 SSH 的真实功能表层仍位于舞台上方，不改变宿主交互和路由。
+
+## 15. V4 可读性护栏（亮/暗双模）
+
+### 15.1 问题定性
+
+V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人物形成完整舞台」，可读性交给每条聊天内容自己的誓约书页。这个分工只覆盖了**正文**：助手书页卡、用户回函、工具/重试档案条都有承托面，但宿主把**轮次过程元数据**直接画在工作区上——
+
+| 行 | 宿主实现 | 是否有面 |
+|---|---|---|
+| 系统提示词 / 上下文注入 | `XrJvXW_root` | 无（仅展开体是代码块） |
+| 本轮运行失败 / 达到 token 上限 | `turnErrorRow` | 无 |
+| 过程控件「55 次工具调用 · 26 条消息」 | `l_V-RG_root` | 无（透明 + 一条 0.5px 分隔线） |
+| 轮尾时间与复制/分支图标 | `xzv4MW_actions` | 无 |
+| 工具调用 / 重试 | `_callRow` / `_retryRow` | 有（墨褐档案条，V3 已覆盖） |
+
+写实插画的亮度在同一帧里从近黑书架跨到近白窗光，因此**任何单一文字色都无法在两种主题下成立**。实测宿主的继承色（无承托面）：
+
+| 主题 | 文字 | 背景 | 对比度 |
+|---|---|---|---|
+| 亮 | `label-tertiary` `#81858c` | 纯白（理论最好情况） | 3.71:1 ❌ |
+| 亮 | `label-tertiary` `#81858c` | 插画中间调 | 1.25:1 ❌ |
+| 亮 | `label-secondary` `#61666b` | 插画中间调 | 1.96:1 ❌ |
+| 亮 | `state-error` `#ec1313` | 插画中间调 | 1.52:1 ❌ |
+| 暗 | `label-tertiary` `#adb2b8` | 棋盘白格 | 1.41:1 ❌ |
+| 暗 | `state-error` `#f25a5a` | 棋盘白格 | 2.18:1 ❌ |
+
+注意亮色第一行：宿主的三级文字色在**纯白上也达不到 AA 4.5:1**，所以这不是「背景再淡一点」能解决的问题，必须有承托面。
+
+### 15.2 三层护栏
+
+1. **舞台纱幕（`--vd-stage-veil`）**：在 conversation pane 的背景层叠一条中心强、两翼弱的横向渐变纱幕（亮 `rgba(255,253,251,.30)`、暗 `rgba(18,11,15,.24)`，两翼分别为 `.12` / `.10`）。它只压缩插画自身的动态范围，压不到人物舞台（舞台是 pane 的子节点，绘在背景之上），因此两侧人物保持鲜明；`hero` 空会话阶段没有文字要承接，纱幕自动升到近乎全透（`--vd-stage-veil-hero`）。纱幕解决的是**没有承托面的微元素**：分隔线、状态点、展开箭头、hover 底色。
+2. **承托面（`data-verdandi-slip` / `.slip` 家族）**：上述四类裸行获得半透明纸面（`--vd-slip`）+ 1px 柔金线 + 圆角 + `backdrop-filter: blur(7px)`。失败行额外获得 3px 深红左规、专属 `--vd-danger` 标题色和「UNKNOWN」错误码芯片；过程控件从透明分隔线变为同一家族的通栏缎带；轮尾图标行变为小圆药丸。文字色通过在该行上重设 `--dsw-alias-label-secondary/tertiary/caption` 一次性覆盖全部后代。
+3. **对比保底**：`--vd-ink-meta` / `--vd-danger` / `--vd-warn` 三个新墨色按「90% 纸面压在最暗插画像素上」的最坏情况取值，两种主题下**全部 ≥5.3:1**（见 `tests/css.spec.ts` 的 `verdandi legibility contrast floor`，它按 WCAG 公式逐一断言）。`backdrop-filter` 不可用时退回 `--vd-slip-solid` 不透明面；`prefers-contrast: more` 加强纱幕并去模糊；`forced-colors: active` 交还系统配色。
+
+### 15.3 实现约束
+
+- 只新增两个稳定钩子：宿主的 `[data-turn-process]`、`[data-turn-tail]` 数据属性，以及失败/压缩行的 `_turnErrorRow` / `_compactionRow` 类名后缀（与已有的 `_markdown_` / `_userRow` 同一契约）。
+- 唯一需要运行时打标的是系统提示词行：它没有可用的类名或属性锚点，由 `decorateLegibilityRows()` 从 `[data-system-prompt-body]` 上溯到 node seat，写入 `data-verdandi-slip="context"`；`dispose()` 会清空全部 `data-verdandi-slip`。
+- 全部新增面均为 `pointer-events` 语义不变、不新增节点、不改变宿主层级，也不引入持续动画。
+- 不想看到纱幕时只改一个变量即可（例如在自定义 CSS 里 `body[data-dsh-verdandi] [data-pane='conversation'] { --vd-stage-veil: 0.14; --vd-stage-veil-edge: 0.05 }`）；承托面单独就能守住对比度下限。
+
+![亮色逐改动点 1:1 对照](../preview/legibility-light.webp)
+
+![暗色逐改动点 1:1 对照](../preview/legibility-dark.webp)
+
+两张对照图逐项列出 ① 系统提示词行、② 运行失败行与错误码、③ 过程控件、④ 轮尾时间与操作图标、⑤ 舞台纱幕，左「修改前」右「修改后」，取景为 900 × 190 的真实场景实拍；⑤ 前后刻意都不加纸面，用来单独说明纱幕只压缩背景动态范围、并不独自承担对比度。
+
+### 15.4 折叠态「思考」行的垂直居中
+
+纸面本身暴露了一个既有缺陷：折叠的推理行没有上下居中。
+
+- 宿主把这一行固定成 `height: calc(24px + font-delta)` 并加 `contain: size layout`（全宿主唯一一处），内部 DisclosureRow 的 `._row_` 自身也是同一高度。
+- V3 的 `[data-variant='think']` 规则给该行加了 `padding: 5px 9px` + `box-sizing: border-box`，content box 被压到 14px，于是 24px 的行走不到 24px 的盒子中央：整行下移 5px，底边溢出纸面 5px。之前没有纸面，这个偏移看不出来。
+- 修复：折叠态 `padding-block: 0` + `justify-content: center`，把宿主预留的高度完整让给这一行；展开态是内容撑高，保留原有上下留白。实测偏移由 `+5.0px` 归零，行底溢出由 `5px` 归零。
+
+![折叠态思考行居中对照](../preview/legibility-think.webp)
+

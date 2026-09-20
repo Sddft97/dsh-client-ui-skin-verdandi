@@ -14,7 +14,12 @@
 - Styles the sidebar, conversation header, chat history, composer, statistics dock, trace view, details pane, settings dialogs, and terminal hosts.
 - Incorporates Verdandi motifs including the vow namecard, bridal portrait, rings, Sacred Tree, Sequence Sword, barbecue, and chibi artwork.
 - Uses separate light and dark workspace scenes. The character stage scales smoothly with conversation state and adapts to narrow windows, collapsed sidebars, and reduced-motion preferences.
+- Keeps the scenic stage while a legibility guard protects text contrast: a bridal veil that only drops when a transcript is present, plus a paper slip behind every process-metadata row (system prompt, turn failure, process control, turn-tail clock and actions). Worst-case ink ratios are ≥5.3:1 in both palettes.
 - Presentation only: the plugin registers no service, does not read or modify model requests, and uploads no data.
+
+![Light legibility comparison](preview/legibility-light.webp)
+
+![Dark legibility comparison](preview/legibility-dark.webp)
 
 ![Dark mode preview](preview/dark.png)
 
