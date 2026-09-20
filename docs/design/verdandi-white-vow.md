@@ -298,3 +298,30 @@ V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人�
 
 ![新会话 chip 对照（暗色）](../preview/legibility-hero-dark.webp)
 
+### 15.7 运行状态「深度求索中…」：不能加面，只能加光晕
+
+这是全皮肤唯一一处**结构上不可能加纸面**的文字：宿主的 `.turnStatus` 是微光渐变文字，`background-clip: text` 把渐变当作**字形填充**，`color` 与 `-webkit-text-fill-color` 都是 transparent，再加 `background-position` 动画制造扫光。任何 background 都是字本身。
+
+**实测的三条候选**（复现页逐条独立渲染，亮暗各一套）：
+
+| 方案 | 结果 |
+|---|---|
+| `-webkit-text-stroke: 3px` 描边 | ❌ 描边吃掉填充，字形糊成白团 |
+| `filter: drop-shadow()` 光晕 | ⚠️ 有效但比 `text-shadow` 弱 |
+| `text-shadow` 四重光晕 | ✅ 与 `background-clip: text` 相容，且**会被时钟继承** |
+
+于是方案是「换微光色 + 加光晕」，两个反直觉的点：
+
+1. **光晕的颜色必须跟着调色板走**，用的就是纸面墨色 `--vd-slip-solid`：亮色是乳白，暗色是墨褐。亮色下它把深蓝字从书架上"托"出来；暗色下它是深色圈，把浅蓝字从亮地砖上分出来。
+2. **亮色主题的微光必须"反向"**。宿主原色是 `#4176e6 → #d3e2ff`（中蓝扫向近白）；而 `#d3e2ff` 在乳白上只有 **1.29:1**——扫光带经过时字形直接消失。所以亮色改成 **深墨蓝 `#1d2568` 扫向品牌蓝 `#4655cc`**，暗色改成 `#8d9cf5 → #e2ecff`。
+
+可读的底色信封由下限决定：亮色卡的是**最亮的那端**（`#4655cc` 在最坏背景上 4.81:1），暗色卡的是**最暗的那端**（`#8d9cf5` 4.74:1）。所以亮色把"谷"挖得尽量深、暗色把"峰"顶得尽量高，扫光的亮度比对回到约 3.8×（宿主原本 3.9×，但亮端不可读），并把渐变带从 20% 加宽到 36%，让扫光更容易被看见。
+
+**一个差点翻车的坑**：`background` 简写会重置 `background-clip: border-box`，于是渐变会以**一个蓝方块**画在 HUD 上。必须用 `background-image`。真机验证过：改用 `background-image` 后 `webkitBackgroundClip` 仍是 `text`、`-webkit-text-fill-color` 仍是 `rgba(0,0,0,0)`，`background-position` 在 600ms 内由 `100%` 走到 `66.7%`（动画未被破坏）。测试里有一条断言专门盯着这个简写不许回来。
+
+无障碍：`prefers-contrast: more` 下直接**放弃微光**，改实心墨色 + 双重光晕；`forced-colors: active` 下把填充交还 `CanvasText`——否则裁剪后的透明填充在强制配色里会渲染成空。
+
+![运行状态对照（亮色）](../preview/legibility-status-light.webp)
+
+![运行状态对照（暗色）](../preview/legibility-status-dark.webp)
+
