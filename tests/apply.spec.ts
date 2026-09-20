@@ -38,6 +38,14 @@ describe('verdandi skin apply/dispose contract', () => {
           <div data-chat-flow-kind="assistant-step"><div data-slot="conversation.chat.node">
             <div class="host-assistant-card"><div class="host_markdown_body"><p>Assistant response</p></div></div>
           </div></div>
+          <div data-chat-flow-kind="system-prompt" data-chat-flow-key="system-prompt">
+            <div data-slot="conversation.chat.node">
+              <div class="host_context_row">
+                <button class="host_context_title">系统提示词</button>
+                <div data-system-prompt-body>PROMPT</div>
+              </div>
+            </div>
+          </div>
           <div data-composer-seat><div data-composer-card></div></div>
         </div>
         <aside data-pane="details"><div data-slot="details">详情点击消息流中的工具行查看详情</div></aside>
@@ -148,6 +156,18 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(conversation?.getAttribute('data-verdandi-view')).toBe('trace')
     expect(conversation?.querySelector("[aria-label='Trajectory timeline']")?.textContent).toBe('No timing data')
     expect(conversation?.querySelector('[data-verdandi-trace-empty]')).toBeNull()
+  })
+
+  it('slips the system-prompt row and releases it on dispose', () => {
+    apply(ctx as never)
+
+    // Only the marker-driven row needs a runtime hook; the rest of the slip
+    // family is addressed by CSS-stable host attributes and class suffixes.
+    expect(document.querySelector('.host_context_row')?.getAttribute('data-verdandi-slip')).toBe('context')
+    expect(document.querySelector('.host-assistant-card')?.hasAttribute('data-verdandi-slip')).toBe(false)
+
+    ctx.disposeAll()
+    expect(document.querySelector('[data-verdandi-slip]')).toBeNull()
   })
 
   it('adds semantic hooks without replacing host controls', () => {

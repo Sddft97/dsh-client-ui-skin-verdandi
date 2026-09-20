@@ -70,10 +70,19 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/data-ds-dark-theme[^{}]*\[class\*='_userRow'\] \[class\*='_bubble'\][\s\S]*?background: rgba\(43, 25, 31, 0\.96\) !important/)
   })
 
-  it('reveals the workspace scene behind both active and hero surfaces', () => {
+  it('keeps the workspace scene visible under a graduated legibility veil', () => {
     expect(CSS).toMatch(/\[data-phase='active'\],[\s\S]*?\[data-phase='hero'\][\s\S]*?background-color: transparent !important/)
     const conversationRule = CSS.match(/\[data-pane='conversation'\]\s*\{([^}]*)\}/)?.[1] ?? ''
-    expect(conversationRule).not.toContain('linear-gradient(90deg')
+    // The artwork stays the bottom layer; the veil only compresses its range.
+    expect(conversationRule).toContain('--vd-art-workspace-light')
+    expect(conversationRule).toMatch(/var\(--vd-stage-veil-edge\) 0%/)
+    expect(conversationRule).toMatch(/var\(--vd-stage-veil\) 9%/)
+    // Both palettes carry the veil as a token, not as a hard-coded wash.
+    expect(CSS).toMatch(/--vd-stage-veil: rgba\(255, 253, 251, 0\.3\)/)
+    expect(CSS).toMatch(/--vd-stage-veil: rgba\(18, 11, 15, 0\.24\)/)
+    // The empty-session composition is not veiled; there is no text to carry.
+    const heroRule = CSS.match(/\[data-verdandi-phase='hero'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(heroRule).toContain('--vd-stage-veil-hero')
   })
 
   it('uses bridal ornaments without creating interactive overlays', () => {
@@ -179,4 +188,128 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/class\*='_openError'[^{}]*\{[^}]*border-left:/)
     expect(CSS).toMatch(/data-pane='sidebar'[^{}]*class~='cm-bal-err'[^{}]*\{[^}]*color:/)
   })
+
+  it('does not pad the collapsed reasoning row out of its fixed host height', () => {
+    // The host pins this one row to `24px + delta` under `contain: size layout`
+    // while its DisclosureRow child is that same height, so any vertical padding
+    // shrinks the content box below the row and pushes it 5px off centre with
+    // its bottom edge outside the slip.
+    const collapsed = CSS.match(
+      /\[data-variant='think'\]:not\(\[data-expanded\]\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(collapsed).toContain('justify-content: center')
+    expect(collapsed).toContain('padding-block: 0')
+
+    // The expanded disclosure is content-sized and keeps its breathing room.
+    const base = CSS.match(/\[data-variant='think'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(base).toContain('padding: 5px 9px')
+  })
+
+  it('carries every bare transcript row on a slip surface', () => {
+    const slipRule = CSS.match(
+      /\[data-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],[\s\S]*?\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(slipRule).toContain('background: var(--vd-slip)')
+    expect(slipRule).toContain('--dsw-alias-label-tertiary: var(--vd-ink-meta)')
+    expect(slipRule).toContain('backdrop-filter: blur(7px)')
+    expect(slipRule).toContain('backdrop-filter')
+
+    // Turn chrome the host draws without any surface must be covered too.
+    expect(CSS).toMatch(/\[class\*='_turnErrorTitle'\]\s*\{\s*color: var\(--vd-danger\) !important/)
+    expect(CSS).toMatch(/\[class\*='_maxTokensTitle'\]\s*\{\s*color: var\(--vd-warn\) !important/)
+    expect(CSS).toMatch(/\[class\*='_turnErrorCode'\]\s*\{[\s\S]*?background: color-mix/)
+    expect(CSS).toMatch(/\[data-turn-process\]\s*\{[\s\S]*?border-radius: 999px/)
+    expect(CSS).toMatch(/\[data-turn-tail\] > \[class\*='_actions'\]\s*\{[\s\S]*?background: var\(--vd-slip\)/)
+
+    // And the ratio has to survive without compositing help.
+    expect(CSS).toMatch(
+      /@supports not \(\(backdrop-filter: blur\(4px\)\) or \(-webkit-backdrop-filter: blur\(4px\)\)\)[\s\S]*?background: var\(--vd-slip-solid\)/,
+    )
+    expect(CSS).toMatch(/@media \(prefers-contrast: more\)[\s\S]*?--vd-stage-veil: rgba\(255, 253, 251, 0\.44\)/)
+    expect(CSS).toMatch(/@media \(forced-colors: active\)[\s\S]*?background: Canvas/)
+  })
+})
+
+/** Relative luminance of an opaque sRGB triple, per WCAG 2.1. */
+function luminance([r, g, b]: [number, number, number]): number {
+  const channel = (value: number) => {
+    const scaled = value / 255
+    return scaled <= 0.04045 ? scaled / 12.92 : ((scaled + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+}
+
+function contrast(foreground: [number, number, number], background: [number, number, number]): number {
+  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a)
+  return (lighter + 0.05) / (darker + 0.05)
+}
+
+function hex(value: string): [number, number, number] {
+  const digits = value.replace('#', '')
+  return [0, 2, 4].map((offset) => Number.parseInt(digits.slice(offset, offset + 2), 16)) as [
+    number,
+    number,
+    number,
+  ]
+}
+
+function rgba(value: string): { rgb: [number, number, number]; alpha: number } {
+  const parts = value.match(/[\d.]+/g)?.map(Number) ?? []
+  return { rgb: [parts[0] ?? 0, parts[1] ?? 0, parts[2] ?? 0], alpha: parts[3] ?? 1 }
+}
+
+/** Alpha-composite `top` over an opaque `bottom`. */
+function over(
+  top: { rgb: [number, number, number]; alpha: number },
+  bottom: [number, number, number],
+): [number, number, number] {
+  return top.rgb.map((channel, index) =>
+    Math.round(channel * top.alpha + (bottom[index] ?? 0) * (1 - top.alpha)),
+  ) as [number, number, number]
+}
+
+/**
+ * The workspace artwork contains near-black shelves and near-white window light
+ * in the same frame, so the declared floor has to hold against both extremes.
+ * A regression here means real text on the real background is unreadable.
+ */
+describe('verdandi legibility contrast floor', () => {
+  const blocks: Array<[string, string]> = [
+    ['light', CSS.match(/body\[data-dsh-verdandi\]\s*\{([\s\S]*?)\n\}/)?.[1] ?? ''],
+    ['dark', CSS.match(/body\[data-dsh-verdandi\]\[data-ds-dark-theme\]\s*\{([\s\S]*?)\n\}/)?.[1] ?? ''],
+  ]
+  const EXTREMES: Array<[string, [number, number, number]]> = [
+    ['darkest artwork pixel', [0, 0, 0]],
+    ['brightest artwork pixel', [255, 255, 255]],
+  ]
+
+  const token = (block: string, name: string) =>
+    block.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1]?.trim() ?? ''
+
+  for (const [palette, block] of blocks) {
+    it(`holds 4.5:1 for ${palette} slip text over both artwork extremes`, () => {
+      expect(block).not.toBe('')
+      const slip = rgba(token(block, '--vd-slip'))
+      const slipSolid = hex(token(block, '--vd-slip-solid'))
+      const inks: Array<[string, [number, number, number]]> = [
+        ['ink', hex(token(block, '--vd-ink'))],
+        ['ink-meta', hex(token(block, '--vd-ink-meta'))],
+        ['danger', hex(token(block, '--vd-danger'))],
+        ['warn', hex(token(block, '--vd-warn'))],
+      ]
+
+      for (const [label, background] of EXTREMES) {
+        for (const [inkName, ink] of inks) {
+          expect(
+            contrast(ink, over(slip, background)),
+            `${palette} ${inkName} on slip over ${label}`,
+          ).toBeGreaterThanOrEqual(4.5)
+          expect(
+            contrast(ink, slipSolid),
+            `${palette} ${inkName} on solid slip fallback`,
+          ).toBeGreaterThanOrEqual(4.5)
+        }
+      }
+    })
+  }
 })

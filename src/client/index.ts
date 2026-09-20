@@ -48,6 +48,7 @@ const SIDEBAR_SIZE_ATTR = 'data-verdandi-sidebar-size'
 const CONVERSATION_PHASE_ATTR = 'data-verdandi-phase'
 const CONVERSATION_VIEW_ATTR = 'data-verdandi-view'
 const DETAILS_EMPTY_ATTR = 'data-verdandi-details-empty'
+const SLIP_ATTR = 'data-verdandi-slip'
 const STAGE_SELECTOR = '[data-verdandi-stage]'
 const DECORATION_SELECTOR = '[data-verdandi-decoration]'
 const LEGACY_SELECTOR = '[data-verdandi-sidebar-card], [data-verdandi-wedding], [data-verdandi-chrome]'
@@ -59,6 +60,13 @@ const OWNED_HOOKS = [
   'data-verdandi-sidebar-action',
   DETAILS_EMPTY_ATTR,
 ] as const
+
+/**
+ * Markers for transcript rows the host renders as bare metadata over the scenic
+ * workspace. `data-system-prompt-body` is the only one without a CSS-stable
+ * ancestor hook, so it is resolved through the node seat below.
+ */
+const SLIP_MARKER_SELECTOR = "[data-system-prompt-body]"
 
 type ThemeTokenPair = {
   light: string
@@ -212,6 +220,47 @@ function clearOwnedHooks(): void {
   }
 }
 
+/**
+ * Resolve the row element that should carry a slip for `marker`.
+ *
+ * The host wraps every chat node in a stable seat, and the seat is the
+ * innermost element guaranteed to contain the marker, so the slip never spans
+ * more than one row. `data-slot` is preferred over `data-chat-flow-key`
+ * because the seat is nested inside the flow item.
+ * @param marker - Element that identifies the row, e.g. a system-prompt body.
+ * @returns The nearest containing row element, or null outside the chat seat.
+ */
+function slipRowFor(marker: HTMLElement): HTMLElement | null {
+  const seat = marker.closest<HTMLElement>("[data-slot='conversation.chat.node']")
+  if (seat) {
+    const root = seat.firstElementChild
+    if (root instanceof HTMLElement && root.contains(marker)) return root
+    return seat
+  }
+  return marker.closest<HTMLElement>('[data-chat-flow-key]')
+}
+
+/**
+ * Tag the transcript rows that have no CSS-stable hook with the slip attribute.
+ * Rows the stylesheet can target directly (turn error, compaction, process,
+ * tail) are left untouched, so only this marker list needs runtime work.
+ * @param conversation - Visible conversation pane, or null when unrendered.
+ */
+function decorateLegibilityRows(conversation: HTMLElement | null): void {
+  const rows = new Set<HTMLElement>()
+  for (const marker of conversation?.querySelectorAll<HTMLElement>(SLIP_MARKER_SELECTOR) ?? []) {
+    const row = slipRowFor(marker)
+    if (row) rows.add(row)
+  }
+
+  for (const tagged of conversation?.querySelectorAll<HTMLElement>(`[${SLIP_ATTR}]`) ?? []) {
+    if (!rows.has(tagged)) tagged.removeAttribute(SLIP_ATTR)
+  }
+  for (const row of rows) {
+    if (row.getAttribute(SLIP_ATTR) !== 'context') row.setAttribute(SLIP_ATTR, 'context')
+  }
+}
+
 function decorateStableRegions(): void {
   clearOwnedHooks()
 
@@ -350,6 +399,7 @@ export function apply(ctx: Context): void {
     body.toggleAttribute(MODAL_ATTR, Boolean(document.querySelector("[role='dialog'][aria-modal='true']")))
     setSidebarSize(body, sidebar)
     ensureWeddingDecorations(sidebar, workspaceVisible ? conversation : null, details)
+    decorateLegibilityRows(workspaceVisible ? conversation : null)
 
     if (workspaceVisible) {
       const stage = ensureCharacterStage(conversation)
@@ -402,6 +452,7 @@ export function apply(ctx: Context): void {
 
     clearOwnedHooks()
     for (const decoration of document.querySelectorAll<HTMLElement>(DECORATION_SELECTOR)) decoration.remove()
+    for (const slip of document.querySelectorAll<HTMLElement>(`[${SLIP_ATTR}]`)) slip.removeAttribute(SLIP_ATTR)
     for (const stage of document.querySelectorAll<HTMLElement>(STAGE_SELECTOR)) stage.remove()
     for (const conversation of document.querySelectorAll<HTMLElement>("[data-pane='conversation']")) {
       for (const property of layoutProperties) conversation.style.removeProperty(property)

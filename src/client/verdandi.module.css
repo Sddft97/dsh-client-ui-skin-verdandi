@@ -21,6 +21,22 @@ body[data-dsh-verdandi] {
   --vd-paper: rgba(255, 253, 251, 0.96);
   --vd-paper-solid: #fffdfb;
   --vd-shadow: 0 14px 34px rgba(67, 16, 30, 0.13);
+  /* Legibility guard. The workspace artwork spans near-black shelves and
+     near-white window light inside one frame, so no single text colour
+     survives it. These tokens build the two counters: a graduated veil that
+     compresses the artwork's range, and a slip surface that carries every
+     transcript row the host draws as bare metadata. Ink ratios are the
+     measured worst case — text over a 90% slip on the darkest artwork pixel. */
+  --vd-slip: rgba(255, 253, 251, 0.9);
+  --vd-slip-solid: #fdfaf7;
+  --vd-slip-line: rgba(199, 168, 107, 0.6);
+  --vd-slip-shadow: 0 4px 14px rgba(62, 17, 29, 0.1);
+  --vd-ink-meta: #5f454d;
+  --vd-danger: #9c1f30;
+  --vd-warn: #7d5310;
+  --vd-stage-veil: rgba(255, 253, 251, 0.3);
+  --vd-stage-veil-edge: rgba(255, 253, 251, 0.12);
+  --vd-stage-veil-hero: rgba(255, 253, 251, 0.06);
   --dsw-font-family: 'Avenir Next', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --dsw-font-family-code: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
   background-color: #f8f2ed;
@@ -43,6 +59,16 @@ body[data-dsh-verdandi][data-ds-dark-theme] {
   --vd-paper: rgba(34, 21, 26, 0.96);
   --vd-paper-solid: #24171c;
   --vd-shadow: 0 16px 38px rgba(0, 0, 0, 0.34);
+  --vd-slip: rgba(36, 23, 28, 0.88);
+  --vd-slip-solid: #2a1a20;
+  --vd-slip-line: rgba(208, 178, 118, 0.4);
+  --vd-slip-shadow: 0 5px 16px rgba(0, 0, 0, 0.34);
+  --vd-ink-meta: #d9c0c7;
+  --vd-danger: #ff9aa9;
+  --vd-warn: #f0cd8a;
+  --vd-stage-veil: rgba(18, 11, 15, 0.24);
+  --vd-stage-veil-edge: rgba(18, 11, 15, 0.1);
+  --vd-stage-veil-hero: rgba(18, 11, 15, 0.06);
   background-color: #171015;
 }
 
@@ -539,6 +565,13 @@ body[data-dsh-verdandi] [data-pane='conversation'] {
   overflow: hidden;
   color: var(--vd-ink);
   background:
+    linear-gradient(
+      90deg,
+      var(--vd-stage-veil-edge) 0%,
+      var(--vd-stage-veil) 9%,
+      var(--vd-stage-veil) 91%,
+      var(--vd-stage-veil-edge) 100%
+    ),
     linear-gradient(180deg, rgba(255, 253, 251, 0.06), rgba(248, 242, 237, 0.15)),
     var(--vd-art-workspace-light) center / cover no-repeat,
     var(--vd-ivory-soft) !important;
@@ -560,7 +593,10 @@ body[data-dsh-verdandi] [data-pane='conversation'] {
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'][data-verdandi-phase='hero'] {
+  /* With no transcript to carry, the veil lifts and the stage composition
+     stays as vivid as the artwork allows. */
   background:
+    linear-gradient(90deg, transparent 0%, var(--vd-stage-veil-hero) 9% 91%, transparent 100%),
     linear-gradient(180deg, rgba(255, 253, 251, 0.02), rgba(248, 242, 237, 0.1)),
     var(--vd-art-workspace-light) center / cover no-repeat,
     var(--vd-ivory-soft) !important;
@@ -568,6 +604,13 @@ body[data-dsh-verdandi] [data-pane='conversation'][data-verdandi-phase='hero'] {
 
 body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] {
   background:
+    linear-gradient(
+      90deg,
+      var(--vd-stage-veil-edge) 0%,
+      var(--vd-stage-veil) 9%,
+      var(--vd-stage-veil) 91%,
+      var(--vd-stage-veil-edge) 100%
+    ),
     linear-gradient(180deg, rgba(25, 15, 20, 0.28), rgba(16, 9, 13, 0.48)),
     var(--vd-art-workspace-dark) center / cover no-repeat,
     #171015 !important;
@@ -581,6 +624,7 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] {
 
 body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'][data-verdandi-phase='hero'] {
   background:
+    linear-gradient(90deg, transparent 0%, var(--vd-stage-veil-hero) 9% 91%, transparent 100%),
     linear-gradient(180deg, rgba(25, 15, 20, 0.18), rgba(16, 9, 13, 0.36)),
     var(--vd-art-workspace-dark) center / cover no-repeat,
     #171015 !important;
@@ -1125,6 +1169,18 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [data-variant='thin
   backdrop-filter: blur(4px);
 }
 
+/* Collapsed reasoning is a single fixed row: the host pins this box to the
+   disclosure row height (`24px + delta` under `contain: size layout` — the only
+   such row in the host) while its child row is that same height. Vertical
+   padding therefore shrinks the content box below the row it must hold, so the
+   row lands 5px low and its bottom edge falls outside the slip. The collapsed
+   state keeps the host height and pads nothing vertically; the expanded state
+   keeps the roomier padding. */
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [data-variant='think']:not([data-expanded]) {
+  justify-content: center;
+  padding-block: 0;
+}
+
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] :is(
   [class*='_callRow'],
   [class*='_retryRow']
@@ -1177,6 +1233,170 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(pre, [class*='codeBlock']
 
 body[data-dsh-verdandi] [data-pane='conversation'] code {
   color: inherit;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Legibility guard — every bare transcript row carries its own paper.         */
+/*                                                                            */
+/* The host draws turn chrome (system prompt, turn process, turn tail, turn    */
+/* failure) as naked text and icons straight onto the workspace. Over a solid  */
+/* host surface those rows are fine; over the scenic artwork their inherited   */
+/* label tokens drop to roughly 1.3–3.5:1, and the failure title is red on a   */
+/* red-brown shelf. Each row therefore gets a slip: a translucent paper surface*/
+/* whose worst-case measured ratio is ≥5.3:1 in both palettes. The slip is the */
+/* contrast guarantee; the stage veil above only calms the artwork so hairline */
+/* separators, state dots and chevrons keep their edges.                       */
+/* -------------------------------------------------------------------------- */
+
+/* The host only exposes a class-suffix hook on the failure and compaction rows,
+   which is the same contract the markdown/bubble rules above already rely on;
+   process and tail expose stable data attributes instead. */
+body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  [data-verdandi-slip],
+  [data-turn-process],
+  [class*='_turnErrorRow'],
+  [class*='_compactionRow']
+) {
+  box-sizing: border-box;
+  margin: 3px 0;
+  padding: 5px 12px;
+  color: var(--vd-ink) !important;
+  background: var(--vd-slip);
+  border: 1px solid var(--vd-slip-line);
+  border-radius: 10px;
+  box-shadow: var(--vd-slip-shadow), inset 0 1px 0 rgba(255, 253, 251, 0.34);
+  -webkit-backdrop-filter: blur(7px) saturate(1.05);
+  backdrop-filter: blur(7px) saturate(1.05);
+  --dsw-alias-label-primary: var(--vd-ink);
+  --dsw-alias-label-secondary: var(--vd-ink-meta);
+  --dsw-alias-label-tertiary: var(--vd-ink-meta);
+  --dsw-alias-label-caption: var(--vd-ink-meta);
+}
+
+/* Failure / token-cap notice: crimson rule, dedicated state colour. */
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] {
+  padding-left: 10px;
+  border-left: 3px solid var(--vd-danger);
+}
+
+/* The token-cap notice reuses the failure row, so it only re-tints the rule. */
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow']:has(
+  [class*='_maxTokensTitle']
+) {
+  border-left-color: var(--vd-warn);
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] [class*='_turnErrorTitle'] {
+  color: var(--vd-danger) !important;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] [class*='_maxTokensTitle'] {
+  color: var(--vd-warn) !important;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] [class*='_turnErrorCode'] {
+  padding: 1px 7px;
+  color: var(--vd-danger);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  background: color-mix(in srgb, var(--vd-danger) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--vd-danger) 32%, transparent);
+  border-radius: 6px;
+}
+
+/* Turn process control: the host's transparent 33px separator becomes a
+   chapter ribbon in the same slip family. */
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] {
+  width: 100%;
+  height: auto;
+  margin: 4px 0 10px;
+  padding: 5px 14px;
+  border-radius: 999px;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover {
+  border-color: var(--vd-gold);
+}
+
+/* Turn tail: the clock and the copy/branch icons are the last bare chrome on
+   the stage, so the action row becomes one small pill. */
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] > [class*='_actions'] {
+  width: fit-content;
+  height: auto;
+  margin: 2px 0 0;
+  padding: 2px 10px;
+  color: var(--vd-ink-meta);
+  background: var(--vd-slip);
+  border: 1px solid var(--vd-slip-line);
+  border-radius: 999px;
+  box-shadow: var(--vd-slip-shadow);
+  -webkit-backdrop-filter: blur(7px) saturate(1.05);
+  backdrop-filter: blur(7px) saturate(1.05);
+  --dsw-alias-label-secondary: var(--vd-ink);
+  --dsw-alias-label-tertiary: var(--vd-ink-meta);
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] > [class*='_actions'] button {
+  color: var(--vd-ink-meta);
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] > [class*='_actions'] button:hover {
+  color: var(--vd-ink);
+  background: color-mix(in srgb, var(--vd-gold) 24%, transparent);
+}
+
+/* --- Fallbacks: the slip must hold its ratio without compositing help. ----- */
+
+@supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+    [data-verdandi-slip],
+    [data-turn-process],
+    [data-turn-tail] > [class*='_actions'],
+    [class*='_turnErrorRow'],
+    [class*='_compactionRow']
+  ) {
+    background: var(--vd-slip-solid);
+  }
+}
+
+@media (prefers-contrast: more) {
+  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+    [data-verdandi-slip],
+    [data-turn-process],
+    [data-turn-tail] > [class*='_actions'],
+    [class*='_turnErrorRow'],
+    [class*='_compactionRow']
+  ) {
+    background: var(--vd-slip-solid);
+    border-color: var(--vd-line-strong);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  body[data-dsh-verdandi] [data-pane='conversation'] {
+    --vd-stage-veil: rgba(255, 253, 251, 0.44);
+    --vd-stage-veil-edge: rgba(255, 253, 251, 0.2);
+  }
+
+  body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] {
+    --vd-stage-veil: rgba(18, 11, 15, 0.42);
+    --vd-stage-veil-edge: rgba(18, 11, 15, 0.18);
+  }
+}
+
+@media (forced-colors: active) {
+  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+    [data-verdandi-slip],
+    [data-turn-process],
+    [data-turn-tail] > [class*='_actions'],
+    [class*='_turnErrorRow'],
+    [class*='_compactionRow']
+  ) {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
 }
 
 /* -------------------------------------------------------------------------- */
