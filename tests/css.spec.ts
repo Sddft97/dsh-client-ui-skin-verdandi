@@ -224,6 +224,30 @@ describe('verdandi compatibility guardrails', () => {
     )
   })
 
+  it('re-tints the running-status shimmer without breaking its text clip', () => {
+    // The status is gradient-clipped shimmer text, so it is re-tinted and
+    // haloed instead of surfaced.
+    expect(CSS).toMatch(
+      /\[class\*='_turnStatus'\]:not\(\s*\[class\*='_turnStatusClock'\]\s*\)\s*\{[^}]*background-image: linear-gradient/,
+    )
+    // The `background` shorthand resets `background-clip` to border-box, which
+    // paints the gradient as a blue box over the HUD.
+    const retint = CSS.match(
+      /\[class\*='_turnStatus'\]:not\(\s*\[class\*='_turnStatusClock'\]\s*\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(retint).not.toMatch(/(?:^|[;\s])background:/)
+    expect(CSS).toMatch(/\[class\*='_turnStatus'\]\s*\{[^}]*text-shadow:/)
+    expect(CSS).toMatch(/\[class\*='_turnStatusClock'\]\s*\{[^}]*--vd-ink-meta/)
+
+    // Accessibility modes must not leave a clipped transparent fill behind.
+    expect(CSS).toMatch(
+      /@media \(prefers-contrast: more\)[\s\S]*?_turnStatus'\][\s\S]*?background-image: none/,
+    )
+    expect(CSS).toMatch(
+      /@media \(forced-colors: active\)[\s\S]*?_turnStatus'\][\s\S]*?-webkit-text-fill-color: CanvasText/,
+    )
+  })
+
   it('carries every bare transcript row on a slip surface', () => {
     const slipRule = CSS.match(
       /\[data-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],[\s\S]*?\)\s*\{([^}]*)\}/,
@@ -315,6 +339,10 @@ describe('verdandi legibility contrast floor', () => {
         ['ink-meta', hex(token(block, '--vd-ink-meta'))],
         ['danger', hex(token(block, '--vd-danger'))],
         ['warn', hex(token(block, '--vd-warn'))],
+        // The running-status shimmer is read against its halo, i.e. the solid
+        // slip colour, so its stops belong to the same floor.
+        ['shimmer-base', hex(token(block, '--vd-shimmer-base'))],
+        ['shimmer-peak', hex(token(block, '--vd-shimmer-peak'))],
       ]
 
       for (const [label, background] of EXTREMES) {

@@ -37,6 +37,8 @@ body[data-dsh-verdandi] {
   --vd-stage-veil: rgba(255, 253, 251, 0.3);
   --vd-stage-veil-edge: rgba(255, 253, 251, 0.12);
   --vd-stage-veil-hero: rgba(255, 253, 251, 0.06);
+  --vd-shimmer-base: #1d2568;
+  --vd-shimmer-peak: #4655cc;
   --dsw-font-family: 'Avenir Next', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
   --dsw-font-family-code: 'JetBrains Mono', 'Cascadia Code', Consolas, monospace;
   background-color: #f8f2ed;
@@ -69,6 +71,8 @@ body[data-dsh-verdandi][data-ds-dark-theme] {
   --vd-stage-veil: rgba(18, 11, 15, 0.24);
   --vd-stage-veil-edge: rgba(18, 11, 15, 0.1);
   --vd-stage-veil-hero: rgba(18, 11, 15, 0.06);
+  --vd-shimmer-base: #8d9cf5;
+  --vd-shimmer-peak: #e2ecff;
   background-color: #171015;
 }
 
@@ -1385,6 +1389,52 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
   border-color: var(--vd-gold);
 }
 
+/* --- Running status: shimmering gradient text, no surface possible. ------- */
+
+/* The "深度求索中… 2分16秒" status is gradient-clipped shimmer text: the host
+   paints the gradient as the glyph *fill* (`background-clip: text`) and animates
+   its position, so a paper slip here is out of the question. Two counters keep
+   it readable on the stage:
+
+   1. Re-tint the shimmer so every gradient stop holds its ratio against the
+      halo colour instead of against the artwork. The host's own highlight,
+      `--dsw-static-deepseek-200`, measures 1.29:1 on ivory — the sweeping band
+      simply erases the glyphs in light mode.
+   2. Give the glyphs a tight halo so their edges always sit on paper colour
+      rather than on whatever the artwork is doing underneath. `text-shadow`
+      composes with `background-clip: text` (unlike the obvious
+      `-webkit-text-stroke`, which swallows the fill at usable widths), and it
+      inherits into the clock.
+
+   TRAP: re-tint with `background-image`, never the `background` shorthand — the
+   shorthand resets `background-clip` to `border-box` and paints the gradient as
+   a blue box. The test suite asserts the shorthand never comes back. */
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus'] {
+  text-shadow:
+    0 0 2px var(--vd-slip-solid),
+    0 0 4px color-mix(in srgb, var(--vd-slip-solid) 92%, transparent),
+    0 0 8px color-mix(in srgb, var(--vd-slip-solid) 70%, transparent),
+    0 0 14px color-mix(in srgb, var(--vd-slip-solid) 45%, transparent);
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus']:not(
+  [class*='_turnStatusClock']
+) {
+  background-image: linear-gradient(
+    90deg,
+    var(--vd-shimmer-base) 0%,
+    var(--vd-shimmer-base) 32%,
+    var(--vd-shimmer-peak) 50%,
+    var(--vd-shimmer-base) 68%,
+    var(--vd-shimmer-base) 100%
+  );
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatusClock'] {
+  color: var(--vd-ink-meta);
+  -webkit-text-fill-color: var(--vd-ink-meta);
+}
+
 /* --- Fallbacks: the slip must hold its ratio without compositing help. ----- */
 
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
@@ -1441,6 +1491,14 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
   }
+
+  /* Drop the shimmer and the clipped fill: solid ink on a full halo. */
+  body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus'] {
+    color: var(--vd-ink);
+    -webkit-text-fill-color: currentColor;
+    background-image: none;
+    text-shadow: 0 0 2px var(--vd-slip-solid), 0 0 5px var(--vd-slip-solid);
+  }
 }
 
 @media (forced-colors: active) {
@@ -1465,6 +1523,14 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
     background: Canvas;
     border-color: CanvasText;
     box-shadow: none;
+  }
+
+  /* A clipped gradient fill would render as nothing here. */
+  body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus'] {
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+    background-image: none;
+    text-shadow: none;
   }
 }
 
