@@ -332,3 +332,29 @@ V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人�
 
 ![运行状态对照（暗色）](../preview/legibility-status-dark.webp)
 
+### 15.8 工具卡片展开态：浅色 token 必须止步于折叠表头
+
+V3 给工具调用行加的「墨褐档案条」把 `--dsw-alias-label-primary/secondary/tertiary` 整体改成了浅色（`#fff8f4` / `#f0dce1` / `#dcbfc7`）。但这条规则命中的是 `_callRow`——**它包住的不只是折叠表头，还有整个展开正文**，而正文自带一块浅色代码面板（宿主的 code-block 底色，亮色下是 `#f9fafb`）。于是「浅色文字 + 浅色面板」，整块正文直接隐形。
+
+真机 DOM 给出了准确的容器：**每张工具卡都把展开正文包在 `*_bodyWrap` 里**（Bash 卡是 `CY-8Ka_bodyWrap`，diff 卡是 `o3BgMG_bodyWrap`），表头则是它的兄弟节点。所以修复很简单——把浅色 token 的作用域收回表头一侧：
+
+```css
+:is([class*='_callRow'], [class*='_retryRow']) [class*='_bodyWrap'] {
+  color: var(--vd-ink);
+  --dsw-alias-label-primary: var(--vd-ink);
+  --dsw-alias-label-secondary: var(--vd-ink-meta);
+  --dsw-alias-label-tertiary: var(--vd-ink-meta);
+  --dsw-alias-label-caption: var(--vd-ink-meta);
+}
+```
+
+真机实测（展开的 Bash 卡）：表头标题仍是 `rgb(240,220,225)` 浅色 ✓；`_bodyWrap` / `_prompt` / `_line` 变为 `rgb(44,28,33)`，`复制` 为 `rgb(95,69,77)`（在 `#f9fafb` 面板上 7.3:1）✓。
+
+### 15.9 其他裸文字：统一到 `--vd-bare-ink`
+
+「本次产出」标签来自 `dsh-better-sidebar` 的 `_producedLabel`（`color: var(--dsw-alias-label-tertiary)`，压在插画上约 1.3:1），与运行状态行是同一类问题。一起收进同一个墨色：
+
+- `--vd-status-ink` 更名为 **`--vd-bare-ink`**，语义从「状态行专用」提升为「所有没有承托面、直接压在工作区画面上的文字」（运行状态行 + 本次产出标签 + `_producedMore`）。
+- 亮色 `#1b1116`（比正文墨 `#2c1c21` 更深，把 4.50:1 提到 5.1:1），暗色 `#fbf3f5`。
+
+![工具卡片与本次产出的前后对照](../preview/legibility-tool-light.webp)
