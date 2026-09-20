@@ -32,7 +32,7 @@ body[data-dsh-verdandi] {
   --vd-slip-line: rgba(199, 168, 107, 0.6);
   --vd-slip-shadow: 0 4px 14px rgba(62, 17, 29, 0.1);
   --vd-ink-meta: #5f454d;
-  --vd-status-ink: #1b1116;
+  --vd-bare-ink: #1b1116;
   --vd-danger: #9c1f30;
   --vd-warn: #7d5310;
   --vd-stage-veil: rgba(255, 253, 251, 0.3);
@@ -65,7 +65,7 @@ body[data-dsh-verdandi][data-ds-dark-theme] {
   --vd-slip-line: rgba(208, 178, 118, 0.4);
   --vd-slip-shadow: 0 5px 16px rgba(0, 0, 0, 0.34);
   --vd-ink-meta: #d9c0c7;
-  --vd-status-ink: #fbf3f5;
+  --vd-bare-ink: #fbf3f5;
   --vd-danger: #ff9aa9;
   --vd-warn: #f0cd8a;
   --vd-stage-veil: rgba(18, 11, 15, 0.24);
@@ -1237,6 +1237,15 @@ body[data-dsh-verdandi] [data-pane='conversation'] code {
   color: inherit;
 }
 
+/* bare text over the stage, same treatment as the running status */
+body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  [class*='_producedLabel'],
+  [class*='_producedMore']
+) {
+  color: var(--vd-bare-ink);
+  -webkit-text-fill-color: var(--vd-bare-ink);
+}
+
 /* -------------------------------------------------------------------------- */
 /* Legibility guard — every bare transcript row carries its own paper.         */
 /*                                                                            */
@@ -1411,7 +1420,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
 body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus'] {
   position: relative;
   animation: none;
-  color: var(--vd-status-ink);
+  color: var(--vd-bare-ink);
   -webkit-text-fill-color: currentColor;
   background-image: none;
   text-shadow: none;
@@ -1472,8 +1481,8 @@ body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus']::after
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatusClock'] {
-  color: var(--vd-status-ink);
-  -webkit-text-fill-color: var(--vd-status-ink);
+  color: var(--vd-bare-ink);
+  -webkit-text-fill-color: var(--vd-bare-ink);
 }
 
 /* --- Fallbacks: the slip must hold its ratio without compositing help. ----- */
@@ -1568,6 +1577,23 @@ body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatusClock'] {
     color: CanvasText;
     -webkit-text-fill-color: CanvasText;
   }
+}
+
+/* The archive bar's light-on-dark tokens must stop at the collapsed header.
+   Every tool card wraps its expanded body in `*_bodyWrap` (verified on a live
+   instance: the Bash card's `CY-8Ka_bodyWrap` and the diff card's
+   `o3BgMG_bodyWrap`), and that body paints its own surface — the host's
+   code-block fill, light in light mode. Left alone it inherits #fff8f4, which
+   is why the command, its output and 复制 all but vanish. */
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] :is(
+  [class*='_callRow'],
+  [class*='_retryRow']
+) [class*='_bodyWrap'] {
+  color: var(--vd-ink);
+  --dsw-alias-label-primary: var(--vd-ink);
+  --dsw-alias-label-secondary: var(--vd-ink-meta);
+  --dsw-alias-label-tertiary: var(--vd-ink-meta);
+  --dsw-alias-label-caption: var(--vd-ink-meta);
 }
 
 /* -------------------------------------------------------------------------- */

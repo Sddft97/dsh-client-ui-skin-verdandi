@@ -271,11 +271,37 @@ describe('verdandi compatibility guardrails', () => {
     // The clock shares the label's ink: --vd-ink-meta does not clear the floor
     // on the dark band, so hierarchy comes from size and weight only.
     const clock = CSS.match(/\[class\*='_turnStatusClock'\]\s*\{([^}]*)\}/)?.[1] ?? ''
-    expect(clock).toContain('color: var(--vd-status-ink)')
+    expect(clock).toContain('color: var(--vd-bare-ink)')
 
     expect(CSS).toMatch(
       /@media \(forced-colors: active\)[\s\S]*?_turnStatus'\]::after[\s\S]*?display: none/,
     )
+  })
+
+  it('stops the archive bar tokens at the collapsed header', () => {
+    // Every tool card wraps its expanded body in `*_bodyWrap`, and that body
+    // paints the host's (light) code surface. Leaving it with the bar's
+    // light-on-dark tokens made the whole expanded card unreadable.
+    const reset = CSS.match(
+      /\[class\*='_callRow'\],\s*\[class\*='_retryRow'\]\s*\)\s*\[class\*='_bodyWrap'\]\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(reset).toContain('color: var(--vd-ink)')
+    expect(reset).toContain('--dsw-alias-label-primary: var(--vd-ink)')
+    expect(reset).toContain('--dsw-alias-label-tertiary: var(--vd-ink-meta)')
+
+    // The bar itself keeps its light-on-dark palette for the header.
+    const bar = CSS.match(
+      /\[class\*='_callRow'\],[\s\S]{0,80}?\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(bar).toContain('--dsw-alias-label-primary: #fff8f4')
+  })
+
+  it('gives the produced-files label the same bare ink as the status', () => {
+    const produced = CSS.match(
+      /\[class\*='_producedLabel'\],[\s\S]{0,60}?\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(produced).toContain('color: var(--vd-bare-ink)')
+    expect(produced).toContain('-webkit-text-fill-color: var(--vd-bare-ink)')
   })
 
   it('carries every bare transcript row on a slip surface', () => {
@@ -389,7 +415,7 @@ describe('verdandi legibility contrast floor', () => {
       // measured on the real scenes (design note §15.7), in linear luminance.
       const [bandMin, bandMax] = STATUS_BAND[palette] ?? [0, 0]
       const ratioOf = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
-      const statusInk = luminance(hex(token(block, '--vd-status-ink')))
+      const statusInk = luminance(hex(token(block, '--vd-bare-ink')))
       const worst = statusInk <= bandMin
         ? ratioOf(statusInk, bandMin)
         : statusInk >= bandMax
