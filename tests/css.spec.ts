@@ -155,6 +155,38 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/\[data-composer-card\]\s*\{[\s\S]*?min-height: 112px/)
   })
 
+  it('leaves the header unclipped and stacks the dropdown row above the tabs', () => {
+    // The host renders the title-row dropdowns inside the header instead of
+    // portalling them, so a header `overflow: hidden` cut every header menu off
+    // at the header's bottom edge. Measured with the menu open: the panel spans
+    // y 43-255 inside a 76px header, and the tab row (y 50-75, later in DOM
+    // order at the same default z-index) painted over its top.
+    const headerRule = CSS.match(/body\[data-dsh-verdandi\] \[data-verdandi-header\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(headerRule).toMatch(/position:\s*relative/)
+    expect(headerRule).toMatch(/z-index:\s*20/)
+    // Match the declaration, not the prose in the comment that explains it.
+    expect(headerRule).not.toMatch(/(?:^|\n)\s*overflow\s*:/)
+    expect(CSS).toMatch(/\[data-verdandi-header\] > :not\(\[data-verdandi-decoration\]\)\s*\{[^}]*z-index:\s*3/)
+    expect(CSS).toMatch(/\[data-verdandi-header\] > \[class\*='_titleRow'\]\s*\{[^}]*z-index:\s*5/)
+  })
+
+  it('paints the header chips without a decorative stud and hands the dark palette a slip', () => {
+    // A 2px white radial-gradient dot at `10px 50%` was invisible on the light
+    // palette but read as a stray dot on the dark one, where the ivory chip sits
+    // on the dark header. The ivory literal also left the dark palette with
+    // near-white ink on a light pill (about 1.3:1 once composited).
+    expect(CSS).not.toMatch(/circle at 10px 50%/)
+    const chipRule = CSS.match(/body\[data-dsh-verdandi\] \[data-verdandi-header\] button\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(chipRule).toMatch(/background:\s*rgba\(255, 253, 251, 0\.66\)/)
+    expect(chipRule).not.toMatch(/radial-gradient/)
+    expect(CSS).toMatch(
+      /\[data-dsh-verdandi\]\[data-ds-dark-theme\] \[data-verdandi-header\] button\s*\{[^}]*background:\s*var\(--vd-slip\)/,
+    )
+    expect(CSS).toMatch(
+      /\[data-dsh-verdandi\]\[data-ds-dark-theme\] \[data-verdandi-header\] button:hover\s*\{[^}]*color:\s*var\(--vd-gold-light\)/,
+    )
+  })
+
   it('reserves the second-round artwork for low-frequency interface states', () => {
     expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
     expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-q-avatar/)

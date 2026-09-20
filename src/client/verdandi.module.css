@@ -789,7 +789,12 @@ body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='
 body[data-dsh-verdandi] [data-verdandi-header] {
   position: relative;
   z-index: 20;
-  overflow: hidden;
+  /* Deliberately no `overflow: hidden`. The host renders its title-row dropdowns
+     *inside* the header instead of portalling them to `document.body` (measured:
+     `[role=menu]`, `position: absolute; z-index: 100`, parent chain
+     `_headerUtilities` -> `_titleRow` -> header), and those panels run well past
+     the 76px header box, so clipping the header cut every header menu off at the
+     header's bottom edge. The decorative layers clip themselves. */
   color: var(--vd-ink) !important;
   background: linear-gradient(180deg, #fffdfb, #f8eee8) !important;
   border-bottom: 1px solid var(--vd-gold) !important;
@@ -964,6 +969,15 @@ body[data-dsh-verdandi] [data-verdandi-header] > :not([data-verdandi-decoration]
   z-index: 3;
 }
 
+/* The header rows are siblings, so the blanket `z-index: 3` above leaves the tab
+   row -- later in DOM order -- painting over a header menu (measured: the menu
+   spans y 43-255 and the tabs cover y 50-75 of it). The title row owns the
+   dropdown triggers (`_headerUtilities` sits inside it), so it has to outrank
+   the tabs. */
+body[data-dsh-verdandi] [data-verdandi-header] > [class*='_titleRow'] {
+  z-index: 5;
+}
+
 body[data-dsh-verdandi] [data-verdandi-header] > div:first-child {
   font-family: Georgia, 'Noto Serif SC', 'Songti SC', serif;
   letter-spacing: 0.012em;
@@ -973,12 +987,14 @@ body[data-dsh-verdandi] [data-verdandi-header] :is(button, [role='tab']) {
   color: var(--vd-ink) !important;
 }
 
+/* No decorative stud on these chips. A 2px white radial-gradient dot at
+   `10px 50%` is invisible on the light palette (white on ivory) but reads as a
+   stray dot on the dark palette, where the same ivory chip sits on the dark
+   header -- and on text crumbs it lands on the first glyph. */
 body[data-dsh-verdandi] [data-verdandi-header] button {
   border-color: rgba(199, 168, 107, 0.62);
   border-radius: 999px;
-  background:
-    radial-gradient(circle at 10px 50%, rgba(255, 255, 255, 0.9) 0 2px, transparent 2.5px),
-    rgba(255, 253, 251, 0.66);
+  background: rgba(255, 253, 251, 0.66);
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.7),
     0 2px 6px rgba(67, 16, 30, 0.07);
@@ -1038,6 +1054,25 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] > [data-verda
 
 body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] :is(button, [role='tab']) {
   color: #fff9f4 !important;
+}
+
+/* The ivory chip above is a light-palette literal, so on the dark palette it
+   stayed a light pill while the ink above turned near-white: the title crumb
+   measured white-on-ivory (about 1.3:1 once composited over the dark header).
+   Hand the dark palette the same slip the rest of the skin uses there. */
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] button {
+  background: var(--vd-slip);
+  box-shadow:
+    inset 0 0 0 1px var(--vd-slip-line),
+    var(--vd-slip-shadow);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] button:hover {
+  color: var(--vd-gold-light) !important;
+  background: var(--vd-slip-solid);
+  box-shadow:
+    inset 0 0 0 1px var(--vd-gold),
+    var(--vd-slip-shadow);
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] {
