@@ -248,3 +248,33 @@ V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人�
 
 ![折叠态思考行居中对照](../preview/legibility-think.webp)
 
+### 15.5 新会话工作区 chip
+
+空会话阶段同样有裸 chrome：工作区行的三个 chip。之所以之前漏掉，是因为我误以为 hero 阶段「没有正文所以不需要护栏」——实际上 hero 恰恰是 chip 最集中的时候。
+
+| chip | 归属 | 类名 | hero 态样式 |
+|---|---|---|---|
+| 工作目录 | 宿主 `WorkspaceChip` | `pXSMma_workspace` | 透明，`label-primary` |
+| 标准模式（agent preset） | 宿主 `AgentPresetSeat` | `cubgiG_seat` | 透明，`label-primary` |
+| 分支 main | 第三方插件 `ui-git-graph` | `_7rgC5q_chipHero` | 透明，`label-primary` |
+
+三者的几何完全一致：高 28px、圆角 16px、`padding: 0 8px`、13px、透明底——宿主是把它当**一组 chip 家族**设计的，只是默认假设工作区不透明。因此护栏加在**这一行的直接子元素**上（`_heroWorkspaceRow` / `_workspaceRow` 的 `> *`），宿主 chip 与插件 seat 一并覆盖，后续新增 seat 也自动生效；分支 chip 是插件用 `querySelector('[class*="heroWorkspaceRow"]')` 挂进来的，同样命中。
+
+### 15.6 一个必须记住的结论：纱幕救不了暗部
+
+写 §15 时我用**线性亮度**估算了纱幕的提升量，这是错的：alpha 合成发生在 sRGB 空间。实测：
+
+| 乳白纱幕 | 压在纯黑上得到 | 与墨色 `#2c1c21` 的对比度 |
+|---|---|---|
+| 0.30 | `rgb(77,76,75)` | 1.89:1 |
+| 0.50 | `rgb(128,127,126)` | 4.03:1 |
+| 0.70 | `rgb(179,177,176)` | 7.59:1 |
+
+也就是说，要用纱幕把暗部拉到可读，需要 0.5 以上的不透明度，插画会被冲掉。**结论：纱幕只负责降噪（让分隔线、状态点、箭头、hover 底色有边），对比度下限必须由纸面承担**——这也解释了为什么 `prefers-contrast: more` 走的是「纸面变实心 + 纱幕加强」双管，而不是只加强纱幕。
+
+由此保留一个已知取舍：hero 阶段 26px 的「探索未至之境」标题目前是唯一没有纸面的文字，纱幕保持近乎全透（0.06）以保住空会话插画。它落在画心中部的中间调区域，实测可读；若日后要收紧，三条路各有代价——给标题加纸面铭牌（改变 hero 构图）、加柔光描边（字形发糊）、或把 hero 纱幕提到 0.4+（明显冲淡插画）。
+
+![新会话 chip 对照（亮色）](../preview/legibility-hero-light.webp)
+
+![新会话 chip 对照（暗色）](../preview/legibility-hero-dark.webp)
+
