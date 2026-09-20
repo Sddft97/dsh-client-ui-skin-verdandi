@@ -258,7 +258,27 @@ V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人�
 | 标准模式（agent preset） | 宿主 `AgentPresetSeat` | `cubgiG_seat` | 透明，`label-primary` |
 | 分支 main | 第三方插件 `ui-git-graph` | `_7rgC5q_chipHero` | 透明，`label-primary` |
 
-三者的几何完全一致：高 28px、圆角 16px、`padding: 0 8px`、13px、透明底——宿主是把它当**一组 chip 家族**设计的，只是默认假设工作区不透明。因此护栏加在**这一行的直接子元素**上（`_heroWorkspaceRow` / `_workspaceRow` 的 `> *`），宿主 chip 与插件 seat 一并覆盖，后续新增 seat 也自动生效；分支 chip 是插件用 `querySelector('[class*="heroWorkspaceRow"]')` 挂进来的，同样命中。
+三者的几何完全一致：高 28px、圆角 16px、`padding: 0 8px`、13px、透明底——宿主是把它当**一组 chip 家族**设计的，只是默认假设工作区不透明。
+
+第一版护栏把纸面加在**这一行的直接子元素**上（`> *`），结果只有工作目录与分支两个 chip 生效，「标准模式」纹丝不动。原因是在真机 `dsh web` 实例上读 DOM 才看清：**宿主 slot 系统给每个 seat 套了一层 `display: contents` 的 div**，它不生成任何盒子，所以纸面画在了一个 0 × 0 的不可见元素上，真正的 `button.cubgiG_seat` 仍是透明的。而分支 chip 是插件用 `querySelector('[class*="heroWorkspaceRow"]')` 直接 append 进来的真实盒子，所以它和同样是直接子元素的工作目录 chip 都能命中——这正是「三个看起来一模一样、两个好一个坏」的原因。
+
+修正后的规则改为命中**行内任意深度的控件**：
+
+```css
+:is([class*='_heroWorkspaceRow'], [class*='_workspaceRow']) :is(button, [role='button'])
+```
+
+宿主 chip、插件 seat、以及以后新增的 seat 都在覆盖范围内；菜单面板被 portal 到 `document.body`，所以这个后代选择器不会误伤展开后的菜单项。
+
+真机实测（元素截图取样，`[class*=heroWorkspaceRow]` 行内 y=中线）：
+
+| 取样点 | 修改前 | 修改后 |
+|---|---|---|
+| 工作目录 chip | `rgb(239,235,229)` 纸面 | `rgb(249,245,240)` 纸面 |
+| 「标准模式」chip | `rgb(116,128,119)` **场景原图** | `rgb(241,240,236)` 纸面 |
+| 行外参考点 | `rgb(117,127,125)` | `rgb(117,127,125)` 未变 |
+
+![真实 GUI 的新会话 chip 前后对照](../preview/legibility-hero-live.webp)
 
 ### 15.6 一个必须记住的结论：纱幕救不了暗部
 
