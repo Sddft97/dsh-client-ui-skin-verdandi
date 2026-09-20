@@ -32,7 +32,12 @@
     "THIRD_PARTY_NOTICES.md",
     "THIRD_PARTY_NOTICES.zh-CN.md",
     "RELEASING.md",
-    "preview"
+    "preview/light.png",
+    "preview/dark.png",
+    "preview/settings.png",
+    "preview/legibility-light.webp",
+    "preview/legibility-dark.webp",
+    "preview/legibility-hero-light.webp"
   ],
   "publishConfig": {
     "access": "public"
