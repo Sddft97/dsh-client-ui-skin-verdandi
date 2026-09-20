@@ -358,3 +358,43 @@ V3 给工具调用行加的「墨褐档案条」把 `--dsw-alias-label-primary/s
 - 亮色 `#1b1116`（比正文墨 `#2c1c21` 更深，把 4.50:1 提到 5.1:1），暗色 `#fbf3f5`。
 
 ![工具卡片与本次产出的前后对照](../preview/legibility-tool-light.webp)
+
+### 15.10 顶栏下拉被裁掉：宿主把面板画在 header 内部，没有 portal
+
+点开顶栏任意一个下拉（标题面包屑、右侧「打开方式」chevron、更多菜单），面板只剩贴着 header 底边的一条。摘掉 `data-dsh-verdandi` 后同一面板完整可见，所以这是皮肤造成的。
+
+真机 DOM 说明得很清楚：面板是 `[role='menu']`，`position: absolute; z-index: 100`，父链为 `_headerUtilities` → `_titleRow` → `[data-verdandi-header]`——**面板没有 portal 到 `document.body`**（新会话 hero 行里的 preset 菜单反而 portal 了，别被它误导）。面板 rect 为 `x 942 y 43 218×212`，而 header 只有 76px 高，于是底边以下全被剪掉。上游 header 的默认值是 `position: static; z-index: auto; overflow: visible`，被我们改成了 `position: relative; z-index: 20; overflow: hidden`。
+
+把面板关进笼子的是两条规则：
+
+1. header 的 `overflow: hidden` 直接剪掉超出 76px 的部分；
+2. `[data-verdandi-header] > :not([data-verdandi-decoration]) { z-index: 3 }` 让 DOM 里靠后的 tab 行拿到同等层级，盖住面板顶部（实测 tab 的 y 50–75 压住了面板顶部）。
+
+修复：header 不再 `overflow: hidden`（各个装饰层自己就是 `overflow: hidden`，会自裁），并把 host 的标题行 `[class*='_titleRow']` 提到 `z-index: 5`，让它压住 tab 行。
+
+```css
+body[data-dsh-verdandi] [data-verdandi-header] { /* 不再 overflow: hidden */ }
+body[data-dsh-verdandi] [data-verdandi-header] > [class*='_titleRow'] { z-index: 5; }
+```
+
+验证：面板打开后 4 个采样点（面板高度 5%/30%/60%/95%）`elementFromPoint` 全部落在 `[role='menu']` 内，亮/暗都过。
+
+![顶栏下拉裁切前后对照（暗色）](../preview/header-menu-dark.webp)
+
+### 15.11 顶栏 chip 左侧那颗小白点：是我们自己画的铆钉
+
+暗色下每个顶栏 chip 左侧都有一颗小圆点，亮色下看不到。来源在自己身上：`[data-verdandi-header] button` 的 `background` 第一层是一颗 2px 的白色铆钉——
+
+```css
+radial-gradient(circle at 10px 50%, rgba(255, 255, 255, 0.9) 0 2px, transparent 2.5px)
+```
+
+亮色下它是「白点压象牙 chip」，自然隐形；暗色下 chip 底色仍是硬编码的亮象牙（`rgba(255,253,251,.66)`），白点就显形了。同一处硬编码还带来第二个缺陷：暗色下 chip 的墨色被 `--vd-ink` 抬成近白（`#fff9f4`），压在亮象牙底上合成后只有约 1.3:1，标题面包屑几乎读不出来。
+
+修复：删掉铆钉层（它在文字 chip 上还会压在第一个字上）；暗色把 chip 换到与其它 slip 同一套的 `--vd-slip` / `--vd-slip-line` / `--vd-slip-shadow`，hover 换 `--vd-slip-solid` + `--vd-gold-light` 墨 + `--vd-gold` 环。亮色一字未动。
+
+实测（暗色标题面包屑）：`background-image: none`，底色 `rgba(36,23,28,.88)`，墨色 `rgb(255,249,244)`，约 16:1。
+
+顺带记一笔免得混淆：**工具行 / 后台任务行左侧那颗按状态变色的小点不是皮肤产生的**，它是宿主的 `_dot_1tljr_3`（`:before` 是 10% 外环、`:after` 是内芯，`[data-state=idle|warning|error|done]` 决定取哪个 `--dsw-static-*` 颜色）。同一个 error 行在亮色是 `rgb(236,19,19)`、暗色是 `rgb(242,90,90)`，两态都在；皮肤只影响它压在什么底色上。
+
+![顶栏 chip 铆钉与暗色墨色前后对照](../preview/header-chip-dark.webp)
