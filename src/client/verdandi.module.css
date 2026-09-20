@@ -1345,6 +1345,40 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] > [class*='_
   background: color-mix(in srgb, var(--vd-gold) 24%, transparent);
 }
 
+/* --- Hero and composer chrome chips. -------------------------------------- */
+
+/* The new-session workspace row is the one place the host draws a whole chip
+   *family* as bare chrome: the workspace chip, the agent-preset seat and the
+   git-graph branch chip are all 28px tall, 16px radius, `padding: 0 8px`,
+   13px, transparent, and coloured `label-primary`. They assume the host's
+   opaque workspace, so over the stage they drop to the same 1.3-3.5:1 as the
+   transcript rows. Styling the row's children covers host chips and every
+   plugin seat alike, including ones added later. */
+body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  [class*='_heroWorkspaceRow'],
+  [class*='_workspaceRow']
+) > * {
+  min-height: 28px;
+  color: var(--vd-ink) !important;
+  background: var(--vd-slip);
+  border: 1px solid var(--vd-slip-line);
+  border-radius: 999px;
+  box-shadow: var(--vd-slip-shadow);
+  -webkit-backdrop-filter: blur(7px) saturate(1.05);
+  backdrop-filter: blur(7px) saturate(1.05);
+  --dsw-alias-label-primary: var(--vd-ink);
+  --dsw-alias-label-secondary: var(--vd-ink-meta);
+  --dsw-alias-label-tertiary: var(--vd-ink-meta);
+  --dsw-alias-label-caption: var(--vd-ink-meta);
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  [class*='_heroWorkspaceRow'],
+  [class*='_workspaceRow']
+) > *:hover {
+  border-color: var(--vd-gold);
+}
+
 /* --- Fallbacks: the slip must hold its ratio without compositing help. ----- */
 
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
@@ -1355,6 +1389,13 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] > [class*='_
     [class*='_turnErrorRow'],
     [class*='_compactionRow']
   ) {
+    background: var(--vd-slip-solid);
+  }
+
+  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+    [class*='_heroWorkspaceRow'],
+    [class*='_workspaceRow']
+  ) > * {
     background: var(--vd-slip-solid);
   }
 }
@@ -1376,11 +1417,23 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] > [class*='_
   body[data-dsh-verdandi] [data-pane='conversation'] {
     --vd-stage-veil: rgba(255, 253, 251, 0.44);
     --vd-stage-veil-edge: rgba(255, 253, 251, 0.2);
+    --vd-stage-veil-hero: rgba(255, 253, 251, 0.34);
   }
 
   body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] {
     --vd-stage-veil: rgba(18, 11, 15, 0.42);
     --vd-stage-veil-edge: rgba(18, 11, 15, 0.18);
+    --vd-stage-veil-hero: rgba(18, 11, 15, 0.3);
+  }
+
+  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+    [class*='_heroWorkspaceRow'],
+    [class*='_workspaceRow']
+  ) > * {
+    background: var(--vd-slip-solid);
+    border-color: var(--vd-line-strong);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 }
 
@@ -1392,6 +1445,16 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] > [class*='_
     [class*='_turnErrorRow'],
     [class*='_compactionRow']
   ) {
+    color: CanvasText;
+    background: Canvas;
+    border-color: CanvasText;
+    box-shadow: none;
+  }
+
+  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+    [class*='_heroWorkspaceRow'],
+    [class*='_workspaceRow']
+  ) > * {
     color: CanvasText;
     background: Canvas;
     border-color: CanvasText;

@@ -205,6 +205,24 @@ describe('verdandi compatibility guardrails', () => {
     expect(base).toContain('padding: 5px 9px')
   })
 
+  it('carries the hero workspace chips on the slip family too', () => {
+    // The new-session workspace row is bare chrome as well: the workspace chip,
+    // the agent-preset seat and the git-graph branch chip are all transparent
+    // 28px pills coloured `label-primary`.
+    const chipRule = CSS.match(
+      /\[class\*='_heroWorkspaceRow'\],\s*\[class\*='_workspaceRow'\]\s*\)\s*>\s*\*\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(chipRule).toContain('background: var(--vd-slip)')
+    expect(chipRule).toContain('--dsw-alias-label-primary: var(--vd-ink)')
+    expect(chipRule).toContain('border-radius: 999px')
+    // Children, not the row: host chips and plugin seats both live there.
+    expect(chipRule).not.toContain('display: flex')
+
+    expect(CSS).toMatch(
+      /@supports not \(\(backdrop-filter[\s\S]*?_heroWorkspaceRow[\s\S]*?background: var\(--vd-slip-solid\)/,
+    )
+  })
+
   it('carries every bare transcript row on a slip surface', () => {
     const slipRule = CSS.match(
       /\[data-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],[\s\S]*?\)\s*\{([^}]*)\}/,
