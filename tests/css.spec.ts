@@ -210,13 +210,14 @@ describe('verdandi compatibility guardrails', () => {
     // the agent-preset seat and the git-graph branch chip are all transparent
     // 28px pills coloured `label-primary`.
     const chipRule = CSS.match(
-      /\[class\*='_heroWorkspaceRow'\],\s*\[class\*='_workspaceRow'\]\s*\)\s*>\s*\*\s*\{([^}]*)\}/,
+      /\[class\*='_heroWorkspaceRow'\],\s*\[class\*='_workspaceRow'\]\s*\)\s*:is\(button, \[role='button'\]\)\s*\{([^}]*)\}/,
     )?.[1] ?? ''
     expect(chipRule).toContain('background: var(--vd-slip)')
     expect(chipRule).toContain('--dsw-alias-label-primary: var(--vd-ink)')
     expect(chipRule).toContain('border-radius: 999px')
-    // Children, not the row: host chips and plugin seats both live there.
-    expect(chipRule).not.toContain('display: flex')
+    // Controls at any depth: the slot system wraps every seat in a
+    // `display: contents` div, so a `> *` rule would paint an invisible box.
+    expect(CSS).not.toMatch(/\[class\*='_heroWorkspaceRow'\][\s\S]{0,80}>\s*\*\s*\{/)
 
     expect(CSS).toMatch(
       /@supports not \(\(backdrop-filter[\s\S]*?_heroWorkspaceRow[\s\S]*?background: var\(--vd-slip-solid\)/,

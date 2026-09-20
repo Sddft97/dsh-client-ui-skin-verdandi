@@ -1352,12 +1352,18 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] > [class*='_
    git-graph branch chip are all 28px tall, 16px radius, `padding: 0 8px`,
    13px, transparent, and coloured `label-primary`. They assume the host's
    opaque workspace, so over the stage they drop to the same 1.3-3.5:1 as the
-   transcript rows. Styling the row's children covers host chips and every
-   plugin seat alike, including ones added later. */
+   transcript rows.
+
+   Target the controls, not the row's children: the slot system wraps each
+   registered seat in a `display: contents` div, which generates no box at all,
+   so a `> *` rule paints nothing and leaves the chip inside it transparent.
+   Matching any control at any depth covers host chips, plugin seats and the
+   seats added later. Menu panels are portalled to `document.body`, so opened
+   menus cannot be caught by this descendant selector. */
 body[data-dsh-verdandi] [data-pane='conversation'] :is(
   [class*='_heroWorkspaceRow'],
   [class*='_workspaceRow']
-) > * {
+) :is(button, [role='button']) {
   min-height: 28px;
   color: var(--vd-ink) !important;
   background: var(--vd-slip);
@@ -1375,7 +1381,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
 body[data-dsh-verdandi] [data-pane='conversation'] :is(
   [class*='_heroWorkspaceRow'],
   [class*='_workspaceRow']
-) > *:hover {
+) :is(button, [role='button']):hover {
   border-color: var(--vd-gold);
 }
 
@@ -1395,7 +1401,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
   body[data-dsh-verdandi] [data-pane='conversation'] :is(
     [class*='_heroWorkspaceRow'],
     [class*='_workspaceRow']
-  ) > * {
+  ) :is(button, [role='button']) {
     background: var(--vd-slip-solid);
   }
 }
@@ -1429,7 +1435,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
   body[data-dsh-verdandi] [data-pane='conversation'] :is(
     [class*='_heroWorkspaceRow'],
     [class*='_workspaceRow']
-  ) > * {
+  ) :is(button, [role='button']) {
     background: var(--vd-slip-solid);
     border-color: var(--vd-line-strong);
     -webkit-backdrop-filter: none;
@@ -1454,7 +1460,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
   body[data-dsh-verdandi] [data-pane='conversation'] :is(
     [class*='_heroWorkspaceRow'],
     [class*='_workspaceRow']
-  ) > * {
+  ) :is(button, [role='button']) {
     color: CanvasText;
     background: Canvas;
     border-color: CanvasText;
