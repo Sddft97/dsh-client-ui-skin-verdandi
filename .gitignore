@@ -3,4 +3,5 @@ node_modules/
 artifacts/
 .playwright-cli/
 output/
+.external/
 .pnpm-store/

@@ -192,13 +192,13 @@
 - 助手婚纱头像使用独立外侧挂槽，不缩短消息书页且保持各类消息左边界对齐；840 px 以下隐藏头像。Composer 提升至 112 px 最小高度，并在内侧下角加入头纱/裙摆装饰。
 - 人物舞台通过皮肤级 `display` 保护保持挂载；任务看板和 SSH 的真实功能表层仍位于舞台上方，不改变宿主交互和路由。
 
-## 15. V4 可读性护栏（亮/暗双模）
+## 15. 可读性护栏（亮/暗双模）
 
-### 15.1 问题定性
+### 15.1 问题
 
-V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人物形成完整舞台」，可读性交给每条聊天内容自己的誓约书页。这个分工只覆盖了**正文**：助手书页卡、用户回函、工具/重试档案条都有承托面，但宿主把**轮次过程元数据**直接画在工作区上——
+工作区使用写实插画背景，同一帧内亮度从近黑书架跨到近白窗光。此前版本的语义是「移除横跨工作区的中央白遮罩，让背景与两侧人物形成完整舞台」，可读性交给每条聊天内容自己的誓约书页；这个分工覆盖了**正文**（助手书页卡、用户回函、工具/重试档案条都有承托面），但宿主把**轮次过程元数据**直接绘制在工作区上：
 
-| 行 | 宿主实现 | 是否有面 |
+| 行 | 宿主实现 | 是否有承托面 |
 |---|---|---|
 | 系统提示词 / 上下文注入 | `XrJvXW_root` | 无（仅展开体是代码块） |
 | 本轮运行失败 / 达到 token 上限 | `turnErrorRow` | 无 |
@@ -206,18 +206,18 @@ V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人�
 | 轮尾时间与复制/分支图标 | `xzv4MW_actions` | 无 |
 | 工具调用 / 重试 | `_callRow` / `_retryRow` | 有（墨褐档案条，V3 已覆盖） |
 
-写实插画的亮度在同一帧里从近黑书架跨到近白窗光，因此**任何单一文字色都无法在两种主题下成立**。实测宿主的继承色（无承托面）：
+插画亮度在同一帧里跨度过大，**任何单一文字色都无法在两种主题下同时成立**。宿主继承色在这些区域的实际表现：
 
 | 主题 | 文字 | 背景 | 对比度 |
 |---|---|---|---|
-| 亮 | `label-tertiary` `#81858c` | 纯白（理论最好情况） | 3.71:1 ❌ |
-| 亮 | `label-tertiary` `#81858c` | 插画中间调 | 1.25:1 ❌ |
-| 亮 | `label-secondary` `#61666b` | 插画中间调 | 1.96:1 ❌ |
-| 亮 | `state-error` `#ec1313` | 插画中间调 | 1.52:1 ❌ |
-| 暗 | `label-tertiary` `#adb2b8` | 棋盘白格 | 1.41:1 ❌ |
-| 暗 | `state-error` `#f25a5a` | 棋盘白格 | 2.18:1 ❌ |
+| 亮 | `label-tertiary` `#81858c` | 纯白（理论最好情况） | 3.71:1 |
+| 亮 | `label-tertiary` `#81858c` | 插画中间调 | 1.25:1 |
+| 亮 | `label-secondary` `#61666b` | 插画中间调 | 1.96:1 |
+| 亮 | `state-error` `#ec1313` | 插画中间调 | 1.52:1 |
+| 暗 | `label-tertiary` `#adb2b8` | 棋盘白格 | 1.41:1 |
+| 暗 | `state-error` `#f25a5a` | 棋盘白格 | 2.18:1 |
 
-注意亮色第一行：宿主的三级文字色在**纯白上也达不到 AA 4.5:1**，所以这不是「背景再淡一点」能解决的问题，必须有承托面。
+注意亮色第一行：宿主的三级文字色在**纯白上也达不到 WCAG AA 4.5:1**。因此这不属于「把背景再调淡一点」可以解决的问题，必须有承托面。
 
 ### 15.2 三层护栏
 
@@ -232,25 +232,25 @@ V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人�
 - 全部新增面均为 `pointer-events` 语义不变、不新增节点、不改变宿主层级，也不引入持续动画。
 - 不想看到纱幕时只改一个变量即可（例如在自定义 CSS 里 `body[data-dsh-verdandi] [data-pane='conversation'] { --vd-stage-veil: 0.14; --vd-stage-veil-edge: 0.05 }`）；承托面单独就能守住对比度下限。
 
-![亮色逐改动点 1:1 对照](../preview/legibility-light.webp)
+![亮色逐改动点 1:1 对照](../../preview/legibility-light.webp)
 
-![暗色逐改动点 1:1 对照](../preview/legibility-dark.webp)
+![暗色逐改动点 1:1 对照](../../preview/legibility-dark.webp)
 
 两张对照图逐项列出 ① 系统提示词行、② 运行失败行与错误码、③ 过程控件、④ 轮尾时间与操作图标、⑤ 舞台纱幕，左「修改前」右「修改后」，取景为 900 × 190 的真实场景实拍；⑤ 前后刻意都不加纸面，用来单独说明纱幕只压缩背景动态范围、并不独自承担对比度。
 
 ### 15.4 折叠态「思考」行的垂直居中
 
-纸面本身暴露了一个既有缺陷：折叠的推理行没有上下居中。
+折叠的推理行本身需要一个与宿主固定行高配合的垂直居中：
 
 - 宿主把这一行固定成 `height: calc(24px + font-delta)` 并加 `contain: size layout`（全宿主唯一一处），内部 DisclosureRow 的 `._row_` 自身也是同一高度。
-- V3 的 `[data-variant='think']` 规则给该行加了 `padding: 5px 9px` + `box-sizing: border-box`，content box 被压到 14px，于是 24px 的行走不到 24px 的盒子中央：整行下移 5px，底边溢出纸面 5px。之前没有纸面，这个偏移看不出来。
-- 修复：折叠态 `padding-block: 0` + `justify-content: center`，把宿主预留的高度完整让给这一行；展开态是内容撑高，保留原有上下留白。实测偏移由 `+5.0px` 归零，行底溢出由 `5px` 归零。
+- 本皮肤的 `[data-variant='think']` 规则给该行加了 `padding: 5px 9px` + `box-sizing: border-box`，content box 被压到 14px，于是 24px 的行走不到 24px 的盒子中央：整行下移 5px，底边溢出纸面 5px。此前没有纸面，该偏移不可见；加上纸面后必须一并修正。
+- 修正方式：折叠态 `padding-block: 0` + `justify-content: center`，把宿主预留的高度完整让给这一行；展开态由内容撑高，保留原有上下留白。修正后行偏移与底边溢出均为 0。
 
-![折叠态思考行居中对照](../preview/legibility-think.webp)
+![折叠态思考行居中对照](../../preview/legibility-think.webp)
 
-### 15.5 新会话工作区 chip
+### 15.5 新会话工作区 chip 的承托面
 
-空会话阶段同样有裸 chrome：工作区行的三个 chip。之所以之前漏掉，是因为我误以为 hero 阶段「没有正文所以不需要护栏」——实际上 hero 恰恰是 chip 最集中的时候。
+空会话阶段的 chrome 同样是裸的：工作区行的三个 chip。`hero` 阶段并非「没有正文所以不需要护栏」——恰恰相反，它正是 chip 最集中的时候。
 
 | chip | 归属 | 类名 | hero 态样式 |
 |---|---|---|---|
@@ -258,31 +258,23 @@ V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人�
 | 标准模式（agent preset） | 宿主 `AgentPresetSeat` | `cubgiG_seat` | 透明，`label-primary` |
 | 分支 main | 第三方插件 `ui-git-graph` | `_7rgC5q_chipHero` | 透明，`label-primary` |
 
-三者的几何完全一致：高 28px、圆角 16px、`padding: 0 8px`、13px、透明底——宿主是把它当**一组 chip 家族**设计的，只是默认假设工作区不透明。
+三者的几何完全一致：高 28px、圆角 16px、`padding: 0 8px`、13px、透明底——宿主是把它们当作**一组 chip 家族**设计的，默认假设工作区背景不透明。
 
-第一版护栏把纸面加在**这一行的直接子元素**上（`> *`），结果只有工作目录与分支两个 chip 生效，「标准模式」纹丝不动。原因是在真机 `dsh web` 实例上读 DOM 才看清：**宿主 slot 系统给每个 seat 套了一层 `display: contents` 的 div**，它不生成任何盒子，所以纸面画在了一个 0 × 0 的不可见元素上，真正的 `button.cubgiG_seat` 仍是透明的。而分支 chip 是插件用 `querySelector('[class*="heroWorkspaceRow"]')` 直接 append 进来的真实盒子，所以它和同样是直接子元素的工作目录 chip 都能命中——这正是「三个看起来一模一样、两个好一个坏」的原因。
+承托面若只加在**这一行的直接子元素**（`> *`），只有工作目录与分支两个 chip 生效，「标准模式」不会：宿主 slot 系统给每个 seat 套了一层 `display: contents` 的 div，它不生成任何盒子，纸面会画在一个 0 × 0 的不可见元素上，真正的 `button.cubgiG_seat` 仍是透明的。而分支 chip 是插件用 `querySelector('[class*="heroWorkspaceRow"]')` 直接 append 进来的真实盒子，因此它与同样是直接子元素的工作目录 chip 都能命中——这就是「三个看起来一模一样的 chip，两个生效一个不生效」的结构性原因。
 
-修正后的规则改为命中**行内任意深度的控件**：
+因此规则命中**行内任意深度的控件**：
 
 ```css
 :is([class*='_heroWorkspaceRow'], [class*='_workspaceRow']) :is(button, [role='button'])
 ```
 
-宿主 chip、插件 seat、以及以后新增的 seat 都在覆盖范围内；菜单面板被 portal 到 `document.body`，所以这个后代选择器不会误伤展开后的菜单项。
+宿主 chip、插件 seat、以及后续新增的 seat 都在覆盖范围内；展开后的菜单面板被 portal 到 `document.body`，所以该后代选择器不会误伤菜单项。
 
-真机实测（元素截图取样，`[class*=heroWorkspaceRow]` 行内 y=中线）：
+![真实 GUI 的新会话 chip 前后对照](../../preview/legibility-hero-live.webp)
 
-| 取样点 | 修改前 | 修改后 |
-|---|---|---|
-| 工作目录 chip | `rgb(239,235,229)` 纸面 | `rgb(249,245,240)` 纸面 |
-| 「标准模式」chip | `rgb(116,128,119)` **场景原图** | `rgb(241,240,236)` 纸面 |
-| 行外参考点 | `rgb(117,127,125)` | `rgb(117,127,125)` 未变 |
+### 15.6 纱幕的作用边界
 
-![真实 GUI 的新会话 chip 前后对照](../preview/legibility-hero-live.webp)
-
-### 15.6 一个必须记住的结论：纱幕救不了暗部
-
-写 §15 时我用**线性亮度**估算了纱幕的提升量，这是错的：alpha 合成发生在 sRGB 空间。实测：
+一个容易误判的点：alpha 合成发生在 **sRGB 空间**，用线性亮度估算会显著高估纱幕的提升量。乳白纱幕压在纯黑上的实测结果：
 
 | 乳白纱幕 | 压在纯黑上得到 | 与墨色 `#2c1c21` 的对比度 |
 |---|---|---|
@@ -290,53 +282,53 @@ V2 语义是「移除横跨工作区的中央白遮罩，让背景和两侧人�
 | 0.50 | `rgb(128,127,126)` | 4.03:1 |
 | 0.70 | `rgb(179,177,176)` | 7.59:1 |
 
-也就是说，要用纱幕把暗部拉到可读，需要 0.5 以上的不透明度，插画会被冲掉。**结论：纱幕只负责降噪（让分隔线、状态点、箭头、hover 底色有边），对比度下限必须由纸面承担**——这也解释了为什么 `prefers-contrast: more` 走的是「纸面变实心 + 纱幕加强」双管，而不是只加强纱幕。
+也就是说，仅靠纱幕把暗部拉到可读需要 0.5 以上的不透明度，插画会被冲掉。**结论：纱幕只负责降噪（让分隔线、状态点、箭头、hover 底色有边界），对比度下限必须由纸面承担**；`prefers-contrast: more` 因此走「纸面变实心 + 纱幕加强」双管，而不是只加强纱幕。
 
-由此保留一个已知取舍：hero 阶段 26px 的「探索未至之境」标题目前是唯一没有纸面的文字，纱幕保持近乎全透（0.06）以保住空会话插画。它落在画心中部的中间调区域，实测可读；若日后要收紧，三条路各有代价——给标题加纸面铭牌（改变 hero 构图）、加柔光描边（字形发糊）、或把 hero 纱幕提到 0.4+（明显冲淡插画）。
+保留一个已知取舍：hero 阶段 26px 的「探索未至之境」标题是唯一没有纸面的文字，纱幕保持近乎全透（0.06）以保住空会话插画。它落在画心中部的中间调区域，实测可读；若日后要收紧，三条路各有代价——给标题加纸面铭牌（改变 hero 构图）、加柔光描边（字形发糊）、或把 hero 纱幕提到 0.4+（明显冲淡插画）。
 
-![新会话 chip 对照（亮色）](../preview/legibility-hero-light.webp)
+![新会话 chip 对照（亮色）](../../preview/legibility-hero-light.webp)
 
-![新会话 chip 对照（暗色）](../preview/legibility-hero-dark.webp)
+![新会话 chip 对照（暗色）](../../preview/legibility-hero-dark.webp)
 
-### 15.7 运行状态「薇儿烧烤中…」：三次被否，最后交还给纯文字
+### 15.7 运行状态行：纯文字方案与已知缺口
 
-这一处状态行（宿主的 `.turnStatus`）是全皮肤最难的一格：它是会话流的最后一个子节点，位置随内容滚动，所以背景是插画里任意一块。**先量再设计**：
+这一处状态行（宿主的 `.turnStatus`）是会话流的最后一个子节点，位置随内容滚动，背景落在插画中任意一块。设计前先量出可用区间：
 
 | | 亮度区间 | 单一实色墨的理论上限 |
 |---|---|---|
-| 亮色（昼景 + 纱幕 .30） | 0.245 – 0.708 | **4.8:1** ✅ 勉强过 AA |
-| 暗色（夜景 + 纱幕 .24） | 0.062 – 0.423 | **2.05:1** ❌ 无论选什么颜色 |
+| 亮色（昼景 + 纱幕 .30） | 0.245 – 0.708 | **4.8:1** 勉强过 AA |
+| 暗色（夜景 + 纱幕 .24） | 0.062 – 0.423 | **2.05:1** 无论选什么颜色 |
 
-结论是一条硬约束：**「无承托面 + 无光晕 + 可见扫光 + 任意位置都 ≥4.5:1」四者不可能同时成立**，任何可见的扫光都要从这个上限上再削一刀。
+由此得到一条硬约束：**「无承托面 + 无光晕 + 可见扫光 + 任意位置都 ≥4.5:1」四者不可能同时成立**，任何可见的扫光都要从这个上限上再削一刀。
 
-**被否掉的三条路**（前两条是评审否决，不是算错）：
+评估过但未采用的方案：
 
-| 方案 | 为什么放弃 |
+| 方案 | 未采用的原因 |
 |---|---|
 | 宿主原样（`background-clip: text` 微光扫光） | 亮端 `#d3e2ff` 在乳白上只有 1.29:1，扫过时字形直接消失 |
 | 重上色扫光 + `text-shadow` 四重光晕 | 光晕本质是在字形周围伪造一小块纸面；14px 中文被明显糊化 |
-| 输入卡纸面向上渐隐 220px | 对比度确实达标且字形锐利，但那层遮罩在插画上读起来像一块雾 |
+| 输入卡纸面向上渐隐 220px | 对比度达标且字形锐利，但该遮罩压在插画上读起来像一块雾 |
 
-另外两条一早就被实测淘汰：`-webkit-text-stroke: 3px` 会吃掉填充（除非配 `paint-order`）；`filter: drop-shadow()` 有效但弱于 `text-shadow`。候选对照见 `preview/options-status-{light,dark}.webp`。
+另外两条经实测淘汰：`-webkit-text-stroke: 3px` 会吃掉填充（除非配 `paint-order`）；`filter: drop-shadow()` 有效但弱于 `text-shadow`。候选对照见 `preview/options-status-{light,dark}.webp`。
 
-**最终交付的就是诚实的纯文字答案**：
+最终采用的是纯文字方案：
 
-- **实色墨**：不用裁剪填充、不加 `text-shadow`、不加描边、不加任何遮罩，场景一动不动。状态行单独用 `--vd-status-ink`（比正文墨更深）把亮色的余量从 4.50:1 提到 **5.1:1**。
+- **实色墨**：不用裁剪填充、不加 `text-shadow`、不加描边、不加任何遮罩，场景保持不动。状态行单独用 `--vd-status-ink`（比正文墨更深）把亮色的余量从 4.50:1 提到 **5.1:1**。
 - **动效搬到金线**：宿主那条会吃掉对比度的 `background-position` 动画改为关闭，改由 `::after` 上一条 2px 柔金刻线扫过。动效回到主题自己的语汇，且**在原理上不可能影响对比度**。
-- **文案换成主题自己的**：宿主渲染 `chat.deepDiving`（「深度求索中…」），皮肤把这枚文本节点压成 `font-size: 0`，再用 `::before` 重新写「薇儿烧烤中…」。宿主按当前语言设置 `documentElement.lang`，所以 `:lang(en)` 下自动切成英文。DOM 不变、`dispose()` 即还原；无障碍仍读到宿主自己的本地化文案。
-  - 一个真机才发现的坑：`[class*='_turnStatus']` **同时命中 `_turnStatusClock`**，所以两条规则都必须 `:not([class*='_turnStatusClock'])`，否则时钟会继承 `font-size: 0` 并多出一份标签。
+- **文案换成主题自己的**：宿主渲染 `chat.deepDiving`（「深度求索中…」），皮肤把这枚文本节点压成 `font-size: 0`，再用 `::before` 重新写「薇儿烧烤中…」。宿主按当前语言设置 `documentElement.lang`，所以 `:lang(en)` 下自动切成英文。DOM 不变、`dispose()` 即还原；无障碍读到的是宿主自己的本地化文案。
+  - 需要注意的选择器冲突：`[class*='_turnStatus']` **同时命中 `_turnStatusClock`**，所以两条规则都必须 `:not([class*='_turnStatusClock'])`，否则时钟会继承 `font-size: 0` 并多出一份标签。
 
-**已知缺口（不掩盖）**：暗色下这块文字的最坏情况只有约 **1.9:1**，而且这是纯文字方案的理论极限（该区间最优单色 2.05:1）。测试里因此只对亮色断言 ≥4.5:1，对暗色断言 ≥1.9 作为回归下限，并把两端实测值写进 `STATUS_BAND` 常量。若日后要补上暗色，只有两条**不伤字形**的路：把暗色 pane 纱幕从 0.24 提到约 0.5（整幅夜景变暗，但无可见遮罩边界），或给字形加 `paint-order: stroke fill` + `-webkit-text-stroke` 的细描边。
+**已知缺口**：暗色下这块文字的最坏情况只有约 **1.9:1**，且这已是纯文字方案的理论极限（该区间最优单色 2.05:1）。因此测试只对亮色断言 ≥4.5:1，对暗色断言 ≥1.9 作为回归下限，并把两端实测值写进 `STATUS_BAND` 常量。若日后要补上暗色，只有两条**不伤字形**的路径：把暗色 pane 纱幕从 0.24 提到约 0.5（整幅夜景变暗，但无可见遮罩边界），或给字形加 `paint-order: stroke fill` + `-webkit-text-stroke` 的细描边。
 
-![运行状态对照（亮色）](../preview/legibility-status-light.webp)
+![运行状态对照（亮色）](../../preview/legibility-status-light.webp)
 
-![运行状态对照（暗色）](../preview/legibility-status-dark.webp)
+![运行状态对照（暗色）](../../preview/legibility-status-dark.webp)
 
-### 15.8 工具卡片展开态：浅色 token 必须止步于折叠表头
+### 15.8 工具卡片展开态：浅色 token 的适用范围
 
-V3 给工具调用行加的「墨褐档案条」把 `--dsw-alias-label-primary/secondary/tertiary` 整体改成了浅色（`#fff8f4` / `#f0dce1` / `#dcbfc7`）。但这条规则命中的是 `_callRow`——**它包住的不只是折叠表头，还有整个展开正文**，而正文自带一块浅色代码面板（宿主的 code-block 底色，亮色下是 `#f9fafb`）。于是「浅色文字 + 浅色面板」，整块正文直接隐形。
+V3 给工具调用行加的「墨褐档案条」把 `--dsw-alias-label-primary/secondary/tertiary` 整体改成了浅色（`#fff8f4` / `#f0dce1` / `#dcbfc7`）。但该规则命中的 `_callRow` **包住的不只是折叠表头，还有整个展开正文**，而正文自带一块浅色代码面板（宿主的 code-block 底色，亮色下是 `#f9fafb`），于是形成「浅色文字 + 浅色面板」，整块正文不可读。
 
-真机 DOM 给出了准确的容器：**每张工具卡都把展开正文包在 `*_bodyWrap` 里**（Bash 卡是 `CY-8Ka_bodyWrap`，diff 卡是 `o3BgMG_bodyWrap`），表头则是它的兄弟节点。所以修复很简单——把浅色 token 的作用域收回表头一侧：
+宿主的容器结构是明确的：**每张工具卡都把展开正文包在 `*_bodyWrap` 里**（Bash 卡是 `CY-8Ka_bodyWrap`，diff 卡是 `o3BgMG_bodyWrap`），表头是它的兄弟节点。因此把浅色 token 的作用域收回表头一侧即可：
 
 ```css
 :is([class*='_callRow'], [class*='_retryRow']) [class*='_bodyWrap'] {
@@ -348,53 +340,86 @@ V3 给工具调用行加的「墨褐档案条」把 `--dsw-alias-label-primary/s
 }
 ```
 
-真机实测（展开的 Bash 卡）：表头标题仍是 `rgb(240,220,225)` 浅色 ✓；`_bodyWrap` / `_prompt` / `_line` 变为 `rgb(44,28,33)`，`复制` 为 `rgb(95,69,77)`（在 `#f9fafb` 面板上 7.3:1）✓。
+实测（展开的 Bash 卡）：表头标题仍是 `rgb(240,220,225)` 浅色；`_bodyWrap` / `_prompt` / `_line` 变为 `rgb(44,28,33)`，`复制` 为 `rgb(95,69,77)`（在 `#f9fafb` 面板上 7.3:1）。
 
-### 15.9 其他裸文字：统一到 `--vd-bare-ink`
+### 15.9 无承托面文字统一到 `--vd-bare-ink`
 
-「本次产出」标签来自 `dsh-better-sidebar` 的 `_producedLabel`（`color: var(--dsw-alias-label-tertiary)`，压在插画上约 1.3:1），与运行状态行是同一类问题。一起收进同一个墨色：
+「本次产出」标签来自 `dsh-better-sidebar` 的 `_producedLabel`（`color: var(--dsw-alias-label-tertiary)`，压在插画上约 1.3:1），与运行状态行属于同一类问题，因此收进同一个墨色：
 
 - `--vd-status-ink` 更名为 **`--vd-bare-ink`**，语义从「状态行专用」提升为「所有没有承托面、直接压在工作区画面上的文字」（运行状态行 + 本次产出标签 + `_producedMore`）。
 - 亮色 `#1b1116`（比正文墨 `#2c1c21` 更深，把 4.50:1 提到 5.1:1），暗色 `#fbf3f5`。
 
-![工具卡片与本次产出的前后对照](../preview/legibility-tool-light.webp)
+![工具卡片与本次产出的前后对照](../../preview/legibility-tool-light.webp)
 
-### 15.10 顶栏下拉被裁掉：宿主把面板画在 header 内部，没有 portal
+### 15.10 顶栏下拉面板的裁切与层级
 
-点开顶栏任意一个下拉（标题面包屑、右侧「打开方式」chevron、更多菜单），面板只剩贴着 header 底边的一条。摘掉 `data-dsh-verdandi` 后同一面板完整可见，所以这是皮肤造成的。
+顶栏的下拉（标题面包屑、右侧「打开方式」chevron、更多菜单）需要在皮肤规则下完整显示，否则只剩贴着 header 底边的一条。
 
-真机 DOM 说明得很清楚：面板是 `[role='menu']`，`position: absolute; z-index: 100`，父链为 `_headerUtilities` → `_titleRow` → `[data-verdandi-header]`——**面板没有 portal 到 `document.body`**（新会话 hero 行里的 preset 菜单反而 portal 了，别被它误导）。面板 rect 为 `x 942 y 43 218×212`，而 header 只有 76px 高，于是底边以下全被剪掉。上游 header 的默认值是 `position: static; z-index: auto; overflow: visible`，被我们改成了 `position: relative; z-index: 20; overflow: hidden`。
+宿主结构：面板是 `[role='menu']`，`position: absolute; z-index: 100`，父链为 `_headerUtilities` → `_titleRow` → `[data-verdandi-header]`——**它由宿主绘制在 header 子树内部，没有 portal 到 `document.body`**（新会话 hero 行里的 preset 菜单则会 portal，两者结构不同）。header 只有 76px 高，面板底边以下会被剪掉。宿主 header 的默认值是 `position: static; z-index: auto; overflow: visible`。
 
-把面板关进笼子的是两条规则：
+把面板关进笼子的是本皮肤的两条规则：
 
 1. header 的 `overflow: hidden` 直接剪掉超出 76px 的部分；
-2. `[data-verdandi-header] > :not([data-verdandi-decoration]) { z-index: 3 }` 让 DOM 里靠后的 tab 行拿到同等层级，盖住面板顶部（实测 tab 的 y 50–75 压住了面板顶部）。
+2. `[data-verdandi-header] > :not([data-verdandi-decoration]) { z-index: 3 }` 让 DOM 里靠后的 tab 行拿到同等层级，盖住面板顶部。
 
-修复：header 不再 `overflow: hidden`（各个装饰层自己就是 `overflow: hidden`，会自裁），并把 host 的标题行 `[class*='_titleRow']` 提到 `z-index: 5`，让它压住 tab 行。
+修正：header 不再 `overflow: hidden`（各装饰层自身是 `overflow: hidden`，会自裁），并把宿主的标题行 `[class*='_titleRow']` 提到 `z-index: 5`，让它压住 tab 行。
 
 ```css
 body[data-dsh-verdandi] [data-verdandi-header] { /* 不再 overflow: hidden */ }
 body[data-dsh-verdandi] [data-verdandi-header] > [class*='_titleRow'] { z-index: 5; }
 ```
 
-验证：面板打开后 4 个采样点（面板高度 5%/30%/60%/95%）`elementFromPoint` 全部落在 `[role='menu']` 内，亮/暗都过。
+验证方式：面板打开后取 4 个采样点（面板高度 5%/30%/60%/95%）做 `elementFromPoint`，全部落在 `[role='menu']` 内；亮/暗两态均通过。
 
-![顶栏下拉裁切前后对照（暗色）](../preview/header-menu-dark.webp)
+![顶栏下拉裁切前后对照（暗色）](../../preview/header-menu-dark.webp)
 
-### 15.11 顶栏 chip 左侧那颗小白点：是我们自己画的铆钉
+### 15.11 顶栏 chip 的装饰层与暗色墨色
 
-暗色下每个顶栏 chip 左侧都有一颗小圆点，亮色下看不到。来源在自己身上：`[data-verdandi-header] button` 的 `background` 第一层是一颗 2px 的白色铆钉——
+暗色下每个顶栏 chip 左侧会出现一颗小圆点，亮色下不可见。来源是 `[data-verdandi-header] button` 的 `background` 第一层——一颗 2px 的白色铆钉：
 
 ```css
 radial-gradient(circle at 10px 50%, rgba(255, 255, 255, 0.9) 0 2px, transparent 2.5px)
 ```
 
-亮色下它是「白点压象牙 chip」，自然隐形；暗色下 chip 底色仍是硬编码的亮象牙（`rgba(255,253,251,.66)`），白点就显形了。同一处硬编码还带来第二个缺陷：暗色下 chip 的墨色被 `--vd-ink` 抬成近白（`#fff9f4`），压在亮象牙底上合成后只有约 1.3:1，标题面包屑几乎读不出来。
+亮色下它是「白点压象牙 chip」，自然隐形；暗色下 chip 底色仍是硬编码的亮象牙（`rgba(255,253,251,.66)`），白点就显形了。同一处硬编码还带来第二个问题：暗色下 chip 的墨色被 `--vd-ink` 抬成近白（`#fff9f4`），压在亮象牙底上合成后只有约 1.3:1，标题面包屑几乎读不出来。
 
-修复：删掉铆钉层（它在文字 chip 上还会压在第一个字上）；暗色把 chip 换到与其它 slip 同一套的 `--vd-slip` / `--vd-slip-line` / `--vd-slip-shadow`，hover 换 `--vd-slip-solid` + `--vd-gold-light` 墨 + `--vd-gold` 环。亮色一字未动。
+处理：删掉铆钉层（它压在文字 chip 上时会盖住第一个字）；暗色把 chip 换到与其它 slip 同一套的 `--vd-slip` / `--vd-slip-line` / `--vd-slip-shadow`，hover 换 `--vd-slip-solid` + `--vd-gold-light` 墨 + `--vd-gold` 环。亮色不变。实测（暗色标题面包屑）：`background-image: none`，底色 `rgba(36,23,28,.88)`，墨色 `rgb(255,249,244)`，约 16:1。
 
-实测（暗色标题面包屑）：`background-image: none`，底色 `rgba(36,23,28,.88)`，墨色 `rgb(255,249,244)`，约 16:1。
+另外需要区分的一点：**工具行 / 后台任务行左侧那颗按状态变色的小点不是皮肤产生的**，它是宿主的 `_dot_1tljr_3`（`:before` 是 10% 外环、`:after` 是内芯，`[data-state=idle|warning|error|done]` 决定取哪个 `--dsw-static-*` 颜色）。同一个 error 行在亮色是 `rgb(236,19,19)`、暗色是 `rgb(242,90,90)`，两态都在；皮肤只影响它压在什么底色上。
 
-顺带记一笔免得混淆：**工具行 / 后台任务行左侧那颗按状态变色的小点不是皮肤产生的**，它是宿主的 `_dot_1tljr_3`（`:before` 是 10% 外环、`:after` 是内芯，`[data-state=idle|warning|error|done]` 决定取哪个 `--dsw-static-*` 颜色）。同一个 error 行在亮色是 `rgb(236,19,19)`、暗色是 `rgb(242,90,90)`，两态都在；皮肤只影响它压在什么底色上。
+![顶栏 chip 装饰与暗色墨色前后对照](../../preview/header-chip-dark.webp)
+### 15.12 宽表（≥4 列）与消息卡片的边界
 
-![顶栏 chip 铆钉与暗色墨色前后对照](../preview/header-chip-dark.webp)
+宿主对「宽表」有一套专门逻辑：列数 ≥ 4 的表格，包裹层会带上 `md-table-wide`，由 `dsh-client-ui-chat` 把它画得比正文栏更宽，默认 `overflow-x: hidden`，悬停时才切成 `auto`：
+
+```css
+.hWmORq_body .md-table-wide {
+  --dsh-table-spare: max(0px, calc((100cqw - var(--dsh-chat-content-width)) / 2));
+  --dsh-table-lead: calc(var(--dsh-table-spare) + min(var(--dsh-chat-content-width), 100cqw) - 100%);
+  width: calc(100% + var(--dsh-table-lead) + var(--dsh-table-spare));
+  max-width: none;
+  margin-left: calc(-1 * var(--dsh-table-lead));
+  padding-left: var(--dsh-table-lead);
+}
+```
+
+这套算法假设助手消息是**没有边框的裸文本块**：表格比文字栏宽一点，读起来仍是「表格多用了一点版面」。本皮肤把助手消息画成了带金色描边的纸卡，同一段出血就变成「表格越过卡片边框」；而 `padding-left: var(--dsh-table-lead)` 又把左侧出血位还了回去，所以超宽内容会在卡片右侧被静默裁掉半个字。
+
+实测（1200px 视口、4 列表格）：出血盒 846px，盒内可用 763px，表格自身 941px，被裁约 95px；完全关闭皮肤后同样被裁，只是少 31px，说明裁切来自宿主本身，皮肤只是把它放大了——其中约 17px 来自卡片的 `padding: 14px 16px` 让宿主 calc 里的 `100%` 少 34px，另外约 31px 来自 `--dsw-font-family` 换了字族后表格变宽。
+
+处理：把宽表收进卡片。包裹层回到 `width: 100%`，清掉宿主的 `margin-left` / `padding-left` / `padding-bottom`，表格 `width: 100%` 在卡片内换行，`overflow-x: auto` 作为极端内容（单个不可断的长 token）的兜底：
+
+```css
+body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_'] [class*='md-table-wide'] {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  padding-left: 0;
+  padding-bottom: 0;
+  overflow-x: auto;
+}
+```
+
+于是 4 列表与 3 列表一样在卡片内换行，金色边框始终包住表格；代价是这个皮肤下不再保留宿主的宽表出血效果。选择器用 `[class*='md-table-wide']` 而不是 `.md-table-wide`，是因为后者是宿主全局类名，写成类选择器会在插件形态里被 CSS Modules 哈希掉，只有属性匹配能同时命中两种形态。
+
+验证：资产形态与本仓库插件形态各注入同一张 4 列表格（真实类名与祖先结构），live 实测包裹层 886px = 卡片内容宽、表格无溢出；A/B 形态对照 1600×1000 亮色与暗色各 0/1,600,000 像素差异。
