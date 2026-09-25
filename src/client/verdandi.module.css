@@ -1457,6 +1457,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
     color-mix(in srgb, var(--vd-slip) 76%, transparent) 100%
   );
   border-radius: 6px;
+  border-left: 3px solid var(--vd-crimson);
   box-shadow:
     var(--vd-slip-shadow),
     0 0 0 1px var(--vd-gold);
@@ -1471,10 +1472,9 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
    disclosure's own aria-expanded. */
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] {
   color: var(--vd-ink);
-  background: color-mix(in srgb, var(--vd-gold) 26%, transparent);
+  background: var(--vd-gold);
   border-radius: 999px;
   transform: scale(1.12);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--vd-gold) 55%, transparent);
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] path {
@@ -1641,11 +1641,11 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_ac
      card it overlaps; pointer-events: none keeps it from stealing the hover.
      The !important pair beats the inline left/top; !important on author
      declarations outranks inline non-important ones. */
-  left: auto !important;
+  left: 50% !important;
   top: auto !important;
-  transform: none;
-  right: -15px;
+  right: auto;
   bottom: calc(100% + 6px);
+  transform: translateX(-50%);
   z-index: 30;
   pointer-events: none;
   white-space: nowrap;
