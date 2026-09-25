@@ -1,0 +1,59 @@
+name: Release guard
+
+# The tag is the release switch, so the tag, the package version, the changelog
+# and the committed build must agree before anything is published. ci.yml already
+# covers the build/test/tarball side for every push; this job covers the
+# bookkeeping that a release depends on.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: The tag must equal the package version
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          echo "tag=$tag package.json=$pkg"
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match the package.json version $pkg"
+            exit 1
+          fi
+
+      - name: The changelog must carry an entry for the version
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if ! grep -q "^## \[$version\]" CHANGELOG.md; then
+            echo "::error::CHANGELOG.md has no '## [$version]' section"
+            exit 1
+          fi
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: The committed build must match the sources
+        run: |
+          pnpm build
+          if ! git diff --exit-code -- lib; then
+            echo "::error::lib/ is stale: rebuild and commit it before tagging"
+            exit 1
+          fi
