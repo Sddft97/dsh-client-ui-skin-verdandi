@@ -90,9 +90,12 @@ describe('verdandi compatibility guardrails', () => {
     // Both palettes carry the veil as a token, not as a hard-coded wash. The
     // light veil is a warm neutral rather than white: a white wash pushed the
     // column towards paper white and read as an overlay over the artwork.
-    expect(CSS).toMatch(/--vd-stage-veil: rgba\(93, 64, 72, 0\.18\)/)
+    expect(CSS).toMatch(/--vd-stage-veil: rgba\(255, 253, 251, 0\.22\)/)
     expect(CSS).toMatch(/--vd-stage-veil: rgba\(18, 11, 15, 0\.24\)/)
-    expect(CSS).not.toMatch(/--vd-stage-veil: rgba\(255, 253, 251/)
+    // Lighter than the original wash, which read as an overlay over the artwork,
+    // but still light: a darker veil lowers the luminance behind dark ink and
+    // therefore lowers its contrast.
+    expect(CSS).not.toMatch(/--vd-stage-veil: rgba\(255, 253, 251, 0\.3\)/)
     // The empty-session composition is not veiled; there is no text to carry.
     const heroRule = CSS.match(/\[data-verdandi-phase='hero'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(heroRule).toContain('--vd-stage-veil-hero')
@@ -169,8 +172,24 @@ describe('verdandi compatibility guardrails', () => {
     expect(headerRule).toMatch(/z-index:\s*20/)
     // Match the declaration, not the prose in the comment that explains it.
     expect(headerRule).not.toMatch(/(?:^|\n)\s*overflow\s*:/)
-    expect(CSS).toMatch(/\[data-verdandi-header\] > :not\(\[data-verdandi-decoration\]\)\s*\{[^}]*z-index:\s*3/)
-    expect(CSS).toMatch(/\[data-verdandi-header\] > \[class\*='_titleRow'\]\s*\{[^}]*z-index:\s*5/)
+    expect(CSS).toMatch(
+      /\[data-verdandi-header\] > :not\(\[data-verdandi-decoration\]\),[\s\S]*?z-index:\s*3/,
+    )
+    // 0.1.7 nests the header content one slot level deeper inside a
+    // `display: contents` anchor, so the lift has to reach through it; otherwise
+    // the veil (z-index 0) paints over the title row. The block is addressed
+    // through its second selector, which is the one the real shell needs: the
+    // first selector in the same list only receives the shared declarations.
+    const liftRule = CSS.match(
+      /\nbody\[data-dsh-verdandi\] \[data-verdandi-header\] \[data-slot='conversation\.session\.header'\] > :not\(\[data-verdandi-decoration\] \*\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(liftRule).toContain('z-index: 3')
+    expect(liftRule).toContain('position: relative')
+    // The title row hangs off that same anchor rather than sitting directly under
+    // the header, so this rule is a descendant one as well; a `>` here matched
+    // nothing on the real shell.
+    expect(CSS).toMatch(/\[data-verdandi-header\] \[class\*='_titleRow'\]\s*\{[^}]*z-index:\s*5/)
+    expect(CSS).toMatch(/\[data-verdandi-header\] \[class\*='_titleRow'\]\s*\{[^}]*letter-spacing:\s*0\.012em/)
   })
 
   it('paints the header chips without a decorative stud and hands the dark palette a slip', () => {
@@ -347,6 +366,16 @@ describe('verdandi compatibility guardrails', () => {
     expect(slipRule).toContain('--dsw-alias-label-tertiary: var(--vd-ink-meta)')
     expect(slipRule).toContain('backdrop-filter: blur(7px)')
     expect(slipRule).toContain('backdrop-filter')
+    // The context / tool-change notice and the turn triggers are bare host rows
+    // inside the same family: the notice is marked at runtime through
+    // `[data-context-source]` / `[data-context-summary]`, the trigger carries its
+    // own `data-turn-trigger`.
+    // The trigger and the user-echo clock share the surface but not the furniture:
+    // the hover-revealed rows must not carry a box the host has to re-flow.
+    const paintOnly = CSS.match(/\[data-pane='conversation'\] :is\(\s*\[data-clock='start'\],[\s\S]*?\)\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(paintOnly).toContain('background: var(--vd-slip)')
+    expect(paintOnly).not.toMatch(/(margin|padding|width|height|border):/)
+    expect(CSS).toMatch(/\[data-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],\s*\[class\*='_turnErrorRow'\]/)
 
     // Turn chrome the host draws without any surface must be covered too.
     expect(CSS).toMatch(/\[class\*='_turnErrorTitle'\]\s*\{\s*color: var\(--vd-danger\) !important/)
@@ -355,8 +384,16 @@ describe('verdandi compatibility guardrails', () => {
     // The running status is a chapter rule, not a pill: no fill of its own, a gold
     // hairline under it, and the copy keeps a fading wash because bare ink over the
     // artwork's darkest band measures 1.14:1.
-    expect(CSS).toMatch(/\[data-turn-process\]\s*\{[\s\S]*?border-radius: 0/)
-    expect(CSS).toMatch(/\[data-turn-process\]\s*\{[\s\S]*?border-bottom: 1px solid color-mix/)
+    // The process row is painted, never resized: the host owns its box, and a
+    // margin, padding, width or height here re-flows the transcript and moves the
+    // row under the pointer. The gold rule belongs to the running status only, so
+    // a long transcript is not cut into strips by a rule under every finished turn.
+    const processRule = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-pane='conversation'\] \[data-turn-process\]\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(processRule).toContain('background: none')
+    expect(processRule).not.toMatch(/(margin|padding|width|height):/)
+    expect(CSS).toMatch(/\[data-verdandi-running\]\s*\{[\s\S]*?border-bottom: 1px solid color-mix/)
     expect(CSS).toMatch(/\[data-turn-process\] \[class\*='_label'\]\s*\{[\s\S]*?background-image: linear-gradient/)
     // The tail row is painted, never resized: the host fades it in on hover, so a
     // changed box moves the buttons under the pointer and the two states fight.
@@ -366,11 +403,33 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).not.toMatch(/\[data-turn-tail\] \[class\*='_actions'\]\s*\{[\s\S]{0,200}?padding:/)
     expect(CSS).not.toMatch(/\[data-turn-tail\] \[class\*='_actions'\]\s*\{[\s\S]{0,200}?width:/)
 
+    // The user-echo clock row is the tail's twin on the other side of the turn,
+    // and the reason it is painted, never resized, is the same one: the host
+    // reveals it on hover, so a changed box slides the buttons under the pointer.
+    const echoRule = CSS.match(/\[data-pane='conversation'\] \[data-clock='start'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(echoRule).toContain('background: var(--vd-slip)')
+    expect(echoRule).toContain('border-radius: 999px')
+    expect(echoRule).not.toMatch(/(margin|padding|width|height|border):/)
+    expect(CSS).not.toMatch(/\[data-clock='start'\]\s*\{[^}]{0,200}?(margin|padding|width|height):/)
+
+    // The trigger row's own hover must not fall back to the host's 7.5% tint:
+    // that token replaces the host's opaque card fill, so the row would go
+    // transparent exactly while the pointer is on it.
+    const triggerRule = CSS.match(/\[data-pane='conversation'\] \[data-turn-trigger\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(triggerRule).toContain('background: var(--vd-slip)')
+    expect(triggerRule).not.toMatch(/(margin|padding|width|height|border):/)
+    expect(CSS).toMatch(
+      /\[data-pane='conversation'\] \[data-turn-trigger\]:hover\s*\{[^}]*background: var\(--vd-slip-solid\)/,
+    )
+
     // And the ratio has to survive without compositing help.
     expect(CSS).toMatch(
       /@supports not \(\(backdrop-filter: blur\(4px\)\) or \(-webkit-backdrop-filter: blur\(4px\)\)\)[\s\S]*?background: var\(--vd-slip-solid\)/,
     )
-    expect(CSS).toMatch(/@media \(prefers-contrast: more\)[\s\S]*?--vd-stage-veil: rgba\(93, 64, 72, 0\.28\)/)
+    expect(CSS).toMatch(
+      /@supports not \(\(backdrop-filter: blur\(4px\)\) or \(-webkit-backdrop-filter: blur\(4px\)\)\)[\s\S]*?\[data-clock='start'\][\s\S]*?background: var\(--vd-slip-solid\)/,
+    )
+    expect(CSS).toMatch(/@media \(prefers-contrast: more\)[\s\S]*?--vd-stage-veil: rgba\(255, 253, 251, 0\.34\)/)
     expect(CSS).toMatch(/@media \(forced-colors: active\)[\s\S]*?background: Canvas/)
   })
 })

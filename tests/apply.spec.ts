@@ -15,6 +15,11 @@ class MockContext {
   }
 }
 
+/** Shells before 0.1.7: the header is the child of the session-header anchor. */
+const LEGACY_HEADER = `<div data-slot="conversation.session.header" style="display:contents"><header>
+  <div class="host_titleRow"><button role="tab" aria-selected="true">对话</button></div>
+</header></div>`
+
 describe('verdandi skin apply/dispose contract', () => {
   let ctx: MockContext
   beforeEach(() => {
@@ -30,9 +35,13 @@ describe('verdandi skin apply/dispose contract', () => {
           <div role="treeitem" aria-selected="true">Current session</div>
         </div>
         <div data-pane="conversation">
-          <div data-slot="conversation.session.header"><header>
-            <button role="tab" aria-selected="true">对话</button>
-            <button role="tab" aria-selected="false">轨迹</button>
+          <div data-slot="conversation.header" style="display:contents"><header>
+            <div data-slot="conversation.session.header" style="display:contents">
+              <div class="host_titleRow">
+                <button role="tab" aria-selected="true">对话</button>
+                <button role="tab" aria-selected="false">轨迹</button>
+              </div>
+            </div>
           </header></div>
           <div data-phase="active"></div>
           <div data-chat-flow-kind="assistant-step"><div data-slot="conversation.chat.node">
@@ -43,6 +52,14 @@ describe('verdandi skin apply/dispose contract', () => {
               <div class="host_context_row">
                 <button class="host_context_title">系统提示词</button>
                 <div data-system-prompt-body>PROMPT</div>
+              </div>
+            </div>
+          </div>
+          <div data-chat-flow-kind="context" data-chat-flow-key="context">
+            <div data-slot="conversation.chat.node">
+              <div class="host_notice_row">
+                <span data-context-source>工具变更</span>
+                <span data-context-summary>+2 / -1</span>
               </div>
             </div>
           </div>
@@ -161,13 +178,43 @@ describe('verdandi skin apply/dispose contract', () => {
   it('slips the system-prompt row and releases it on dispose', () => {
     apply(ctx as never)
 
-    // Only the marker-driven row needs a runtime hook; the rest of the slip
+    // Only the marker-driven rows need a runtime hook; the rest of the slip
     // family is addressed by CSS-stable host attributes and class suffixes.
     expect(document.querySelector('.host_context_row')?.getAttribute('data-verdandi-slip')).toBe('context')
     expect(document.querySelector('.host-assistant-card')?.hasAttribute('data-verdandi-slip')).toBe(false)
+    // The context / tool-change notice carries no stable class either: only its
+    // disclosure's two semantic attributes, which the marker list now includes.
+    expect(document.querySelector('.host_notice_row')?.getAttribute('data-verdandi-slip')).toBe('context')
 
     ctx.disposeAll()
     expect(document.querySelector('[data-verdandi-slip]')).toBeNull()
+  })
+
+  it('marks the header through the 0.1.7 slot and still resolves the older one', () => {
+    // 0.1.7 puts the header inside `[data-slot='conversation.header']` and keeps
+    // `conversation.session.header` for the display:contents anchor inside it, so
+    // the old `…session.header] > header` child no longer exists and every
+    // `[data-verdandi-header]` rule was dead.
+    apply(ctx as never)
+
+    const inner = document.querySelector('header')
+    expect(inner?.hasAttribute('data-verdandi-header')).toBe(true)
+    expect(inner?.querySelector("[data-verdandi-decoration='header-veil']")).not.toBeNull()
+
+    // Older shells: the header is the child of the session-header anchor itself.
+    // The legacy tree is parsed, not moved node by node: jsdom stops indexing a
+    // subtree that was detached inside a `display: contents` parent.
+    const conversation = document.querySelector('[data-pane="conversation"]')
+    expect(conversation).not.toBeNull()
+    conversation!.innerHTML = LEGACY_HEADER
+
+    // A fresh context, like a second mount against the older shell's DOM.
+    ctx = new MockContext()
+    apply(ctx as never)
+    const legacyHeader = conversation?.querySelector('header')
+    expect(legacyHeader?.hasAttribute('data-verdandi-header')).toBe(true)
+    expect(legacyHeader?.querySelector("[data-verdandi-decoration='header-veil']")).not.toBeNull()
+    ctx.disposeAll()
   })
 
   it('adds semantic hooks without replacing host controls', () => {

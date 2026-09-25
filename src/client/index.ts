@@ -50,6 +50,21 @@ const CONVERSATION_VIEW_ATTR = 'data-verdandi-view'
 const DETAILS_EMPTY_ATTR = 'data-verdandi-details-empty'
 const SLIP_ATTR = 'data-verdandi-slip'
 const RUNNING_ATTR = 'data-verdandi-running'
+/**
+ * The session header strip, in probe order. dsh 0.1.7 renders
+ * `<div data-slot='conversation.header' style='display:contents'><header>` and
+ * keeps `conversation.session.header` for the `display:contents` anchor that
+ * holds the title row and the tabs inside that header, so the old
+ * `[data-slot='conversation.session.header'] > header` child no longer exists.
+ * The three candidates are probed one at a time rather than as one comma list:
+ * a list resolves by document order, which picks the earlier anchor over its own
+ * header, and the anchor carries neither its own paint nor a box.
+ */
+const HEADER_SELECTORS = [
+  "[data-slot='conversation.header'] > header",
+  "[data-slot='conversation.session.header'] > header",
+  "[data-slot='conversation.session.header']:has(> header)",
+] as const
 const STAGE_SELECTOR = '[data-verdandi-stage]'
 const DECORATION_SELECTOR = '[data-verdandi-decoration]'
 const LEGACY_SELECTOR = '[data-verdandi-sidebar-card], [data-verdandi-wedding], [data-verdandi-chrome]'
@@ -65,10 +80,12 @@ const OWNED_HOOKS = [
 
 /**
  * Markers for transcript rows the host renders as bare metadata over the scenic
- * workspace. `data-system-prompt-body` is the only one without a CSS-stable
- * ancestor hook, so it is resolved through the node seat below.
+ * workspace. The context/tool-change notice keeps its own class hash on the row
+ * root, so it is hooked through the disclosure's two semantic attributes; the
+ * system prompt only exposes its body, which is why every marker is resolved
+ * through the node seat below.
  */
-const SLIP_MARKER_SELECTOR = "[data-system-prompt-body]"
+const SLIP_MARKER_SELECTOR = "[data-system-prompt-body], [data-context-source], [data-context-summary]"
 
 type ThemeTokenPair = {
   light: string
@@ -126,6 +143,15 @@ function firstElement<T extends HTMLElement>(selector: string): T | null {
   return document.querySelector<T>(selector)
 }
 
+function headerElement(root: ParentNode | null): HTMLElement | null {
+  if (!root) return null
+  for (const selector of HEADER_SELECTORS) {
+    const header = root.querySelector<HTMLElement>(selector)
+    if (header) return header
+  }
+  return null
+}
+
 function isRendered(element: HTMLElement | null): element is HTMLElement {
   if (!element || element.hidden || element.getAttribute('aria-hidden') === 'true') return false
   const style = window.getComputedStyle(element)
@@ -160,7 +186,7 @@ function ensureWeddingDecorations(
   ensureDecoration(sidebarRoot, 'sidebar-veil-corners-top')
   ensureDecoration(sidebarRoot, 'sidebar-veil-corners-bottom')
   ensureDecoration(conversation, 'workspace-lace')
-  const header = conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null
+  const header = headerElement(conversation)
   ensureDecoration(header, 'header-veil')
   ensureDecoration(header, 'header-namecard')
   ensureDecoration(header, 'header-bridal-corners')
@@ -272,7 +298,7 @@ function decorateLegibilityRows(conversation: HTMLElement | null): void {
 function decorateStableRegions(): void {
   clearOwnedHooks()
 
-  const header = firstElement<HTMLElement>("[data-slot='conversation.session.header'] > header")
+  const header = headerElement(document)
   header?.setAttribute('data-verdandi-header', '')
 
   const details = firstElement<HTMLElement>("[data-pane='details']")
@@ -333,7 +359,7 @@ function setSidebarSize(body: HTMLElement, sidebar: HTMLElement | null): void {
 
 function measureConversation(conversation: HTMLElement): void {
   const conversationRect = conversation.getBoundingClientRect()
-  const header = conversation.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header")
+  const header = headerElement(conversation)
   const composer = conversation.querySelector<HTMLElement>(
     "[data-composer-seat], [data-slot='conversation.input.dock'], [data-slot='conversation.composer']",
   )
@@ -362,7 +388,7 @@ function setStageWidth(stage: HTMLElement, conversation: HTMLElement): void {
 
 function setConversationView(conversation: HTMLElement): 'chat' | 'trace' {
   const selectedTab = conversation.querySelector<HTMLElement>(
-    "[data-slot='conversation.session.header'] [role='tab'][aria-selected='true']",
+    "[data-verdandi-header] [role='tab'][aria-selected='true']",
   )
   const label = (selectedTab?.textContent ?? '').trim()
   const view = /^(轨迹|Trace)$/i.test(label) ? 'trace' : 'chat'
@@ -458,7 +484,7 @@ export function apply(ctx: Context): void {
       sidebar,
       conversation,
       details,
-      conversation?.querySelector<HTMLElement>("[data-slot='conversation.session.header'] > header") ?? null,
+      headerElement(conversation),
       conversation?.querySelector<HTMLElement>("[data-composer-seat], [data-slot='conversation.input.dock']") ?? null,
     ])
   }

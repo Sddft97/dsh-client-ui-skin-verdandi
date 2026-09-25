@@ -25,6 +25,16 @@ the rest.
   the pointer while the fade ran and the two hover states fought each other. The
   row is now painted and never resized; the harness proves the geometry is
   identical before and after a forced hover.
+- The rows the host draws without a surface are readable again. The session header
+  was never marked at all — the hook looked for
+  `[data-slot='conversation.session.header'] > header`, which 0.1.7 no longer
+  renders — so the header surface, its agent-team and mode chips and its 对话/轨迹
+  tabs stayed unstyled; the trigger rows (收到执行请求, 继续执行目标) lost their
+  surface on hover because the skin's translucent tint replaced the host's opaque
+  fill; and the user message's clock row lives beside the bubble instead of inside
+  the turn tail, so it never received the slip. All three are covered now, and every
+  hover-revealed row stays paint-only. The context notice row is marked for the slip
+  through its own `[data-context-source]` / `[data-context-summary]` attributes.
 
 ### Changed
 
