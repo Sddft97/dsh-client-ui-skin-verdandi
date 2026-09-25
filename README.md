@@ -57,7 +57,7 @@ dsh plugin --profile web remove @hjbztlbr/dsh-client-ui-skin-verdandi
 
 ## 兼容性
 
-- 已在 DeepSeek Harness `0.1.1-rc.2` Web profile 上测试。
+- 已在 DeepSeek Harness `0.1.5-rc.1` 与 `0.1.7-rc.2` 的 Web profile 上测试：0.1.7 把侧栏「新建会话」的文字包进 `newSessionLabel`/`newSessionContent` 并追加了快捷键提示，运行状态也从 `_turnStatus` 行移入 turn-process 条带，两者都已适配，且旧版渲染不受影响。
 - 对 better-sidebar、AionUI、SSH、Cordis、`.xterm` 与设置 portal 使用定向样式，避免改写终端 ANSI 调色板或全局系统 token。
 - 小尺寸窗口会隐藏装饰性头像和人物舞台，优先保证操作区域与文字可读。
 
