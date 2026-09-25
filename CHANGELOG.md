@@ -13,18 +13,16 @@ the rest.
 
 ### Fixed
 
-- The floating copy tooltip is centred over the clock pill. The host's action
-  tooltip (复制) is a flex child of the clock rows whose width animates open, so
-  the pill grew by ~66px while the pointer rested on the button and snapped
-  back on leave — with the row's own `transition: all` that animated the
-  buttons under the pointer. The bubble is now lifted out of the flow and
-  centred above the pill: the host's script leaves page-coordinate inline
-  left/top on it from another positioning mode, which only activate once the
-  bubble is absolute and resolve against whatever wrapper happens to be
-  positioned, so they are neutralised (`left/top: auto !important`) and the
-  bubble is anchored to the row itself with a z-index over the message card. A
-  real pointer-path trace went from three distinct geometry states (rest /
-  hover / +66px tooltip) to two byte-identical ones.
+- The copy tooltip no longer exists. The host's action tooltip (复制) is a flex
+  child of the clock rows whose width animates open, so the pill grew by ~66px
+  while the pointer rested on the button and snapped back on leave — with the
+  row's own `transition: all` that animated the buttons under the pointer. A
+  first fix lifted the bubble out of the flow, but a floating card over live
+  conversation is its own problem (it covers messages and its text hugged the
+  border), so the bubble is simply not rendered inside these rows: the copy
+  icon with its gold hover tint is self-explanatory, and the jitter mechanism
+  dies with the bubble. A real pointer-path trace confirms the pill's geometry
+  never changes.
 - The finished process rows are legible over the artwork again. Measured on the
   live dsh 0.1.7-rc.2 app, the bare process ink (`--vd-ink-meta`, light rose-brown)
   sat on artwork bands as dark as luminance 0.007, so "已协调子智能体" and its
@@ -39,16 +37,20 @@ the rest.
     wash at all; they now carry the turn label's paper wash and radius. The
     label is the disclosure button's last child, so the inline padding shifts no
     sibling, and the row box the host drew stays where it is.
-- The chapter hierarchy inside a turn is readable at a glance. The top-level
-  turn-process row ("用时 …", which may fold many step groups) now sets its
-  label in full ink on opaque warm paper marked by a crimson chapter bar and
-  capped by a solid gold ring, while the fold labels keep the lighter
-  translucent wash. Its fold-state chevron — a 14px 1px-stroke svg in the
-  host's caption grey, previously invisible on the paper pill and never
-  rotated by the host in any state — reads as an ink arrow on a solid gold
-  badge with a heavier stroke, and rotates 180° with the disclosure's own
-  `aria-expanded` / `data-expanded` state. The 14px box is untouched, so
-  nothing around it moves.
+- The chapter hierarchy inside a turn is readable at a glance. The stock host
+  titles the turn-process row ("用时 …", which may fold many step groups) with
+  a full-width separator; the skin keeps that title grammar without the hard
+  line: the label sets in full ink on opaque warm paper marked by a crimson
+  chapter bar and capped by a solid gold ring, and a soft gold rule fades in
+  and out across the column under it (one per turn; the running state keeps
+  its own brighter rule with the sweep riding it). The fold labels keep the
+  lighter translucent wash. The fold-state chevron — a 14px 1px-stroke svg in
+  the host's caption grey, previously invisible on the paper pill — reads as
+  an ink arrow on a solid gold badge; its rotation is the host's own
+  data-open rule, which an earlier `transform: scale(1.12)` on the badge had
+  silently overridden (the arrow stopped turning) — the badge now scales via
+  the individual `scale` property, which composes with the host's transform.
+  The 14px box is untouched, so nothing around it moves.
 - The ladder of gold hairlines under an expanded fold is gone. The old chapter
   rule drew a 1px gold border under every `[data-step-process][data-chat-paging-anchor]`
   row, but every step row carries that anchor — the rows inside an expanded

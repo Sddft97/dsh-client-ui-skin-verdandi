@@ -1414,6 +1414,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] [cla
    row never reads as a floating white bar. Nothing here changes geometry on
    hover, which is what the message actions row must never do. */
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] {
+  position: relative;
   /* Paint only: the host owns this row's box, and the transcript already carries
      enough furniture without a rule under every finished turn. */
   color: var(--vd-ink-meta);
@@ -1430,6 +1431,26 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] {
    finished rows stay plain. */
 body[data-dsh-verdandi] [data-pane='conversation'] [data-verdandi-running] {
   border-bottom: 1px solid color-mix(in srgb, var(--vd-gold) 42%, transparent);
+}
+
+/* The stock host titles this row with a full-width separator; in the skin's
+   language that reads as a soft gold rule fading out at both ends — one per
+   turn, under the chapter pill only (the running state keeps its own brighter
+   rule with the sweep riding it). */
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:not([data-verdandi-running])::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--vd-gold) 42%, transparent) 18% 82%,
+    transparent
+  );
+  pointer-events: none;
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_label'] {
@@ -1474,18 +1495,14 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
   color: var(--vd-ink);
   background: var(--vd-gold);
   border-radius: 999px;
-  transform: scale(1.12);
+  /* scale via the individual property: it composes with the host's own
+     data-open rotation rule on this chevron, which a transform here would
+     override — that override is exactly why the arrow stopped turning. */
+  scale: 1.12;
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] path {
   stroke-width: 1.4px;
-}
-
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] :is(
-    [aria-expanded='true'],
-    [data-expanded='true']
-  ) [class*='_chevron'] {
-  transform: rotate(180deg) scale(1.12);
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover [class*='_chevron'] {
@@ -1621,34 +1638,14 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] button:h
   background: color-mix(in srgb, var(--vd-gold) 24%, transparent);
 }
 
-/* The host's action tooltips (复制 / 分支 …) are flex children of these rows and
-   animate their width open, so the pill grows by ~66px for as long as the
-   pointer rests on the button and snaps back when it leaves — with the row's
-   own `transition: all` that is the "buttons running around" jitter. Lifting
-   the bubble out of the flow keeps the reveal, the animation and the copy
-   behaviour while the row's box stops breathing. These rows are the paint-only
-   family, so the anchor stays inside it and never touches the host's other
-   tooltips. */
+/* The host's copy tooltip (复制) animated its width open inside these rows —
+   the original source of the "buttons running around" jitter — and floating it
+   over the transcript covered live conversation. The copy icon with its gold
+   hover tint is self-explanatory, so the bubble is simply not rendered: the
+   jitter mechanism and the overlay die with it. */
 body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] [class*='_bubble'],
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_actions'] [class*='_bubble'] {
-  position: absolute;
-  /* The host's script leaves page-coordinate inline left/top on this bubble
-     from another positioning mode; they only activate once the bubble is
-     absolute, and resolve against whatever wrapper happens to be positioned,
-     so they are neutralised and the bubble is anchored here instead: centred
-     on the copy button (28px at the row's right edge — a 58px bubble needs
-     15px of overhang), above the row. The z-index lifts it over the message
-     card it overlaps; pointer-events: none keeps it from stealing the hover.
-     The !important pair beats the inline left/top; !important on author
-     declarations outranks inline non-important ones. */
-  left: 50% !important;
-  top: auto !important;
-  right: auto;
-  bottom: calc(100% + 6px);
-  transform: translateX(-50%);
-  z-index: 30;
-  pointer-events: none;
-  white-space: nowrap;
+  display: none;
 }
 
 /* Turn triggers (收到执行请求 / 继续执行目标 / 收到任务消息 / 定时任务) are the host's
