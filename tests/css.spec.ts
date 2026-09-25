@@ -409,8 +409,10 @@ describe('verdandi compatibility guardrails', () => {
     const echoRule = CSS.match(/\[data-pane='conversation'\] \[data-clock='start'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(echoRule).toContain('background: var(--vd-slip)')
     expect(echoRule).toContain('border-radius: 999px')
-    expect(echoRule).not.toMatch(/(margin|padding|width|height|border):/)
-    expect(CSS).not.toMatch(/\[data-clock='start'\]\s*\{[^}]{0,200}?(margin|padding|width|height):/)
+    expect(echoRule).not.toMatch(/(margin|width|height|border):/)
+    expect(echoRule).not.toMatch(/padding-(right|top|bottom):/)
+    expect(echoRule.match(/padding-left:\s*[\d.]+px/g) ?? []).toHaveLength(1)
+    expect(CSS).not.toMatch(/\[data-clock='start'\]\s*\{[^}]{0,200}?(margin|padding-right|padding-top|padding-bottom|width|height):/)
 
     // The trigger row's own hover must not fall back to the host's 7.5% tint:
     // that token replaces the host's opaque card fill, so the row would go

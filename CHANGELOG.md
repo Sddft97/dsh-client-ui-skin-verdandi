@@ -13,6 +13,30 @@ the rest.
 
 ### Fixed
 
+- The chapter title reads as a title, without a separator. The turn-process
+  label ("用时 …") now sets in the brand colour — crimson in light, gold in
+  dark, through the official token — on its opaque warm paper, and the crimson
+  chapter bar widens to 4px; the fold labels stay in meta ink, so the
+  hierarchy is literally "the heading takes the brand colour, the entries do
+  not". The soft fading gold rule under the row is removed: at any opacity it
+  stayed invisible over the light artwork, and an invisible ornament is not a
+  hierarchy.
+- The fold chevron is a paper disc inside a gold ring, and the arrow is
+  ink-dark in both themes. Colouring the arrow per-theme put near-white ink on
+  the gold badge in dark mode (~1.9:1) — the arrow vanished exactly where the
+  user looked for it — and the old hover rule repainted it gold-on-gold. The
+  badge's hover feedback is now the ring brightening from 55% translucent
+  1.5px to full-strength 2px: no colour inversion anywhere, so nothing can
+  blend into anything. Rotation stays with the host's own data-open rule; the
+  badge scales through the individual `scale` property, which composes with
+  it.
+- The clock pill no longer hugs its round edge: a constant, hover-independent
+  `padding-left: 10px` moves the timestamp off the pill's rounded end (the
+  host's own padding is 0). The geometry-guard tests now allow exactly this
+  one constant declaration and keep banning everything else.
+
+### Fixed
+
 - The copy tooltip no longer exists. The host's action tooltip (复制) is a flex
   child of the clock rows whose width animates open, so the pill grew by ~66px
   while the pointer rested on the button and snapped back on leave — with the
