@@ -29,7 +29,7 @@ Verdandi ships in two forms; pick one for your setup. **Do not enable both at th
 
 ### Option 1: skin marketplace (recommended)
 
-For dsh `0.1.7-rc.2+` setups with the skin center installed (it ships with the dsh-web bundle; `1.0.2+` trusts this skin's hooks):
+For dsh `0.1.7-rc.2+` setups with the skin center installed. The skin center is [`@linxin666/dsh-client-ui-skin-center`](https://github.com/zhu1090093659/dsh-skins) (source at [zhu1090093659/dsh-skins](https://github.com/zhu1090093659/dsh-skins), shipped with the dsh-web bundle) — it provides the skin list / try-on / apply as a first-class settings section and is the single loader for all skins:
 
 1. Open “Settings → 皮肤 (Skin)” and find “薇儿丹蒂 · 纯白圣誓 (Verdandi · White Vow)” in the skin list.
 2. Click 试穿 (try on) for an instant, uncommitted preview; click 应用 (apply) to persist — the page refreshes itself.
@@ -39,7 +39,7 @@ The marketplace version (`1.0.x`) is independent of the npm plugin version (`0.1
 
 ### Option 2: standalone plugin
 
-For setups without the skin center, or if you prefer npm versioning and command-line updates.
+For setups without the skin center ([`@linxin666/dsh-client-ui-skin-center`](https://github.com/zhu1090093659/dsh-skins)), or if you prefer npm versioning and command-line updates.
 
 Install from npm:
 
