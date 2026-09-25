@@ -1526,6 +1526,49 @@ body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnStatus']::after
   pointer-events: none;
 }
 
+/* dsh 0.1.7 hosts the live status inside the turn-process ribbon and switches
+   that label's copy with the turn state (running / worked / took / failed), so
+   the copy swap is scoped by the running marker the hooks project rather than by
+   the removed `_turnStatus` class. Finished states keep the host's own wording;
+   the ribbon's surface already carries the contrast, so only the motion and the
+   running copy are added here. */
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_label'] {
+  position: relative;
+  background-image: none;
+  text-shadow: none;
+}
+
+body[data-dsh-verdandi] [data-verdandi-running] [class*='_label'] {
+  font-size: 0;
+}
+
+body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::before {
+  content: '薇儿烧烤中...';
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+html:lang(en) body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::before {
+  content: 'Verdandi is grilling...';
+}
+
+body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: -3px;
+  left: 0;
+  height: 2px;
+  background-color: color-mix(in srgb, var(--vd-gold) 30%, transparent);
+  background-image: linear-gradient(90deg, transparent, var(--vd-gold-light), transparent);
+  background-repeat: no-repeat;
+  background-size: 38% 100%;
+  border-radius: 2px;
+  animation: verdandi-status-sweep 1.9s linear infinite;
+  pointer-events: none;
+}
+
 @keyframes verdandi-status-sweep {
   from {
     background-position: -70% 0;
