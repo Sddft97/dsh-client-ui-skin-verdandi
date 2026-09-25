@@ -1,38 +1,67 @@
 # Release checklist
 
+A version exists only when four things agree: the git tag `vX.Y.Z`, the `version`
+in `package.json`, the newest section of `CHANGELOG.md`, and the tarball on npm.
+Two of them are machine-checked: `.github/workflows/release-guard.yml` fails a tag
+push whose tag does not match `package.json`, whose version has no changelog
+section, or whose committed `lib/` does not match the sources. The rest is this
+checklist.
+
 ## 1. Local verification
 
 ```powershell
 pnpm install --frozen-lockfile
 pnpm build
+git diff --exit-code -- lib
 pnpm test
 pnpm typecheck
 npm pack --dry-run --json
 ```
 
-Confirm that the package contains only `lib/index.js`, `lib/client.js`, the DSH manifests, public documentation, license notices, and the six storefront previews listed in the `files` allowlist. Raw game assets remain in the GitHub source repository for reproducible builds but are not duplicated in the npm tarball, and the per-change-point comparison images under `preview/` stay out of the tarball because they are documentation evidence rather than storefront art. A release tarball of roughly 8 MB is expected: about 3 MB is the inlined skin artwork in `lib/client.js`, and about 4.5 MB is the three full-resolution storefront screenshots.
+Confirm that the package contains only `lib/index.js`, `lib/client.js`, the DSH manifests, public documentation, license notices, the changelog, and the six storefront previews listed in the `files` allowlist. Raw game assets remain in the GitHub source repository for reproducible builds but are not duplicated in the npm tarball, and the per-change-point comparison images under `preview/` stay out of the tarball because they are documentation evidence rather than storefront art. A release tarball of roughly 8 MB is expected: about 3 MB is the inlined skin artwork in `lib/client.js`, and about 4.5 MB is the three full-resolution storefront screenshots.
 
-## 2. GitHub release
+## 2. Version and changelog
+
+1. Bump `version` in `package.json` following SemVer: a patch for fixes that keep
+   the host contract, a minor for new skin behaviour, a major for a change that
+   requires a different host or skin-center generation.
+2. Add the matching `## [X.Y.Z] - YYYY-MM-DD` section to `CHANGELOG.md`, written
+   from the user's side: what changed on screen, which host version it targets,
+   and what the verification was.
+3. Commit both together as `chore: release X.Y.Z` and push `main`. Do not tag yet:
+   the guard runs on the tag, but reviews and CI run on the branch.
+
+## 3. GitHub release
 
 1. Create `Sddft97/dsh-client-ui-skin-verdandi` as a public repository.
 2. Add the GitHub topic `dsh-plugin`.
 3. Enable GitHub Issues so users and rights holders have the contact path documented in the public notices.
 4. Push the full history and confirm that CI passes. Before submitting to the DSH catalog, the public repository must be at least one day old and contain at least ten commits.
-5. Create a tag that matches the `package.json` version exactly (for example `v0.1.1` for `0.1.1`) and a GitHub Release for it.
+5. Create a tag that matches the `package.json` version exactly (for example `v0.1.3` for `0.1.3`) and a GitHub Release for it, with the body taken from the
+   changelog section. Backfill a tag and a Release for every version that reached
+   npm, so the history never shows an npm artifact without a matching release; a
+   version that was tagged but superseded before publishing is documented in the
+   changelog instead of released.
 6. Check both README languages, screenshots, and installation commands from a logged-out browser.
 
-## 3. npm release
+## 4. npm release
 
 The scoped package must be published with public access. `publishConfig.access` already enforces this setting, but the explicit flag below makes the release intent auditable. Direct publishing requires npm 2FA or a suitable granular access token.
 
 ```powershell
 npm login
 npm publish --access public
+npm view @hjbztlbr/dsh-client-ui-skin-verdandi dist-tags
 ```
+
+`prepublishOnly` rebuilds, retests, and typechecks before the tarball is created,
+so a release cannot ship a stale `lib/`. The `dist-tags` output must show the new
+version as `latest`; if the publish reported an error, treat the release as
+unfinished and re-check before announcing it.
 
 After publishing, verify that the package page is public and that its `repository` field resolves to the GitHub repository. Test installation in a disposable DSH Web profile before announcing the release.
 
-## 4. DSH plugin market
+## 5. DSH plugin market
 
 Submit one YAML entry at `data/plugins/Sddft97__dsh-client-ui-skin-verdandi.yml` in `awesome-dsh-plugin`:
 
