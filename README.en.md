@@ -57,7 +57,7 @@ dsh plugin --profile web remove @hjbztlbr/dsh-client-ui-skin-verdandi
 
 ## Compatibility
 
-- Tested with the DeepSeek Harness `0.1.5-rc.1` and `0.1.7-rc.2` Web profiles: 0.1.7 wraps the sidebar "new session" label in `newSessionLabel`/`newSessionContent` and appends a shortcut hint, and moves the running status from the `_turnStatus` line into the turn-process ribbon. Both are handled, and the older shell renders unchanged.
+- Tested with the DeepSeek Harness `0.1.5-rc.1` and `0.1.7-rc.2` Web profiles; on 0.1.7 both the skin-center `1.0.2` asset form (hooks trusted) and the plugin form were verified: 0.1.7 rebuilt the session header (`conversation.header`), the trigger rows, the user-echo clock row, the context notice rows, the work-steps fold and the turn-process ribbon. All are handled, and the older shell renders unchanged.
 - Uses scoped compatibility styles for better-sidebar, AionUI, SSH, Cordis, `.xterm`, and settings portals without replacing terminal ANSI colors or broad system tokens.
 - Decorative avatars and character artwork are hidden at smaller viewport sizes so controls and text remain usable.
 

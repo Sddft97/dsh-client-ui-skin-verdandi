@@ -9,7 +9,7 @@ A version exists only when all four agree: the git tag `vX.Y.Z`, the `version` i
 enforces the first two on every tag push; the checklist in `RELEASING.md` covers
 the rest.
 
-## [Unreleased]
+## [0.1.5] - 2026-09-26
 
 ### Fixed
 
