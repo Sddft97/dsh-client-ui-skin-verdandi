@@ -1435,7 +1435,11 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-verdandi-running] {
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_label'] {
   position: relative;
   padding: 1px 18px 1px 10px;
-  color: var(--vd-ink-meta);
+  /* The turn-process row is the chapter that may fold many step groups inside
+     it, so it reads one step above the fold labels: full ink instead of meta,
+     and the wash capped by a gold hairline ring so the two levels never look
+     like the same control. */
+  color: var(--vd-ink);
   font-weight: 600;
   letter-spacing: 0.015em;
   /* The artwork behind a transcript row can be near-black — measured at 1.37:1
@@ -1448,13 +1452,32 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
   background-image: linear-gradient(
     90deg,
     var(--vd-slip) 0%,
-    color-mix(in srgb, var(--vd-slip) 84%, transparent) 58%,
-    color-mix(in srgb, var(--vd-slip) 72%, transparent) 100%
+    color-mix(in srgb, var(--vd-slip) 88%, transparent) 58%,
+    color-mix(in srgb, var(--vd-slip) 76%, transparent) 100%
   );
   border-radius: 6px;
+  box-shadow:
+    var(--vd-slip-shadow),
+    0 0 0 1px var(--vd-slip-line);
 }
 
+/* The fold indicator sits at the chapter pill's tail. The host draws it as a
+   14px 1px-stroke svg in caption grey — invisible on the paper pill, the user
+   could not tell folded from expanded. The arrow reads in full ink on a soft
+   gold badge with a slightly heavier stroke and a paint-level scale; the box
+   stays 14px, so nothing around it moves. */
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] {
+  color: var(--vd-ink);
+  background: color-mix(in srgb, var(--vd-gold) 26%, transparent);
+  border-radius: 999px;
+  transform: scale(1.12);
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] path {
+  stroke-width: 1.4px;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover [class*='_chevron'] {
   color: color-mix(in srgb, var(--vd-gold) 72%, var(--vd-ink-meta));
 }
 
@@ -1517,6 +1540,19 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] :is(
   color: color-mix(in srgb, var(--vd-gold) 72%, var(--vd-ink-meta));
 }
 
+/* Expanded work-step body: the host stacks the call rows directly under the
+   disclosure and against the next fold, so the crimson command rows read as
+   glued to the title above and the sibling fold below. The rows inside are
+   static content the user explicitly opened — not hover-revealed chrome — so a
+   vertical rhythm here is safe and wanted. */
+body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process-body]:not(:empty) {
+  margin-top: 4px;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process-body] > [class*='_content'] > * + * {
+  margin-top: 7px;
+}
+
 /* Turn tail: the clock and the copy/branch icons are the last bare chrome on the
    stage, so the row keeps the slip pill — painted, never resized. The host fades
    this row in with `[data-actions-reveal=hover]:hover .xzv4MW_actions`, so any
@@ -1527,6 +1563,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] :is(
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_actions']:has(
   [class*='_time']
 ) {
+  position: relative;
   color: var(--vd-ink-meta);
   background: var(--vd-slip);
   border-radius: 999px;
@@ -1556,6 +1593,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_ac
    the tail above: this row is revealed on hover too, so the skin paints it only
    and never touches its width, margin, padding or border. */
 body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] {
+  position: relative;
   color: var(--vd-ink-meta);
   background: var(--vd-slip);
   border-radius: 999px;
@@ -1574,6 +1612,23 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] button {
 body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] button:hover {
   color: var(--vd-ink);
   background: color-mix(in srgb, var(--vd-gold) 24%, transparent);
+}
+
+/* The host's action tooltips (复制 / 分支 …) are flex children of these rows and
+   animate their width open, so the pill grows by ~66px for as long as the
+   pointer rests on the button and snaps back when it leaves — with the row's
+   own `transition: all` that is the "buttons running around" jitter. Lifting
+   the bubble out of the flow keeps the reveal, the animation and the copy
+   behaviour while the row's box stops breathing. These rows are the paint-only
+   family, so the anchor stays inside it and never touches the host's other
+   tooltips. */
+body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] [class*='_bubble'],
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_actions'] [class*='_bubble'] {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 /* Turn triggers (收到执行请求 / 继续执行目标 / 收到任务消息 / 定时任务) are the host's
@@ -1596,6 +1651,35 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-trigger] {
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-trigger]:hover {
   background: var(--vd-slip-solid);
+}
+
+/* Session navigation rail: the host's turn mini-map at the pane's right edge
+   draws every turn as a 20×2 tick in `--dsw-alias-border-l4`, which dissolves
+   over the artwork — the user could not find it at all. The rail gets a paper
+   seat fading in from the pane edge, the loaded turns read in the skin's ink,
+   the unloaded ones stay fainter, and the current turn takes the brand colour
+   (crimson in light, gold in dark). Paint only: the marks keep the host's 10px
+   hit boxes and the scroller's behaviour. */
+body[data-dsh-verdandi] [data-slot='conversation.view'] nav:has([class*='_marks']) {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--vd-slip) 62%, transparent) 42%
+  );
+  border-radius: 10px 0 0 10px;
+}
+
+body[data-dsh-verdandi] [data-slot='conversation.view'] nav [class*='_mark']::before {
+  background: color-mix(in srgb, var(--vd-ink) 58%, transparent);
+}
+
+body[data-dsh-verdandi] [data-slot='conversation.view'] nav [class*='_markUnloaded']::before {
+  background: color-mix(in srgb, var(--vd-ink) 26%, transparent);
+}
+
+body[data-dsh-verdandi] [data-slot='conversation.view'] nav [class*='_markActive']::before,
+body[data-dsh-verdandi] [data-slot='conversation.view'] nav [class*='_markPreview']::before {
+  background: var(--dsw-alias-brand-primary);
 }
 
 /* --- Hero and composer chrome chips. -------------------------------------- */

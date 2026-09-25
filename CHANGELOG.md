@@ -13,6 +13,16 @@ the rest.
 
 ### Fixed
 
+- The copy/branch action row no longer "runs around" under the pointer. The
+  host's action tooltips (复制 / 分支 …) are flex children of the clock rows and
+  animate their width open, so the pill grew by ~66px while the pointer rested
+  on the button and snapped back on leave — with the row's own
+  `transition: all` that animated the buttons under the pointer. The tooltip
+  now floats (absolute, right-anchored above the row, `pointer-events: none`),
+  so the reveal, its animation and the copy behaviour survive while the row's
+  box stops breathing. Reproduced with a real pointer-path trace: the row's
+  geometry went from three distinct states (rest / hover / +66px tooltip) to
+  two (rest / hover, byte-identical boxes).
 - The finished process rows are legible over the artwork again. Measured on the
   live dsh 0.1.7-rc.2 app, the bare process ink (`--vd-ink-meta`, light rose-brown)
   sat on artwork bands as dark as luminance 0.007, so "已协调子智能体" and its
@@ -27,6 +37,27 @@ the rest.
     wash at all; they now carry the turn label's paper wash and radius. The
     label is the disclosure button's last child, so the inline padding shifts no
     sibling, and the row box the host drew stays where it is.
+- The session navigation rail (the host's turn mini-map at the pane's right
+  edge) is findable again. It drew every turn as a 20×2 tick in
+  `--dsw-alias-border-l4`, which dissolved over the artwork; the rail now gets
+  a paper seat fading in from the pane edge, loaded turns read in the skin's
+  ink, unloaded ones stay fainter, and the current turn takes the brand colour
+  (crimson in light, gold in dark). Anchored through
+  `[data-slot='conversation.view'] nav:has([class*='_marks'])`, so no CSS-module
+  hash is load-bearing.
+- The chapter hierarchy inside a turn is readable at a glance: the top-level
+  turn-process row ("用时 …", which may fold many step groups) now sets its
+  label in full ink capped by a gold hairline ring, while the fold labels keep
+  the lighter meta treatment; and its fold-state chevron — a 14px 1px-stroke
+  svg in the host's caption grey, previously invisible on the paper pill —
+  reads as an ink arrow on a soft gold badge with a slightly heavier stroke and
+  a paint-level scale. The 14px box is untouched, so nothing around it moves.
+- The expanded work-step body no longer glues its rows together: the host
+  stacked the call rows directly under the disclosure and against the next
+  fold, so the crimson command rows read as attached to the title. The body
+  gets a 4px top margin and a 7px rhythm between its rows — they are static
+  content the user explicitly opened, not hover-revealed chrome, so the
+  geometry is safe to set.
 - The asset form (dsh-skins `skins/verdandi`) re-declared the old fading
   gradient in its later status-swap rule, which would have silently overridden
   the chapter rule; the duplicate declaration is removed so both forms resolve
