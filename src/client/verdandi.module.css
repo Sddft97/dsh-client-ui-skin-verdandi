@@ -1436,12 +1436,13 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
   position: relative;
   padding: 1px 18px 1px 10px;
   /* The turn-process row is the chapter that may fold many step groups inside
-     it, so it reads one step above the fold labels: full ink instead of meta,
-     and the wash capped by a gold hairline ring so the two levels never look
-     like the same control. */
+     it, so it reads one step above the fold labels: full ink on opaque warm
+     paper capped by a solid gold ring — the translucent wash the fold labels
+     use read as "the same control" once both existed. */
   color: var(--vd-ink);
   font-weight: 600;
   letter-spacing: 0.015em;
+  background-color: color-mix(in srgb, var(--vd-slip-solid) 94%, var(--vd-gold));
   /* The artwork behind a transcript row can be near-black — measured at 1.37:1
      for bare ink over the darkest band — so the copy keeps a paper wash that
      follows it. The wash eases towards the row's end but never reaches
@@ -1458,23 +1459,33 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
   border-radius: 6px;
   box-shadow:
     var(--vd-slip-shadow),
-    0 0 0 1px var(--vd-slip-line);
+    0 0 0 1px var(--vd-gold);
 }
 
 /* The fold indicator sits at the chapter pill's tail. The host draws it as a
    14px 1px-stroke svg in caption grey — invisible on the paper pill, the user
    could not tell folded from expanded. The arrow reads in full ink on a soft
    gold badge with a slightly heavier stroke and a paint-level scale; the box
-   stays 14px, so nothing around it moves. */
+   stays 14px, so nothing around it moves. The host ships no rotation rule for
+   this chevron at all, so the expanded state is articulated here off the
+   disclosure's own aria-expanded. */
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] {
   color: var(--vd-ink);
   background: color-mix(in srgb, var(--vd-gold) 26%, transparent);
   border-radius: 999px;
   transform: scale(1.12);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--vd-gold) 55%, transparent);
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] path {
   stroke-width: 1.4px;
+}
+
+body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] :is(
+    [aria-expanded='true'],
+    [data-expanded='true']
+  ) [class*='_chevron'] {
+  transform: rotate(180deg) scale(1.12);
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover [class*='_chevron'] {
@@ -1492,18 +1503,14 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover [cl
 
 /* Work steps fold (dsh 0.1.7): consecutive steps collapse behind a range-level
    group row — `div[data-step-process]` with a transparent 14px title and an
-   icon/chevron cross-fade — which the skin had no rule for at all, so the folded
-   title read as raw host chrome. It gets the same chapter language as the turn
-   row above: the group's own gold hairline, the label as ink, the leading mark in
-   gold. Only paint is touched, and the label is addressed through the host's own
-   `[data-process-activity]` anchor, so tool titles inside the expanded body are
-   never caught by it. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process][data-chat-paging-anchor] {
-  /* Only the folded group is a chapter boundary; the expanded group is just a
-     container and must not draw a second rule inside the transcript. */
-  padding-bottom: 6px;
-  border-bottom: 1px solid color-mix(in srgb, var(--vd-gold) 30%, transparent);
-}
+   icon/chevron cross-fade — which the skin had no rule for at all. Only the
+   labels carry the chapter language now (the wash pills above): the gold
+   hairline this rule used to draw under `[data-step-process][data-chat-paging-anchor]`
+   was removed on purpose. Every step row carries that anchor — the rows inside
+   an expanded body and the virtualizer's compressed stubs included — so the
+   rule produced a ladder of gold lines under the fold (loudest in dark mode),
+   and a hairline that cannot tell a chapter boundary from any other row is not
+   worth its cost. */
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] [data-process-activity] {
   position: relative;
@@ -1625,8 +1632,21 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] button:h
 body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] [class*='_bubble'],
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_actions'] [class*='_bubble'] {
   position: absolute;
-  right: 0;
+  /* The host's script leaves page-coordinate inline left/top on this bubble
+     from another positioning mode; they only activate once the bubble is
+     absolute, and resolve against whatever wrapper happens to be positioned,
+     so they are neutralised and the bubble is anchored here instead: centred
+     on the copy button (28px at the row's right edge — a 58px bubble needs
+     15px of overhang), above the row. The z-index lifts it over the message
+     card it overlaps; pointer-events: none keeps it from stealing the hover.
+     The !important pair beats the inline left/top; !important on author
+     declarations outranks inline non-important ones. */
+  left: auto !important;
+  top: auto !important;
+  transform: none;
+  right: -15px;
   bottom: calc(100% + 6px);
+  z-index: 30;
   pointer-events: none;
   white-space: nowrap;
 }
