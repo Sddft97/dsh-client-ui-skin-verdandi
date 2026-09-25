@@ -1438,16 +1438,18 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
   color: var(--vd-ink-meta);
   font-weight: 600;
   letter-spacing: 0.015em;
-  /* The artwork behind a transcript row can be near-black — measured at 1.14:1
+  /* The artwork behind a transcript row can be near-black — measured at 1.37:1
      for bare ink over the darkest band — so the copy keeps a paper wash that
-     follows it and fades out before the row ends. It reads as a line of ink on a
-     soft ground rather than as a filled bar, which is what the ribbon shape was
-     rejected for. */
+     follows it. The wash eases towards the row's end but never reaches
+     transparent: with the old full fade the tail characters of "用时 21分28秒"
+     landed on bare artwork and the line dissolved there. It still reads as a
+     line of ink on a soft ground rather than as a filled bar, which is what the
+     ribbon shape was rejected for. */
   background-image: linear-gradient(
     90deg,
     var(--vd-slip) 0%,
-    color-mix(in srgb, var(--vd-slip) 76%, transparent) 58%,
-    transparent 100%
+    color-mix(in srgb, var(--vd-slip) 84%, transparent) 58%,
+    color-mix(in srgb, var(--vd-slip) 72%, transparent) 100%
   );
   border-radius: 6px;
 }
@@ -1481,9 +1483,24 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process][data-chat
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] [data-process-activity] {
+  position: relative;
+  padding: 1px 12px 1px 10px;
   color: var(--vd-ink-meta);
   font-weight: 600;
   letter-spacing: 0.015em;
+  /* The expanded steps are the same bare ink over the same artwork as the turn
+     row — 1.37:1 over the darkest band in light mode — but they had no wash at
+     all, so "已协调子智能体" dissolved wherever the shelf behind it turned
+     dark. The label carries the turn label's paper wash (tail held at 72%), and
+     the label is the button's last child, so the extra inline padding never
+     moves a sibling; the box the host drew stays where it is. */
+  background-image: linear-gradient(
+    90deg,
+    var(--vd-slip) 0%,
+    color-mix(in srgb, var(--vd-slip) 84%, transparent) 58%,
+    color-mix(in srgb, var(--vd-slip) 72%, transparent) 100%
+  );
+  border-radius: 6px;
 }
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] [data-process-activity]:is(

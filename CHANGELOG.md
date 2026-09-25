@@ -11,6 +11,37 @@ the rest.
 
 ## [Unreleased]
 
+### Fixed
+
+- The finished process rows are legible over the artwork again. Measured on the
+  live dsh 0.1.7-rc.2 app, the bare process ink (`--vd-ink-meta`, light rose-brown)
+  sat on artwork bands as dark as luminance 0.007, so "已协调子智能体" and its
+  siblings rendered at 1.37:1–2.4:1 in light mode — below every threshold the
+  skin's own readability guard promises. Two paint-only corrections:
+  - The turn-process label's paper wash no longer fades to transparent at its
+    tail — the last characters of "用时 21分28秒" were landing on bare artwork.
+    The gradient now holds 72% of the slip at 100% (worst case ≈5.5:1 under the
+    glyphs, ≈7:1 where the wash is full), while still easing towards the row's
+    end so it reads as a soft ground rather than a filled bar.
+  - The work-steps fold labels (`[data-process-activity]`, dsh 0.1.7) had no
+    wash at all; they now carry the turn label's paper wash and radius. The
+    label is the disclosure button's last child, so the inline padding shifts no
+    sibling, and the row box the host drew stays where it is.
+- The asset form (dsh-skins `skins/verdandi`) re-declared the old fading
+  gradient in its later status-swap rule, which would have silently overridden
+  the chapter rule; the duplicate declaration is removed so both forms resolve
+  through the same single rule.
+
+### Verified
+
+- Live, on the running app with the asset form served from the skin center:
+  computed styles carry the new wash (tail alpha 0.649), and screenshots in both
+  themes show the finished process rows on their paper pills. Dark mode was
+  already healthy (12.3:1 bare, 15.5:1 triggers, 10.5:1 clock pill) and is
+  unchanged apart from sharing the same wash tokens. Gates: 43/43 tests,
+  `tsc --noEmit` clean, anchor parity holds, skin-center catalog PASS, live
+  fingerprint PASS.
+
 ## [0.1.4] - 2026-09-25
 
 ### Fixed
