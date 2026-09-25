@@ -18,7 +18,7 @@ pnpm typecheck
 npm pack --dry-run --json
 ```
 
-Confirm that the package contains only `lib/index.js`, `lib/client.js`, the DSH manifests, public documentation, license notices, the changelog, and the six storefront previews listed in the `files` allowlist. Raw game assets remain in the GitHub source repository for reproducible builds but are not duplicated in the npm tarball, and the per-change-point comparison images under `preview/` stay out of the tarball because they are documentation evidence rather than storefront art. A release tarball of roughly 8 MB is expected: about 3 MB is the inlined skin artwork in `lib/client.js`, and about 4.5 MB is the three full-resolution storefront screenshots.
+Confirm that the package contains only `lib/index.js`, `lib/client.js`, the DSH manifests, public documentation, license notices, the changelog, and the five storefront previews listed in the `files` allowlist (`light`, `hero-light`, `dark`, `hero-dark`, `settings`). Raw game assets remain in the GitHub source repository for reproducible builds but are not duplicated in the npm tarball, and per-change-point comparison images stay out of both the tarball and `preview/`: the storefront shows the skin as users will see it, not documentation evidence. A release tarball of roughly 8 MB is expected: about 3 MB is the inlined skin artwork in `lib/client.js`, and the rest is the five full-resolution storefront screenshots.
 
 Also check the compatibility line in both READMEs names the host versions this release was actually verified against: it is the first thing a user reads when a new DSH build changes the shell, and it drifts silently otherwise.
 

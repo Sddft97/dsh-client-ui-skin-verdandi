@@ -8,6 +8,8 @@
 
 ![Light mode preview](preview/light.png)
 
+![New-session page (light)](preview/hero-light.png)
+
 ## Features
 
 - Deep crimson `#8E2438` identifies navigation, identity, and selected conversations; bridal white keeps reading and editing areas clean; soft gold is reserved for knight crests and interaction details.
@@ -17,11 +19,7 @@
 - Keeps the scenic stage while a legibility guard protects text contrast: a bridal veil that only drops when a transcript is present, plus a paper slip behind every process-metadata row and every new-session workspace chip (system prompt, turn failure, process control, turn-tail clock and actions, workspace / preset / branch chips). Worst-case ink ratios are ≥5.3:1 in both palettes.
 - Presentation only: the plugin registers no service, does not read or modify model requests, and uploads no data.
 
-![Light legibility comparison](preview/legibility-light.webp)
-
-![Dark legibility comparison](preview/legibility-dark.webp)
-
-![New-session workspace chips](preview/legibility-hero-light.webp)
+![New-session page (dark)](preview/hero-dark.png)
 
 ![Dark mode preview](preview/dark.png)
 

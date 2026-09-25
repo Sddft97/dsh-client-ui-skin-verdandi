@@ -8,6 +8,8 @@
 
 ![亮色模式预览](preview/light.png)
 
+![新会话页面（亮色）](preview/hero-light.png)
+
 ## 主题特色
 
 - 深红 `#8E2438` 承担导航、身份与会话选中态，婚纱白承担阅读和编辑区域，柔金用于骑士纹章与交互刻线。
@@ -17,11 +19,7 @@
 - 工作区保留完整插画舞台，同时用「可读性护栏」守住文字对比：一层只在有正文时落下的头纱纱幕，加上每条过程元数据行与新会话工作区 chip 自己的纸面承托（系统提示词、运行失败、过程控件、轮尾时间与操作、工作目录／预设／分支 chip）。两种主题下新墨色最坏情况均 ≥5.3:1。
 - 纯呈现层：不注册服务，不读取或修改模型请求，不上传数据。
 
-![亮色可读性对照](preview/legibility-light.webp)
-
-![暗色可读性对照](preview/legibility-dark.webp)
-
-![新会话工作区 chip 对照](preview/legibility-hero-light.webp)
+![新会话页面（暗色）](preview/hero-dark.png)
 
 ![暗色模式预览](preview/dark.png)
 

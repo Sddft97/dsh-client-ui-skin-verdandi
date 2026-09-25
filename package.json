@@ -34,11 +34,10 @@
     "RELEASING.md",
     "CHANGELOG.md",
     "preview/light.png",
+    "preview/hero-light.png",
     "preview/dark.png",
-    "preview/settings.png",
-    "preview/legibility-light.webp",
-    "preview/legibility-dark.webp",
-    "preview/legibility-hero-light.webp"
+    "preview/hero-dark.png",
+    "preview/settings.png"
   ],
   "publishConfig": {
     "access": "public"

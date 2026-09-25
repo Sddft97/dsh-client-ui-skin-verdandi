@@ -1,8 +1,7 @@
 [
+  "preview/hero-light.png",
+  "preview/hero-dark.png",
   "preview/light.png",
   "preview/dark.png",
-  "preview/settings.png",
-  "preview/legibility-light.webp",
-  "preview/legibility-dark.webp",
-  "preview/legibility-hero-light.webp"
+  "preview/settings.png"
 ]
