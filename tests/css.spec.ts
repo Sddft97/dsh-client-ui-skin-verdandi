@@ -87,9 +87,12 @@ describe('verdandi compatibility guardrails', () => {
     expect(conversationRule).toContain('--vd-art-workspace-light')
     expect(conversationRule).toMatch(/var\(--vd-stage-veil-edge\) 0%/)
     expect(conversationRule).toMatch(/var\(--vd-stage-veil\) 9%/)
-    // Both palettes carry the veil as a token, not as a hard-coded wash.
-    expect(CSS).toMatch(/--vd-stage-veil: rgba\(255, 253, 251, 0\.3\)/)
+    // Both palettes carry the veil as a token, not as a hard-coded wash. The
+    // light veil is a warm neutral rather than white: a white wash pushed the
+    // column towards paper white and read as an overlay over the artwork.
+    expect(CSS).toMatch(/--vd-stage-veil: rgba\(93, 64, 72, 0\.18\)/)
     expect(CSS).toMatch(/--vd-stage-veil: rgba\(18, 11, 15, 0\.24\)/)
+    expect(CSS).not.toMatch(/--vd-stage-veil: rgba\(255, 253, 251/)
     // The empty-session composition is not veiled; there is no text to carry.
     const heroRule = CSS.match(/\[data-verdandi-phase='hero'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(heroRule).toContain('--vd-stage-veil-hero')
@@ -349,14 +352,25 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/\[class\*='_turnErrorTitle'\]\s*\{\s*color: var\(--vd-danger\) !important/)
     expect(CSS).toMatch(/\[class\*='_maxTokensTitle'\]\s*\{\s*color: var\(--vd-warn\) !important/)
     expect(CSS).toMatch(/\[class\*='_turnErrorCode'\]\s*\{[\s\S]*?background: color-mix/)
-    expect(CSS).toMatch(/\[data-turn-process\]\s*\{[\s\S]*?border-radius: 999px/)
-    expect(CSS).toMatch(/\[data-turn-tail\] > \[class\*='_actions'\]\s*\{[\s\S]*?background: var\(--vd-slip\)/)
+    // The running status is a chapter rule, not a pill: no fill of its own, a gold
+    // hairline under it, and the copy keeps a fading wash because bare ink over the
+    // artwork's darkest band measures 1.14:1.
+    expect(CSS).toMatch(/\[data-turn-process\]\s*\{[\s\S]*?border-radius: 0/)
+    expect(CSS).toMatch(/\[data-turn-process\]\s*\{[\s\S]*?border-bottom: 1px solid color-mix/)
+    expect(CSS).toMatch(/\[data-turn-process\] \[class\*='_label'\]\s*\{[\s\S]*?background-image: linear-gradient/)
+    // The tail row is painted, never resized: the host fades it in on hover, so a
+    // changed box moves the buttons under the pointer and the two states fight.
+    expect(CSS).toMatch(
+      /\[data-turn-tail\] \[class\*='_actions'\]:has\(\s*\[class\*='_time'\]\s*\)\s*\{[\s\S]*?background: var\(--vd-slip\)/,
+    )
+    expect(CSS).not.toMatch(/\[data-turn-tail\] \[class\*='_actions'\]\s*\{[\s\S]{0,200}?padding:/)
+    expect(CSS).not.toMatch(/\[data-turn-tail\] \[class\*='_actions'\]\s*\{[\s\S]{0,200}?width:/)
 
     // And the ratio has to survive without compositing help.
     expect(CSS).toMatch(
       /@supports not \(\(backdrop-filter: blur\(4px\)\) or \(-webkit-backdrop-filter: blur\(4px\)\)\)[\s\S]*?background: var\(--vd-slip-solid\)/,
     )
-    expect(CSS).toMatch(/@media \(prefers-contrast: more\)[\s\S]*?--vd-stage-veil: rgba\(255, 253, 251, 0\.44\)/)
+    expect(CSS).toMatch(/@media \(prefers-contrast: more\)[\s\S]*?--vd-stage-veil: rgba\(93, 64, 72, 0\.28\)/)
     expect(CSS).toMatch(/@media \(forced-colors: active\)[\s\S]*?background: Canvas/)
   })
 })

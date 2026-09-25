@@ -11,6 +11,46 @@ the rest.
 
 ## [Unreleased]
 
+## [0.1.4] - 2026-09-25
+
+### Fixed
+
+- One avatar per assistant node. dsh 0.1.7 renders the reasoning block and the
+  folded work-steps body inside the transcript, and both contain markdown of their
+  own, so the avatar decoration was attached to those too and expanding either
+  block grew a second and third avatar.
+- The tail clock and copy/branch row no longer jitter on hover. The host fades that
+  row in through `[data-actions-reveal=hover]:hover`, and the skin had been
+  resizing it (width, height, margin, padding, border), so the buttons slid under
+  the pointer while the fade ran and the two hover states fought each other. The
+  row is now painted and never resized; the harness proves the geometry is
+  identical before and after a forced hover.
+
+### Changed
+
+- Light mode no longer washes the conversation. The stage veil was white at 30%,
+  which pushed the whole column towards paper white and read as an overlay over the
+  artwork; it is now a warm neutral at 18% that darkens instead of washing. The
+  caption seat also joins the ink family, so the clock, the copy icons and the tool
+  captions stop resolving to a cool grey over this skin's ivory surfaces.
+- The running status is an in-flow status line instead of a floating white bar: no
+  fill, no radius, the label as the chapter's own caption, and the gold hairline
+  under the row carrying the sweep. The copy keeps a paper wash that fades out,
+  because bare ink over the artwork's darkest band measures 1.14:1.
+- The folded work-steps group (dsh 0.1.7 `[data-step-process]`, which the skin had
+  no rule for at all) now carries the same chapter language as the turn row, with
+  its label addressed through the host's own `[data-process-activity]` anchor.
+
+### Notes
+
+- The two forms are back in anchor parity. The asset port had anchored the turn
+  tail on `data-dsh-part="turn-tail"`, an attribute the shell never emits, so its
+  tail rules were dead in the real app while the plugin form worked. It now uses
+  `data-turn-tail`, and `tests/anchor-parity.spec.ts` fails when the forms drift
+  apart again, including on a fresh checkout where the port is not present.
+- Backward compatible with the pre-0.1.7 shell: the new rules are inert there, and
+  the 0.1.5 mirror renders 0 differing pixels against 0.1.3 in both forms.
+
 ## [0.1.3] - 2026-09-25
 
 ### Fixed

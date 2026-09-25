@@ -175,9 +175,15 @@ function ensureWeddingDecorations(
   ensureDecoration(composer, 'hero-chibi-right')
   ensureDecoration(details, 'details-record')
 
+  // One avatar per assistant node, on the node's own body only. dsh 0.1.7 renders
+  // the reasoning block (`[class*='thinkBody']`) and the folded work-steps group
+  // (`[data-step-process-body]`) inside the transcript as well, and both contain
+  // markdown of their own; decorating those puts a second and third avatar inside
+  // the expanded blocks, where the skin never meant to draw one.
   for (const markdown of conversation?.querySelectorAll<HTMLElement>(
     "[data-chat-flow-kind='assistant-step'] [data-slot='conversation.chat.node'] [class*='_markdown_']",
   ) ?? []) {
+    if (markdown.closest("[class*='thinkBody'], [data-step-process-body]")) continue
     ensureDecoration(markdown, 'assistant-avatar')
   }
 }
