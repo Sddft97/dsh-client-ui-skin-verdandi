@@ -50,10 +50,15 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: The committed build must match the sources
+      - name: The committed bundle must match the sources
+        # Only the two shipped bundles are compared: lib/index.js and
+        # lib/client.js are what the `files` allowlist publishes, while
+        # lib/client.js.map embeds sourcesContent whose line endings follow the
+        # platform that ran the build, so it cannot be compared across operating
+        # systems and is not part of the package.
         run: |
           pnpm build
-          if ! git diff --exit-code -- lib; then
-            echo "::error::lib/ is stale: rebuild and commit it before tagging"
+          if ! git diff --exit-code -- lib/index.js lib/client.js; then
+            echo "::error::the committed bundle is stale: rebuild and commit lib/index.js and lib/client.js before tagging"
             exit 1
           fi
