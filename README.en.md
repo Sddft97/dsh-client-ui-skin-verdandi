@@ -25,25 +25,50 @@
 
 ## Installation
 
-### Install from npm
+Verdandi ships in two forms; pick one for your setup. **Do not enable both at the same time** — they load the same visuals through different mechanisms, and enabling both stacks their rendering.
+
+### Option 1: skin marketplace (recommended)
+
+For dsh `0.1.7-rc.2+` setups with the skin center installed (it ships with the dsh-web bundle; `1.0.2+` trusts this skin's hooks):
+
+1. Open “Settings → 皮肤 (Skin)” and find “薇儿丹蒂 · 纯白圣誓 (Verdandi · White Vow)” in the skin list.
+2. Click 试穿 (try on) for an instant, uncommitted preview; click 应用 (apply) to persist — the page refreshes itself.
+3. The skin installs as a pure asset directory into the DSH home. **No install command, no restart** — reopening the skin card or refreshing the page picks it up.
+
+The marketplace version (`1.0.x`) is independent of the npm plugin version (`0.1.x`); marketplace updates are also done by re-downloading there.
+
+### Option 2: standalone plugin
+
+For setups without the skin center, or if you prefer npm versioning and command-line updates.
+
+Install from npm:
 
 ```powershell
 dsh plugin --profile web add @hjbztlbr/dsh-client-ui-skin-verdandi
 ```
 
-### Install from GitHub
+Or from GitHub:
 
 ```powershell
 dsh plugin --profile web add github:Sddft97/dsh-client-ui-skin-verdandi
 ```
 
-After installation, enable “Verdandi · White Vow” in the DSH skin manager and press `Ctrl+F5` to force-refresh the page. Full skins modify many of the same host surfaces, so keep only one enabled at a time.
+After installation, enable “Verdandi · White Vow” in the plugin/skin manager and press `Ctrl+F5` to force-refresh the page.
+
+### Notes
+
+- When one form is enabled, make sure the other stays disabled.
+- Full skins modify many of the same host surfaces, so keep only one enabled at a time.
 
 ## Appearance modes
 
 Choose Light, Dark, or Follow System under “Settings → General → Appearance” in DSH. If DSH is set to a fixed appearance, changing only the browser or operating-system theme will not override it.
 
 ## Update and uninstall
+
+**Skin marketplace install**: update by re-downloading in the skin marketplace; uninstall from the skin list, or delete `skins/verdandi/` under the DSH home and refresh the page.
+
+**Plugin install**:
 
 ```powershell
 # Update
