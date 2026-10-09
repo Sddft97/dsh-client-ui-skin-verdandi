@@ -21,9 +21,12 @@ the rest.
   started a window drag instead of reaching the button. Only the desktop app was
   affected, and nothing in-page can see it: `elementFromPoint` skips
   `pointer-events: none` layers, and injected clicks never enter the native drag path.
-  The skin's own layers opt out now, the shell's drag rects are left untouched, and a
-  test pins the invariant that no skin declaration ever says
-  `-webkit-app-region: drag`.
+  The skin's own layers opt out now. Because the shell computes a region as "each drag
+  element's rect minus its own no-drag descendants", four full-band opt-outs also carved
+  the window drag out of the top bar, so the skin hands one handle back: a single
+  `header-drag-strip` decoration that is `drag` again and covers only the empty middle
+  of the bar (left 40%, width 20%), measured to overlap zero controls. Tests pin the
+  invariant that this is the sheet's only `-webkit-app-region: drag` declaration.
 - A split header control is one pill again. The shell's "open with <app>" control is
   two buttons in one box (`div > button + button`); the blanket rule that gives every
   header button a capsule gave each half its own, so the seam showed a notch and two

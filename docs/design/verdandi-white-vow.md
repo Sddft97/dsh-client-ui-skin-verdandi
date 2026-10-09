@@ -607,3 +607,15 @@ body[data-dsh-verdandi] [data-verdandi-header]::after { -webkit-app-region: no-d
 实测方式（**遍历全部元素**读计算值，而不是命中测试）：覆盖顶栏的 `drag` 层由 12 降到 7，剩下的全是宿主自己的；皮肤各层计算值变为 `no-drag`。测试里加了一条不变式：**皮肤 CSS 里永不出现 `-webkit-app-region: drag` 声明**（先剥注释再匹配，因为规则注释里会提到这个词）。
 
 **顺带发现的宿主问题**：桌面端皮肤中心返回的 `patches` 缺少 `cache-control: no-store`（同一接口在 web 实例上是 `no-store`），CSS 改动在桌面端会被 HTTP 缓存吃掉——**改完必须硬重载**，否则测的是旧样式。前面几轮「还是没修好」里，有一部分其实是「根本没生效」。
+
+**修正的后半段（把拖动还回去）**：退出拖动区之后，宿主整条顶栏的拖动区也被一起挖空了——因为宿主的区域算法是「每个 `drag` 元素自己的矩形 **减去它自己的 `no-drag` 后代**」，而皮肤那 4 个满幅饰层正好都是 header 的 `no-drag` 后代。于是皮肤得**还一条拖动带**：
+
+```css
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-drag-strip'] {
+  -webkit-app-region: drag;   /* 皮肤唯一一处 drag 声明 */
+  position: absolute; top: 0; bottom: 0; left: 40%; width: 20%;
+  z-index: 0; pointer-events: none;
+}
+```
+
+它自己就是 `drag` 元素、且没有任何 `no-drag` 后代，所以贡献的是**自己完整的矩形**；位置取顶栏**正中间那 20%**（徽记所在处，抓徽记拖窗口是最自然的手势）。实测与全部控件的矩形**重叠为 0**，因此不可能再吃掉点击。测试把不变式钉住：整套 CSS 里 `-webkit-app-region: drag` 声明**有且仅有这一处**，且必须是这个选择器、这个位置。
