@@ -422,6 +422,8 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
 
 于是 4 列表与 3 列表一样在卡片内换行，金色边框始终包住表格；代价是这个皮肤下不再保留宿主的宽表出血效果。选择器用 `[class*='md-table-wide']` 而不是 `.md-table-wide`，是因为后者是宿主全局类名，写成类选择器会在插件形态里被 CSS Modules 哈希掉，只有属性匹配能同时命中两种形态。
 
+验证：资产形态与本仓库插件形态各注入同一张 4 列表格（真实类名与祖先结构），live 实测包裹层 886px = 卡片内容宽、表格无溢出；A/B 形态对照 1600×1000 亮色与暗色各 0/1,600,000 像素差异。
+
 ### 15.13 侧栏面板行的图标槽与轨迹页签的形状
 
 §14 给「任务看板 / SSH / 技能中心」三行加了 24 px 图标槽，目标是「解决不同宿主图标尺寸造成的文字起始线错位」。实测下来它只把这三行彼此对齐了：官方 Plugins / Schedule 行与未被 hook 标记的插件行仍是宿主的 16 px 槽，于是同一列里两套几何共存——带环的三行 40 px 行高、10 px 间距、24 px 字形槽（含 `border-radius: 50%` 金环与 `rgba(255,253,251,.08)` 底）、标题起点 x=46+8；其余行 36 px 行高、8 px 间距、16 px 裸字形。
@@ -449,4 +451,48 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
 
 两块改动的真壳对照图在 `evidence/verdandi-sidebar-rows-light-*`、`evidence/verdandi-history-tab-zoom-*`（`Sddft97/dsh-skins`）。
 
-验证：资产形态与本仓库插件形态各注入同一张 4 列表格（真实类名与祖先结构），live 实测包裹层 886px = 卡片内容宽、表格无溢出；A/B 形态对照 1600×1000 亮色与暗色各 0/1,600,000 像素差异。
+### 15.14 运行状态：改回宿主自己的组件，只重映射两个 token
+
+§15.7 把运行状态做成了「宿主文案塌陷 → 皮肤用伪元素重写文案 + 金色细线扫光」，靠 hooks 打
+`data-verdandi-running` 标记定位。0.2.0 把这个状态搬成了独立组件：
+
+```jsx
+<div className={styles.running} data-chat-running={true}>
+  <span role="status" aria-live="polite">深度求索中</span>
+  <span className={styles.runningDivider} />
+  <span className={styles.runningContent}>
+    <RunningWhaleTail />
+    <TextShimmer active className={styles.runningText}>深度求索中，用时 20 秒 ···</TextShimmer>
+  </span>
+</div>
+```
+
+于是两件事同时发生。① 标记再也打不上（hook 找的是 `[data-turn-process]` + `*_label` 的文案前缀），
+那条规则、它对应的 `@keyframes` 和 hook 里的 `markRunningStatus()` 一起成了死代码，用户看到的就是
+宿主原样。② 「扫光」本来就是宿主 `TextShimmer` 的既有能力：`.sweep` 用 105° 渐变 mask 配合
+`translateX` 与 `steps(48)` 在 1.5s 内扫一遍，颜色取 `--dsw-alias-label-shimmer`，而 `.running`
+把它别名到 `--dsw-alias-label-deep-diving-shimmer`——皮肤当年是在自绘一个宿主已经做好的效果。
+
+处理：删掉整套自绘（重写文案的 `::before`、金色细线 `::after`、它的 `@keyframes`，以及 hook 里
+的标记逻辑与 `data-verdandi-running` 标记），只重映射宿主读的那两个 token：
+
+```css
+body[data-dsh-verdandi] [data-chat-running] {
+  --dsw-alias-label-deep-diving: var(--vd-bare-ink);
+  --dsw-alias-label-deep-diving-shimmer: var(--vd-crimson-deep);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-chat-running] {
+  --dsw-alias-label-deep-diving-shimmer: var(--vd-crimson-soft);
+}
+```
+
+配色依据是对 §15.7 那两个实测亮度带的计算：文字基准用纯墨 `--vd-bare-ink`（亮 5.18:1、暗 2.03:1），
+扫光带用深红（亮 `crimson-deep` 3.41:1、暗 `crimson-soft` 1.95:1）。四个数字都高于宿主自己的取值
+（宿主基准亮色只有 1.71:1、它的扫光 2.87:1），而「基准↔扫光」的步进（1.52× / 3.97×）与宿主设计同级
+（1.68× / 1.42×），所以扫光读起来是运动，而不是字在闪。曾考虑把扫光带做成柔金（更贴合「柔金只作
+骑士纹章与交互刻线」），但金带经过时带内对比度只有亮 1.57:1 / 暗 1.09:1，会让字在扫过的瞬间糊掉，
+故取深红。
+
+代价：0.1.7 及更早的宿主没有这个组件，也没有这两个 token，那里的运行状态回到宿主原样——皮肤不再
+重写它的文案，也不再画那条细线。README 的兼容性行已注明运行状态的着色是 0.2.0 起的能力。

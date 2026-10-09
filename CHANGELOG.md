@@ -13,6 +13,21 @@ the rest.
 
 ### Fixed
 
+- The running status is the host's own again, re-tinted rather than rewritten. dsh
+  0.2.0 mounts it as a node of its own (`[data-chat-running]`, with the whale tail
+  and a `TextShimmer` sweep) and paints it from two tokens; the skin used to
+  collapse the host's label, restate the copy (`薇儿烧烤中...` /
+  `Verdandi is grilling...`) from a pseudo-element and draw its own gold hairline
+  under the row, anchored on a marker the 0.2.0 shell never grows — so the whole
+  thing was dead there and the stock blue status showed through. The copy swap and
+  the hairline are gone and the skin now only re-maps
+  `--dsw-alias-label-deep-diving` and `--dsw-alias-label-deep-diving-shimmer`: the
+  ink is the same plain-ink token the readability guard measures (5.18:1 light /
+  2.03:1 dark against the measured artwork band) and the sweeping band is the
+  skin's crimson (3.41:1 / 1.95:1). Both beat the host's own values (its light ink
+  is 1.71:1) and the base-to-band step stays at the host's own strength, so the
+  sweep reads as motion rather than as the word blinking. The `data-verdandi-running`
+  marker and the hook that projected it are retired with it.
 - The registered sidebar rows read as one list again. The rows the hooks mark
   (`task-board` / `skill-explorer` / `ssh`) carried a 24px gold ring, a taller
   row box and a wider gap, while the official Plugins / Schedule rows and the
@@ -68,6 +83,15 @@ the rest.
   two-form anchor parity check), `tsc --noEmit` clean, `pnpm build` reproducible
   (a second build produces identical bytes), and `npm pack --dry-run` still
   ships only `lib/` plus the manifests, docs and the five storefront previews.
+- The running status was measured against a faithful fixture of the host's own
+  node — its real class names, its real stylesheet — rather than a live turn: the
+  resolved colours, the mask and the moving sweep were read back frame by frame in
+  both palettes, and the same readback was then repeated with no override injected
+  at all, so the two colours in the built skin are the ones the host resolves
+  (light `rgb(27,17,22)` + `rgb(104,22,38)`, dark `rgb(251,243,245)` +
+  `rgb(198,83,105)`). The screenshots are the basis of the numbers above. The
+  copy-swap removal is on both forms; the sweep tint is a 0.2.0-only capability,
+  so on 0.1.7 and earlier the status keeps the host's stock look.
 
 ## [0.1.5] - 2026-09-26
 
