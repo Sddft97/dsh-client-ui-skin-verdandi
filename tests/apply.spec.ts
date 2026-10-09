@@ -138,6 +138,9 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-veil-corners-bottom']")).not.toBeNull()
     expect(conversation?.querySelector(":scope > [data-verdandi-decoration='workspace-lace']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil']")).not.toBeNull()
+    // The drag handle that gives window dragging back on the desktop shell, where the
+    // top bar is an Electron drag region and the layers above it opt out of it.
+    expect(conversation?.querySelector("header > [data-verdandi-decoration='header-drag-strip']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-namecard']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-bridal-corners']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil-corners']")).not.toBeNull()

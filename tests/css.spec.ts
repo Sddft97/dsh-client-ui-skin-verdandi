@@ -258,8 +258,18 @@ describe('verdandi compatibility guardrails', () => {
     expect(declarations).toMatch(
       /body\[data-dsh-verdandi\] \[data-verdandi-header\]::after\s*\{[^}]*-webkit-app-region:\s*no-drag/,
     )
-    // And nothing in the skin may ever declare a drag region of its own.
-    expect(declarations).not.toMatch(/-webkit-app-region:\s*drag/)
+    // ...and exactly one deliberate exception: the handle that gives window dragging
+    // back. It sits over the empty middle of the bar (left 40% / width 20%), which was
+    // measured to clear every control, so it can never swallow a click.
+    const strip = declarations.match(
+      /\[data-verdandi-decoration='header-drag-strip'\]\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(strip).toMatch(/-webkit-app-region:\s*drag/)
+    expect(strip).toMatch(/left:\s*40%/)
+    expect(strip).toMatch(/width:\s*20%/)
+    expect(strip).toMatch(/pointer-events:\s*none/)
+    // It is the only drag declaration in the whole sheet.
+    expect(declarations.match(/-webkit-app-region:\s*drag/g) ?? []).toHaveLength(1)
   })
 
   it('keeps the decorative lifts below any host overlay', () => {

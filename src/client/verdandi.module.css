@@ -808,6 +808,20 @@ body[data-dsh-verdandi] [data-verdandi-header]::after {
   -webkit-app-region: no-drag;
 }
 
+/* ...except this one, which is the drag handle the skin owes back. It contributes its
+   own rect (minus its own no-drag descendants, of which it has none) and covers only
+   the empty middle of the bar, so no control is ever inside it. */
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-drag-strip'] {
+  -webkit-app-region: drag;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 40%;
+  width: 20%;
+  z-index: 0;
+  pointer-events: none;
+}
+
 /* The pane lifts are deliberately in the single digits. Anything the host raises for
    an overlay lives in the tens or hundreds, so a decoration that outranks it will
    paint over the overlay -- reported once as the composer seal sitting on top of the

@@ -242,6 +242,13 @@ function ensureWeddingDecorations(
   ensureDecoration(header, 'header-bridal-corners')
   ensureDecoration(header, 'header-veil-corners')
   ensureDecoration(header, 'header-vow-crest')
+  // The shell's top bar is an Electron window-drag region and `-webkit-app-region` is
+  // inherited, so every layer above inherits `drag` (which is what swallowed real
+  // clicks on the controls) and, once they opt out with `no-drag`, they carve the
+  // whole band out of the shell's own drag region. This strip gives dragging back
+  // where the skin is decoration only: the empty middle of the bar, centred on the
+  // crest, clear of every control.
+  ensureDecoration(header, 'header-drag-strip')
 
   const composer = conversation?.querySelector<HTMLElement>('[data-composer-card]') ?? null
   ensureDecoration(composer, 'composer-seal')
