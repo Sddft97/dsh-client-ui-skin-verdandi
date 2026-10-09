@@ -371,6 +371,8 @@ body[data-dsh-verdandi] [data-verdandi-header] > [class*='_titleRow'] { z-index:
 
 验证方式：面板打开后取 4 个采样点（面板高度 5%/30%/60%/95%）做 `elementFromPoint`，全部落在 `[role='menu']` 内；亮/暗两态均通过。
 
+**后续（0.2.0 回归）**：这里当时的写法 `> [class*='_titleRow']` 是 0-2-0，能赢只是因为宿主那时的标题行直接挂在 header 下、与 `z-index: 3` 那条同级且写在后面。0.2.0 把标题行塞进 `conversation.session.header` 这个 `display: contents` 座位后，`z-index: 3` 那条的后代形式变成 0-3-0，标题行规则反被压住——「更多操作」菜单又回到页签下面。见 **15.16**。
+
 ![顶栏下拉裁切前后对照（暗色）](../../preview/header-menu-dark.webp)
 
 ### 15.11 顶栏 chip 的装饰层与暗色墨色
@@ -528,3 +530,48 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-chat-running] {
 **对宿主的依赖**（全部在此）：`[data-chat-running]`（宿主自己发布的运行标记）、两句前缀文案（`深度求索中` / `Deep diving`，用于拆分与播报）。**零 CSS-module 类名、零 TextShimmer 内部结构**。任一条失效都**失败关闭**：不接管、宿主原样，而不是留半成品；那种中间态由 15.14 的 token 重映射把宿主的行染成皮肤色。
 
 **验证**：夹具（真实类名 + 宿主真实样式表）逐帧比对颜色/掩膜/扫光位置；随后在真实页面上由**皮肤自己的 hook 与 CSS** 接管注入的宿主节点，实测宿主视觉子节点全部 `display:none`、标记在自身写入触发的多轮 sync 后仍在、文案 `薇儿烧烤中，用时 20 秒 ···`、live region `深度求索中`、图标掩膜指向皮肤资产且逐帧 transform 变化、一次真实 `characterData` tick 后文案跟到 `1 分 07 秒`。两条新用例把接管与失败关闭路径钉住，并做了突变验证（回退标记重申、回退"别把自己的 live region 当宿主文案"两处修复，测试各自变红）。
+
+### 15.16 顶栏与输入区的三处修正（分体控件、菜单层级、装饰压弹层）
+
+三项互不相干，但都在顶栏/输入区，且两条是同一个根因类型：**皮肤自己加的同级/更高级层，最后都盖在宿主自己的东西上**。
+
+#### (1) 分体控件被画成两个胶囊
+
+宿主的「用访达打开 + chevron」是一个 `div > button + button` 的分体控件（`_split` 里一个 `_main`、一个 `_chevron`，两者各 23×22 / 18×22，紧挨着，中间没有间隙）。15.11 那条「顶栏所有 button 都画胶囊」的兜底规则给两半各画了一个 999px 胶囊 + 一圈 `inset` 白环，于是接缝处出现一个缺口和双环——用户描述为「两个按钮分别画了圆角胶囊，外面又套了一层胶囊」。
+
+修正：**分体控件是一个控件**，胶囊画在它的**容器**上，两半保持方形、无边框、无环、透明：
+
+```css
+body[data-dsh-verdandi] [data-verdandi-header] :is(div, span):has(> button + button):not([role='tablist']) { border-radius: 999px; overflow: hidden; /* + 底色/边框/外描边 */ }
+body[data-dsh-verdandi] [data-verdandi-header] :is(div, span):has(> button + button):not([role='tablist']) > button { border: 0 !important; border-radius: 0 !important; background: none !important; box-shadow: none !important; }
+```
+
+选择器是结构式的（**容器里有两个相邻 button**），不点宿主类名；`overflow: hidden` 让 hover 的矩形底色被胶囊裁掉；`hover` 在容器内层按钮上补回来。必须排除 `[role='tablist']`——页签也是 `button + button`，但它们要保持无框平铺（15.10 的前提）。暗色同样映射到 `--vd-slip` 一套。
+
+实测（真实页面，3× 截图 `fix-split-pill.png`）：容器 `border-radius: 999px` / 有底/有边/`overflow: hidden`，两半 `radius=0` / `bg=transparent` / `shadow=none` / `border=0`；页签容器未被误伤（`radius=0`、无背景）。
+
+#### (2)「更多操作」菜单被页签行盖住
+
+现象：「切换会话后顶栏的 ui 和按钮点不动」。实测不是点不到，而是**菜单出来了、但被页签行压住**：菜单 `z-index 100`、落在 y 43–111，页签行覆盖 y 50–75，于是 `elementsFromPoint` 在菜单第一项上返回的是 `[role='tablist']`——点第一项等于点页签。
+
+根因就是 15.10 的回归（见那里的小节）：标题行那条 0-2-0 的规则在 0.2.0 上输给了 `z-index: 3` 的后代形式。修正：把层级写成 0-3-0 以上，并且**同时**用结构式选择器匹配「拥有弹层触发器的那一行」（`:has([aria-haspopup])`），不再依赖宿主类名和书写顺序：
+
+```css
+/* header 直属：老宿主；经 session.header 座位：0.2.0；:has 形式：不点类名 */
+[data-verdandi-header] > [class*='_titleRow'], [data-verdandi-header] > :has([aria-haspopup]),
+[data-verdandi-header] [data-slot='conversation.session.header'] > [class*='_titleRow'],
+[data-verdandi-header] [data-slot='conversation.session.header'] > :has([aria-haspopup]),
+[data-verdandi-header] [class*='_titleRow']:has([aria-haspopup]) { z-index: 5; }
+```
+
+实测：标题行 `z-index` 由 3 → 5；菜单第一项（y 47–77，正是被页签压住的那段）`topmost` 变成菜单项内部的 `span`、`reachable=true`；**真点一下第一项，菜单关闭、动作生效**（修复前点不到）。
+
+#### (3) 输入区印章盖住模型选择框
+
+`composer-seal`（誓约书 + 戒指，`position: absolute; top: -49px`、水平居中）压在模型选择弹层上。原因是皮肤自己把层级抬得太高：该印章 `z-index: 5`，而输入区座位被皮肤提到 `z-index: 15`、顶栏被提到 `z-index: 20`。宿主弹层在**根层**上通常是 `z-index 1100`，本该稳赢——但桌面端里弹层挂在低于顶栏/输入区的那条上下文里，于是皮肤的两位数层级反压上去。
+
+处理原则（与 §6「角色舞台禁止 `position: fixed; z-index: 9999`」是同一个原则）：**皮肤的承载层一律留在个位数**——顶栏 20 → 4、输入区座位 15 → 3、印章 5 → 1。印章只需高于输入卡自己的背景，不需要高于输入卡的内容（现在内容会盖住压在卡内那 19px 的印章下半，这是更正确的顺序）。
+
+实测（把印章临时挪到弹层正中再判序）：`seal index=7` 在 `panel index=2` 之后 → 宿主弹层赢。另外把这三个值写进测试：座位与印章都必须 < 10，印章必须低于座位，座位必须高于消息节点的 2。
+
+**这一节的教训**（写进测试的断言里）：皮肤的 `z-index` 不是「越大越安全」；宿主弹层的层级随版本漂移，唯一稳的做法是**自己尽量低**，只在同一个 pane 内部竞争。

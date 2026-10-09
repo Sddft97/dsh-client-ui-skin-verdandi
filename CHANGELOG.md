@@ -9,6 +9,33 @@ A version exists only when all four agree: the git tag `vX.Y.Z`, the `version` i
 enforces the first two on every tag push; the checklist in `RELEASING.md` covers
 the rest.
 
+## [Unreleased]
+
+### Fixed
+
+- A split header control is one pill again. The shell's "open with <app>" control is
+  two buttons in one box (`div > button + button`); the blanket rule that gives every
+  header button a capsule gave each half its own, so the seam showed a notch and two
+  inset rings butting together. The pair's box is the pill now and the halves stay
+  square, borderless and transparent inside it -- structural selection (a container
+  holding two adjacent buttons), minus the tab list, which is `button + button` too.
+- The header's own dropdown is clickable again. dsh 0.2.0 moved the title row one slot
+  deeper (`conversation.session.header`, a `display: contents` seat), which made the
+  skin's `z-index: 3` rule for the header rows score 0-3-0 and pushed the 0-2-0
+  title-row lift below it -- so the tab row (later in DOM order) painted over the top
+  of the `更多操作` menu and swallowed the clicks meant for its first item. The lift is
+  spelled out at 0-3-0 or above and matched structurally
+  (`> :has([aria-haspopup])`) as well as by class, so it no longer depends on the
+  host's nesting depth or on source order.
+- Decorative layers no longer outrank host popovers. The composer seal (an absolutely
+  positioned ornament that floats above the composer card) covered the model picker,
+  because the skin had lifted the composer seat to `z-index: 15` and the header to
+  `z-index: 20`: a popover the host renders inside a lower context cannot win against
+  a two-digit lift. Skin-carried layers stay in the single digits now (header 4,
+  composer seat 3, seal 1) and the seal sits below the composer's own content.
+  Pinned by a test: no skin lift reaches double digits, and the seal stays under the
+  seat.
+
 ## [0.1.6] - 2026-10-09
 
 ### Fixed
