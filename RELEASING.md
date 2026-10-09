@@ -48,11 +48,30 @@ Also check the compatibility line in both READMEs names the host versions this r
 
 ## 4. npm release
 
-The scoped package must be published with public access. `publishConfig.access` already enforces this setting, but the explicit flag below makes the release intent auditable. Direct publishing requires npm 2FA or a suitable granular access token.
+The scoped package must be published with public access. `publishConfig.access` already enforces this setting, but the explicit flag makes the release intent auditable.
 
-```powershell
-npm login
-npm publish --access public
+**Preferred: let the tag publish it.** `.github/workflows/publish.yml` runs on a `v*`
+tag and authenticates with the GitHub OIDC token (npm trusted publishing), so the
+release needs no credential in the repository, no `NPM_TOKEN`, and no interactive 2FA:
+
+```sh
+git push origin main
+git tag vX.Y.Z && git push origin vX.Y.Z     # CI publishes, then prints the dist-tags
+```
+
+One-time setup on npmjs.com: package → Settings → Trusted Publisher → GitHub, with owner
+`Sddft97`, repository `dsh-client-ui-skin-verdandi`, workflow `publish.yml`. This path is
+the one to prefer when the publishing account's second factor is a security key: the
+legacy CLI login has no WebAuthn support, and the web login hands the credential back
+over a connection that a filtering proxy can leave hanging.
+
+Publishing by hand is still possible when the account can answer for its second factor
+(a 6-digit TOTP code, or one of npm's recovery codes in its place). Since npm began
+restricting 2FA-bypassing tokens for direct publishing, that path needs the code:
+
+```sh
+npm login --auth-type=web          # the browser completes the 2FA, then
+npm publish --access public --otp=<code-from-the-authenticator>
 npm view @hjbztlbr/dsh-client-ui-skin-verdandi dist-tags
 ```
 

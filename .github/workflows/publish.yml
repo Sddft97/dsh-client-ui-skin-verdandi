@@ -1,0 +1,45 @@
+name: Publish
+
+# Publishing is authenticated by the GitHub OIDC token, not by a credential in this
+# repository: the job asks npm for a short-lived token scoped to this workflow, so no
+# NPM_TOKEN secret exists and no interactive 2FA is involved. That matters here because
+# the account's second factor is a security key, which the CLI cannot answer for (the
+# legacy flow has no WebAuthn, and the web flow hands the token back over a connection
+# that a filtering proxy can strand).
+#
+# One-time setup on npmjs.com: package -> Settings -> Trusted Publisher -> GitHub, with
+# owner `Sddft97`, repository `dsh-client-ui-skin-verdandi` and workflow `publish.yml`.
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # the OIDC token npm exchanges for a publish credential
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      # Trusted publishing needs npm 11.5 or newer.
+      - run: npm install -g npm@latest
+
+      - run: pnpm install --frozen-lockfile
+
+      # `prepublishOnly` rebuilds, retests and typechecks, so the tarball cannot ship a
+      # stale lib/. Provenance is attached because the OIDC token can sign it.
+      - run: npm publish --access public --provenance
+
+      - name: Show the published dist-tags
+        run: npm view "$(node -p "require('./package.json').name")" dist-tags
