@@ -31,10 +31,12 @@ const DEAD_ANCHORS = ['data-dsh-part']
 /**
  * Anchors that may legitimately appear in one form only. `data-dsh-surface` is
  * stamped by the dsh-web-all semantic adapter and only the asset form anchors on
- * it; the plugin form keeps to the per-skin hooks instead.
+ * it; the plugin form keeps to the per-skin hooks instead. `data-dsh-verdandi` is
+ * this plugin's own body scope: the asset form is scoped by the skin center's
+ * injected `data-dsh-skin`, so the marker never appears in its stylesheets.
  */
 const V2_ONLY = ['data-dsh-surface']
-const V1_ONLY: string[] = []
+const V1_ONLY = ['data-dsh-verdandi']
 
 const anchors = (css: string): string[] =>
   [...new Set([...css.matchAll(/\[(data-[a-z0-9-]+)/g)].map((m) => m[1]))].sort()

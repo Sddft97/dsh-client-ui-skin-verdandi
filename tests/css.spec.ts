@@ -5,6 +5,13 @@ import { describe, expect, it } from 'vitest'
 const CSS = readFileSync(resolve(process.cwd(), 'src/client/verdandi.module.css'), 'utf8')
 
 /**
+ * The same stylesheet with comments stripped, for the guards that assert a rule
+ * is *absent*. Each removal carries a `[P0 fix]` note naming the selector it
+ * dropped, so matching the raw source would make every one of them fail.
+ */
+const CSS_NO_COMMENTS = CSS.replace(/\/\*[\s\S]*?\*\//g, '')
+
+/**
  * Linear-luminance extremes of the artwork band the running status floats in,
  * measured on the real scenes with the pane veil applied (design note §15.7).
  * The status has no surface, so this band — not a slip — is its backing.
@@ -149,8 +156,12 @@ describe('verdandi compatibility guardrails', () => {
   })
 
   it('aligns sidebar navigation and removes the selected-session wedge', () => {
-    expect(CSS).toMatch(/data-verdandi-nav-entry[\s\S]*?align-items: center/)
-    expect(CSS).toMatch(/data-verdandi-nav-entry[\s\S]*?> :first-child[\s\S]*?flex: 0 0 24px/)
+    // The registered panel rows (task-board / skill-explorer / ssh) used to
+    // carry their own 24px gold ring and a taller row box, which left them
+    // ringed and indented beside the bare official rows. The marker now paints
+    // nothing at all, so every row keeps the host's own geometry — 16px glyph,
+    // 8px gap, 36px row — and the alignment comes from not overriding it.
+    expect(CSS_NO_COMMENTS).not.toMatch(/\[data-verdandi-nav-entry\]/)
     expect(CSS).not.toMatch(/aria-selected='true'\]::before[\s\S]*?clip-path: polygon/)
     expect(CSS).not.toContain('left: -7px')
   })
@@ -217,11 +228,26 @@ describe('verdandi compatibility guardrails', () => {
   })
 
   it('keeps the trajectory compact without decorative artwork overlays', () => {
-    const timelineRule = CSS.match(/\[aria-label='Trajectory timeline'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    // The panel is reached through both locale spellings of its aria-label.
+    const timelineRule = CSS.match(
+      /:is\(\s*\[aria-label='轨迹时间线'\],\s*\[aria-label='Trajectory timeline'\]\s*\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
     expect(timelineRule).toContain('min-height: 0')
     expect(timelineRule).not.toMatch(/28vh|320px/)
     expect(CSS).not.toMatch(/data-verdandi-trace-empty|SEQUENCE ARCHIVE/)
     expect(CSS).not.toMatch(/\[aria-label='Trajectory timeline'\]::(?:before|after)/)
+  })
+
+  it('anchors the earlier-history tab to the lane edge', () => {
+    // 28px wide and 50px tall: a pill radius ate half of the top and bottom
+    // edges, so the trailing rounding pulled the fill off the panel border and
+    // left a hairline gap along both. Square on the lane edge, the trailing side
+    // on the same 6px as the row chips, and no top/bottom rules, so the fill
+    // meets the panel border instead of doubling it one pixel inside.
+    const earlier = CSS.match(/\[class\*='earlierHistory'\]\s*\)\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(earlier).toContain('border-radius: 0 6px 6px 0')
+    expect(earlier).toContain('border-top: 0')
+    expect(earlier).toContain('border-bottom: 0')
   })
 
   it('groups composer statistics into one compact ribbon', () => {
@@ -289,15 +315,19 @@ describe('verdandi compatibility guardrails', () => {
   })
 
   it('runs the status on plain ink with motion on a hairline', () => {
-    // No surface, no halo, no outline, no clipped fill: every decoration here
-    // was measured or reviewed down. What is left must stay plain.
-    const status = CSS.match(
-      /\[class\*='_turnStatus'\]\s*\{([^}]*)\}/,
-    )?.[1] ?? ''
-    expect(status).toContain('background-image: none')
-    expect(status).toContain('text-shadow: none')
-    expect(status).toContain('-webkit-text-fill-color: currentColor')
-    expect(status).toContain('animation: none')
+    // dsh 0.1.7 moved the live status inside the turn-process control and
+    // dropped the `_turnStatus` class, so the contract is now expressed on the
+    // marker the hooks project: plain ink, no surface, no halo, no outline, and
+    // the only motion is the gold hairline.
+    expect(CSS_NO_COMMENTS).not.toMatch(/_turnStatus/)
+
+    const label = CSS.match(/\[data-verdandi-running\] \[class\*='_label'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(label).toContain('color: var(--vd-ink)')
+    // The host's own text node is collapsed, not removed.
+    expect(label).toContain('font-size: 0')
+    expect(CSS).toMatch(
+      /\[data-turn-process\] \[class\*='_label'\]\s*\{[^}]*text-shadow:\s*none/,
+    )
     // The rejected halo was a multi-layer glow in the paper colour.
     expect(CSS).not.toMatch(/text-shadow:[^;]*var\(--vd-slip-solid\)/)
     expect(CSS).not.toMatch(/\[data-pane='conversation'\]::(?:before|after)/)
@@ -305,30 +335,19 @@ describe('verdandi compatibility guardrails', () => {
 
     // Motion lives on a gold hairline, which cannot touch contrast.
     expect(CSS).toMatch(
-      /\[class\*='_turnStatus'\]::after\s*\{[^}]*--vd-gold-light[^}]*verdandi-status-sweep/,
+      /\[data-verdandi-running\] \[class\*='_label'\]::after\s*\{[^}]*--vd-gold-light[^}]*verdandi-status-sweep/,
     )
     expect(CSS).toMatch(/@keyframes verdandi-status-sweep/)
 
     // The theme states its own line; the host's localized string survives in the
     // accessibility tree, so the swap is visual only and must stay reversible.
     const swap = CSS.match(
-      /\[class\*='_turnStatus'\]:not\(\s*\[class\*='_turnStatusClock'\]\s*\)::before\s*\{([^}]*)\}/,
+      /\[data-verdandi-running\] \[class\*='_label'\]::before\s*\{([^}]*)\}/,
     )?.[1] ?? ''
     expect(swap).toContain("content: '薇儿烧烤中...'")
     expect(swap).toContain('font-size: 14px')
-    // The host's own text node is collapsed, not removed.
     expect(CSS).toMatch(
-      /\[class\*='_turnStatus'\]:not\(\s*\[class\*='_turnStatusClock'\]\s*\)\s*\{[^}]*font-size: 0/,
-    )
-    expect(CSS).toMatch(/html:lang\(en\)[\s\S]*?_turnStatusClock'\]\s*\)::before\s*\{[^}]*Verdandi is grilling/)
-
-    // The clock shares the label's ink: --vd-ink-meta does not clear the floor
-    // on the dark band, so hierarchy comes from size and weight only.
-    const clock = CSS.match(/\[class\*='_turnStatusClock'\]\s*\{([^}]*)\}/)?.[1] ?? ''
-    expect(clock).toContain('color: var(--vd-bare-ink)')
-
-    expect(CSS).toMatch(
-      /@media \(forced-colors: active\)[\s\S]*?_turnStatus'\]::after[\s\S]*?display: none/,
+      /html:lang\(en\)[\s\S]*?data-verdandi-running\] \[class\*='_label'\]::before\s*\{[^}]*Verdandi is grilling/,
     )
   })
 
@@ -350,12 +369,12 @@ describe('verdandi compatibility guardrails', () => {
     expect(bar).toContain('--dsw-alias-label-primary: #fff8f4')
   })
 
-  it('gives the produced-files label the same bare ink as the status', () => {
-    const produced = CSS.match(
-      /\[class\*='_producedLabel'\],[\s\S]{0,60}?\{([^}]*)\}/,
-    )?.[1] ?? ''
-    expect(produced).toContain('color: var(--vd-bare-ink)')
-    expect(produced).toContain('-webkit-text-fill-color: var(--vd-bare-ink)')
+  it('drops the dead produced-files label selector', () => {
+    // `_producedLabel` and `_producedMore` appear nowhere in the shipped dsh
+    // 0.1.7 host (checked against the app bundle), so the rule could only ever
+    // paint nothing. It is gone rather than kept as a guess.
+    expect(CSS_NO_COMMENTS).not.toMatch(/_producedLabel/)
+    expect(CSS_NO_COMMENTS).not.toMatch(/_producedMore/)
   })
 
   it('carries every bare transcript row on a slip surface', () => {
