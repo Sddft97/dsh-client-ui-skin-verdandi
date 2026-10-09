@@ -160,6 +160,29 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(document.querySelector('[data-verdandi-decoration]')).toBeNull()
   })
 
+  it('only mounts the drag handle where the shell has a window-drag region', () => {
+    // The shell's drag-region rules are platform-gated (`[data-platform="darwin"]`), so a
+    // platform whose window has a native title bar leaves `-webkit-app-region` unused.
+    // A band the host never reserved must not be invented there -- it could swallow
+    // clicks in an area the shell never handed over.
+    const original = window.getComputedStyle
+    window.getComputedStyle = ((el: Element, pseudo?: string | null) => {
+      const style = original(el, pseudo ?? undefined)
+      if (el.tagName === 'HEADER') {
+        return Object.create(style, { webkitAppRegion: { value: 'no-drag' } }) as CSSStyleDeclaration
+      }
+      return style
+    }) as typeof window.getComputedStyle
+    try {
+      apply(ctx as never)
+      expect(document.querySelector("[data-verdandi-decoration='header-drag-strip']")).toBeNull()
+      // ...while the rest of the header decoration is untouched.
+      expect(document.querySelector("[data-verdandi-decoration='header-veil']")).not.toBeNull()
+    } finally {
+      window.getComputedStyle = original
+    }
+  })
+
   it('selects the trajectory view without tagging host timeline content', () => {
     const conversation = document.querySelector('[data-pane="conversation"]')
     conversation?.querySelector('[role="tab"][aria-selected="true"]')?.setAttribute('aria-selected', 'false')

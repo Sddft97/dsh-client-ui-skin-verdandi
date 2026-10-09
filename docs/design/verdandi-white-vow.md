@@ -620,6 +620,19 @@ body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='head
 
 它自己就是 `drag` 元素、且没有任何 `no-drag` 后代，所以贡献的是**自己完整的矩形**；位置取顶栏**正中间那 20%**（徽记所在处，抓徽记拖窗口是最自然的手势）。实测与全部控件的矩形**重叠为 0**，因此不可能再吃掉点击。测试把不变式钉住：整套 CSS 里 `-webkit-app-region: drag` 声明**有且仅有这一处**，且必须是这个选择器、这个位置。
 
+**跨平台注意（Windows）**：宿主的拖动区样式本身就是**按平台分叉**的——
+
+```css
+[data-platform="darwin"] .wSkVaW_headerLeading,
+[data-platform="darwin"] .wSkVaW_headerActions … { app-region: no-drag; }
+```
+
+也就是说拖动区机制**只在 macOS 启用**（Windows 用系统标题栏拖动，客户区里没有拖动区）。于是：
+
+- 给饰层加 `no-drag`：在 Windows 上是**空操作**（那里本来就没有拖动区），无害；
+- 但拖动带**不能**无条件挂 ✗——那会在 Windows 上凭空造出一条宿主从未划定的拖动带，而它在 Windows 布局下是否避开控件并无保证，可能复现"吞点击"。所以 hook 里加判据：**只有 `getComputedStyle(header).webkitAppRegion === 'drag'` 时才挂这条带**（无拖动区时若已存在则移除）；jsdom 算不出该属性，视为 `drag`，夹具继续描述 macOS 形态。
+- 实测：web 实例（相当于"没有拖动区的平台"）`headerRegion=none` → `stripCreated=false`，其余 5 个饰层照常；macOS 桌面端 header 计算值 `drag` → 拖动带照常挂载，行为不变。
+
 ### 15.18 插件/功能页占主槽时，立绘降到页面内容之后
 
 现象：插件的设置页（例如 MCP 连接器）里，角色立绘压在页面卡片与文字之上；而像「记忆系统」那种自带背景的页面又看不到立绘——两块页面的行为不统一。

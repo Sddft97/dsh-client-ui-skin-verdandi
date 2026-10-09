@@ -13,6 +13,13 @@ the rest.
 
 ### Fixed
 
+- The window-drag handle is only mounted where the shell actually uses a drag region.
+  The shell's own drag-region rules are platform-gated (`[data-platform="darwin"]`), so
+  on a platform whose window has a native title bar `-webkit-app-region` is unused;
+  adding a `drag` band there would invent an area the host never reserved, which is the
+  same class of bug this round fixed. The hook checks the header's computed region and
+  skips (or removes) the strip where the shell has none -- on top of the `no-drag`
+  opt-out, which is a no-op on such platforms anyway.
 - The character art no longer covers plugin surfaces. The stage is
   `position: absolute; z-index: 0`, which beats a static page in paint order, so on the
   MCP connector and similar plugin pages the figures sat on top of the cards. Whenever
