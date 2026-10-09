@@ -49,7 +49,6 @@ const CONVERSATION_PHASE_ATTR = 'data-verdandi-phase'
 const CONVERSATION_VIEW_ATTR = 'data-verdandi-view'
 const DETAILS_EMPTY_ATTR = 'data-verdandi-details-empty'
 const SLIP_ATTR = 'data-verdandi-slip'
-const RUNNING_ATTR = 'data-verdandi-running'
 /**
  * The session header strip, in probe order. dsh 0.1.7 renders
  * `<div data-slot='conversation.header' style='display:contents'><header>` and
@@ -74,7 +73,6 @@ const OWNED_HOOKS = [
   'data-verdandi-new-session',
   'data-verdandi-nav-entry',
   'data-verdandi-sidebar-action',
-  RUNNING_ATTR,
   DETAILS_EMPTY_ATTR,
 ] as const
 
@@ -327,29 +325,6 @@ function decorateStableRegions(): void {
   }
 }
 
-/**
- * Mark the turn-process control while its turn is actually running.
- *
- * dsh 0.1.7 moved the live status into that control and switches its label copy
- * with the turn state (running / worked / took / failed), so the skin's copy
- * swap has to be scoped by state instead of by the removed `_turnStatus` class.
- * Only the running label is marked, so the finished states keep the host wording.
- * @param conversation - Visible conversation pane, or null when unrendered.
- */
-function markRunningStatus(conversation: HTMLElement | null): void {
-  const running = conversation
-    ? [...conversation.querySelectorAll<HTMLElement>('[data-turn-process]')].filter((node) => {
-      const text = (node.querySelector("[class*='_label']")?.textContent ?? '').trim()
-      return /^(深度求索中|Deep diving)/i.test(text)
-    })
-    : []
-
-  for (const marked of document.querySelectorAll<HTMLElement>(`[${RUNNING_ATTR}]`)) {
-    if (!running.includes(marked)) marked.removeAttribute(RUNNING_ATTR)
-  }
-  for (const node of running) node.setAttribute(RUNNING_ATTR, '')
-}
-
 function setSidebarSize(body: HTMLElement, sidebar: HTMLElement | null): void {
   const width = sidebar?.getBoundingClientRect().width || sidebar?.offsetWidth || 0
   if (width > 0 && width < 96) body.setAttribute(SIDEBAR_SIZE_ATTR, 'rail')
@@ -462,7 +437,6 @@ export function apply(ctx: Context): void {
     setSidebarSize(body, sidebar)
     ensureWeddingDecorations(sidebar, workspaceVisible ? conversation : null, details)
     decorateLegibilityRows(workspaceVisible ? conversation : null)
-    markRunningStatus(workspaceVisible ? conversation : null)
 
     if (workspaceVisible) {
       const stage = ensureCharacterStage(conversation)

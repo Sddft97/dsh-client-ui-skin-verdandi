@@ -1441,13 +1441,9 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] {
   text-align: start;
 }
 
-/* The running status is the one place the chapter language belongs: a gold rule
-   under the live line, with the sweep riding it. Marked by the hooks, so the
-   finished rows stay plain. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-verdandi-running] {
-  border-bottom: 1px solid color-mix(in srgb, var(--vd-gold) 42%, transparent);
-}
-
+/* The running state used to add a gold rule under the live row. dsh 0.2.0 moved
+   the live status into a node of its own (`[data-chat-running]`), so the rule and
+   the marker it rode are gone — see the running-status note below. */
 
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_label'] {
   position: relative;
@@ -1755,63 +1751,37 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
 }
 
 /* [P0 fix] Removed the whole `_turnStatus` / `_turnStatusClock` block: the host
-   class was dropped in DSH 0.1.7, so those rules were dead. The live status now
-   rides the turn-process control plus the marker the hooks project — see
-   `[data-verdandi-running]` below — and the contrast measurements that shaped the
-   bare-ink treatment are kept in docs/design/verdandi-white-vow.md §15.7. */
-/* dsh 0.1.7 hosts the live status inside the turn-process control and switches
-   that label's copy with the turn state (running / worked / took / failed), so
-   the copy swap is scoped by the running marker the hooks project rather than by
-   the removed `_turnStatus` class. Finished states keep the host's own wording;
-   while the turn runs the label reads as ink and the gold hairline under the row
-   carries the motion, which is why no surface is involved. */
+   class was dropped in DSH 0.1.7, so those rules were dead. The contrast
+   measurements that shaped the bare-ink treatment are kept in
+   docs/design/verdandi-white-vow.md §15.7. */
+
+/* --- Running status: the host's own component, re-tinted ---------------- */
+
+/* dsh 0.2.0 mounts the live status as a node of its own — `[data-chat-running]`,
+   carrying the whale tail and a TextShimmer sweep for the motion — and paints it
+   from two tokens. The skin therefore contributes nothing but those two colours:
+   the ink is the same plain-ink token the readability guard already measures, and
+   the sweeping band is the skin's crimson, because a band that keeps its contrast
+   with the artwork reads as motion rather than as the word blinking.
+   What this replaces: collapse the host's label, restate the copy from a
+   pseudo-element, and draw a gold hairline under the row. That version was
+   anchored on a marker the 0.2.0 shell never grows, and the sweep it painted was
+   never the host's — the two effects it imitated are both native here.
+   Measured against the artwork band (§15.7): ink 5.18:1 light / 2.03:1 dark, and
+   the band 1.48:1 / 1.95:1. The band has to be the *soft* crimson, not the deep
+   one: deep crimson sits 1.52x away from the near-black ink, which on the light
+   artwork reads as one more shade of black rather than as a pass of colour, while
+   soft crimson steps 3.5x / 4.0x away (the host's own step is 1.68x / 1.42x). One
+   token covers both palettes because `--vd-crimson-soft` already flips with them. */
+body[data-dsh-verdandi] [data-chat-running] {
+  --dsw-alias-label-deep-diving: var(--vd-bare-ink);
+  --dsw-alias-label-deep-diving-shimmer: var(--vd-crimson-soft);
+}
+
+/* The turn-process label is the chapter rule's business; it only wants the
+   host's halo off here. */
 body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_label'] {
-  position: relative;
   text-shadow: none;
-}
-
-body[data-dsh-verdandi] [data-verdandi-running] [class*='_label'] {
-  color: var(--vd-ink);
-  font-size: 0;
-}
-
-body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::before {
-  content: '薇儿烧烤中...';
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-}
-
-html:lang(en) body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::before {
-  content: 'Verdandi is grilling...';
-}
-
-/* The sweep rides the row's own hairline: the button keeps `padding-bottom: 7px`
-   above its border, so the label's baseline offset puts the highlight exactly on
-   the gold rule rather than beside it. */
-body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
-  content: '';
-  position: absolute;
-  right: 0;
-  bottom: -8px;
-  left: 0;
-  height: 2px;
-  background-color: color-mix(in srgb, var(--vd-gold) 30%, transparent);
-  background-image: linear-gradient(90deg, transparent, var(--vd-gold-light), transparent);
-  background-repeat: no-repeat;
-  background-size: 38% 100%;
-  border-radius: 2px;
-  animation: verdandi-status-sweep 1.9s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes verdandi-status-sweep {
-  from {
-    background-position: -70% 0;
-  }
-  to {
-    background-position: 170% 0;
-  }
 }
 
 /* [P0 fix] Removed the trailing `_turnStatusClock` rule too: same dead host

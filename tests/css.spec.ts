@@ -314,41 +314,38 @@ describe('verdandi compatibility guardrails', () => {
     )
   })
 
-  it('runs the status on plain ink with motion on a hairline', () => {
-    // dsh 0.1.7 moved the live status inside the turn-process control and
-    // dropped the `_turnStatus` class, so the contract is now expressed on the
-    // marker the hooks project: plain ink, no surface, no halo, no outline, and
-    // the only motion is the gold hairline.
+  it('re-tints the host running indicator instead of restating its copy', () => {
+    // dsh 0.2.0 mounts the live status as a node of its own — `[data-chat-running]`,
+    // with the whale tail and a TextShimmer sweep for the motion — and paints it
+    // from two tokens, so the skin's whole contribution is those two colours.
     expect(CSS_NO_COMMENTS).not.toMatch(/_turnStatus/)
 
-    const label = CSS.match(/\[data-verdandi-running\] \[class\*='_label'\]\s*\{([^}]*)\}/)?.[1] ?? ''
-    expect(label).toContain('color: var(--vd-ink)')
-    // The host's own text node is collapsed, not removed.
-    expect(label).toContain('font-size: 0')
-    expect(CSS).toMatch(
-      /\[data-turn-process\] \[class\*='_label'\]\s*\{[^}]*text-shadow:\s*none/,
-    )
+    const ink = CSS.match(/body\[data-dsh-verdandi\] \[data-chat-running\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    expect(ink).toContain('--dsw-alias-label-deep-diving: var(--vd-bare-ink)')
+    // The band is the soft crimson, not the deep one: deep crimson sits only
+    // 1.52x away from the near-black ink and reads as one more shade of black on
+    // the light artwork, while soft crimson steps 3.5x / 4.0x away.
+    expect(ink).toContain('--dsw-alias-label-deep-diving-shimmer: var(--vd-crimson-soft)')
+
+    // One token covers both palettes — `--vd-crimson-soft` already flips with them
+    // — so a second dark rule would only be another place to drift.
+    expect(CSS_NO_COMMENTS).not.toMatch(/\[data-ds-dark-theme\] \[data-chat-running\]/)
+
+    // The copy swap and the hand-drawn hairline are gone: the sweep the user sees
+    // is the host's own. Restating the copy under a marker the 0.2.0 shell never
+    // grows is exactly what failed silently there.
+    expect(CSS_NO_COMMENTS).not.toMatch(/薇儿烧烤中|Verdandi is grilling/)
+    expect(CSS_NO_COMMENTS).not.toMatch(/verdandi-status-sweep/)
+
+    // Nothing paints the old marker, so the hook must not project it either.
+    expect(CSS_NO_COMMENTS).not.toMatch(/\[data-verdandi-running\]/)
+
+    // The label itself only keeps the host's halo off.
+    expect(CSS).toMatch(/\[data-turn-process\] \[class\*='_label'\]\s*\{[^}]*text-shadow:\s*none/)
     // The rejected halo was a multi-layer glow in the paper colour.
     expect(CSS).not.toMatch(/text-shadow:[^;]*var\(--vd-slip-solid\)/)
     expect(CSS).not.toMatch(/\[data-pane='conversation'\]::(?:before|after)/)
     expect(CSS).not.toMatch(/-webkit-text-stroke/)
-
-    // Motion lives on a gold hairline, which cannot touch contrast.
-    expect(CSS).toMatch(
-      /\[data-verdandi-running\] \[class\*='_label'\]::after\s*\{[^}]*--vd-gold-light[^}]*verdandi-status-sweep/,
-    )
-    expect(CSS).toMatch(/@keyframes verdandi-status-sweep/)
-
-    // The theme states its own line; the host's localized string survives in the
-    // accessibility tree, so the swap is visual only and must stay reversible.
-    const swap = CSS.match(
-      /\[data-verdandi-running\] \[class\*='_label'\]::before\s*\{([^}]*)\}/,
-    )?.[1] ?? ''
-    expect(swap).toContain("content: '薇儿烧烤中...'")
-    expect(swap).toContain('font-size: 14px')
-    expect(CSS).toMatch(
-      /html:lang\(en\)[\s\S]*?data-verdandi-running\] \[class\*='_label'\]::before\s*\{[^}]*Verdandi is grilling/,
-    )
   })
 
   it('stops the archive bar tokens at the collapsed header', () => {
@@ -405,14 +402,15 @@ describe('verdandi compatibility guardrails', () => {
     // artwork's darkest band measures 1.14:1.
     // The process row is painted, never resized: the host owns its box, and a
     // margin, padding, width or height here re-flows the transcript and moves the
-    // row under the pointer. The gold rule belongs to the running status only, so
-    // a long transcript is not cut into strips by a rule under every finished turn.
+    // row under the pointer. The gold rule that marked the running row is gone
+    // with the marker it rode (see the running-status test below), so a long
+    // transcript is not cut into strips by a rule under every finished turn.
     const processRule = CSS.match(
       /body\[data-dsh-verdandi\] \[data-pane='conversation'\] \[data-turn-process\]\s*\{([^}]*)\}/,
     )?.[1] ?? ''
     expect(processRule).toContain('background: none')
     expect(processRule).not.toMatch(/(margin|padding|width|height):/)
-    expect(CSS).toMatch(/\[data-verdandi-running\]\s*\{[\s\S]*?border-bottom: 1px solid color-mix/)
+    expect(CSS_NO_COMMENTS).not.toMatch(/\[data-verdandi-running\]/)
     expect(CSS).toMatch(/\[data-turn-process\] \[class\*='_label'\]\s*\{[\s\S]*?background-image: linear-gradient/)
     // The tail row is painted, never resized: the host fades it in on hover, so a
     // changed box moves the buttons under the pointer and the two states fight.
@@ -539,6 +537,9 @@ describe('verdandi legibility contrast floor', () => {
       // The running status sits on the artwork with no surface at all, so it is
       // checked against the band it actually floats in. Those extremes are
       // measured on the real scenes (design note §15.7), in linear luminance.
+      // The skin paints that ink with `--vd-bare-ink` (the host's running-status
+      // node reads it through `--dsw-alias-label-deep-diving`), so this is the
+      // running status's own contract, not an unrelated token's.
       const [bandMin, bandMax] = STATUS_BAND[palette] ?? [0, 0]
       const ratioOf = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05)
       const statusInk = luminance(hex(token(block, '--vd-bare-ink')))
