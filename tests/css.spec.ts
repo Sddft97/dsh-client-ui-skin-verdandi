@@ -272,6 +272,25 @@ describe('verdandi compatibility guardrails', () => {
     expect(declarations.match(/-webkit-app-region:\s*drag/g) ?? []).toHaveLength(1)
   })
 
+  it('drops the character stage behind a page surface', () => {
+    // The stage is `position: absolute; z-index: 0`, which beats a static page in paint
+    // order -- that is how the figures ended up over the MCP connector's cards. The
+    // conversation is the only occupant of `[data-slot="main"]` that carries `data-slot`
+    // on the node the slot hands out; every page (plugin manager, plugin pages, task
+    // board, memory page, the MCP connector's iframe host) does not. Any of them drops
+    // the stage to -1: still inside this pane's stacking context (above its own
+    // background) and below the page's in-flow content, so a page with its own
+    // background hides the art and a page without one shows it behind the content.
+    const rule = CSS.match(
+      /:has\(\[data-slot='main'\] > :not\(\[data-slot\]\)\)[^{]*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(rule).toMatch(/z-index:\s*-1/)
+    expect(CSS).toMatch(/:has\(\[data-slot='main'\] \[data-plugin-panel\]\)[^{]*\.characterStage/)
+    expect(CSS).toMatch(/:has\(\[data-slot='main'\] \[data-plugin-detail\]\)[^{]*\.characterStage/)
+    // The chat page keeps the stage at its normal level.
+    expect(CSS).toMatch(/\.characterStage\s*\{[^}]*z-index:\s*0/)
+  })
+
   it('keeps the decorative lifts below any host overlay', () => {
     // A purely decorative layer must never outrank a popover. The composer seal did:
     // it sat at z-index 5 inside a composer that the skin had lifted to 15.

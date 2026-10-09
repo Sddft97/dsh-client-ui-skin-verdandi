@@ -13,6 +13,14 @@ the rest.
 
 ### Fixed
 
+- The character art no longer covers plugin surfaces. The stage is
+  `position: absolute; z-index: 0`, which beats a static page in paint order, so on the
+  MCP connector and similar plugin pages the figures sat on top of the cards. Whenever
+  the main slot hands out a page surface instead of the conversation seat -- the
+  conversation is the only occupant that carries `data-slot` -- the stage drops to
+  `z-index: -1` -- above the pane's own background (it is a stacking context), below
+  the page's content -- so a page with its own background hides it outright and a page
+  without one shows it behind the content instead of over it.
 - The top bar is clickable again on the desktop app. Its top bar is an Electron
   window-drag region (`-webkit-app-region: drag` on the header and its rows, `no-drag`
   on each control) and that property is inherited, so every decoration the skin mounted

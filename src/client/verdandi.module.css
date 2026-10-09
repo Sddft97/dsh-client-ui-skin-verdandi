@@ -662,6 +662,19 @@ body[data-dsh-verdandi] [data-pane='conversation'] > .characterStage {
   display: block !important;
 }
 
+/* A plugin surface (or its detail view) owns the main slot, so the stage drops behind
+   whatever that page paints. The stage is `position: absolute; z-index: 0`, which beats
+   a static page in paint order -- that is how the figures ended up over the MCP
+   connector's cards. At `-1` it stays above this pane's own background (the pane is a
+   stacking context) and below the page's in-flow content, so: a page with its own
+   background hides it outright (nothing decorative over key information), a page
+   without one still shows it in the gaps, behind the content. */
+body[data-dsh-verdandi]:has([data-slot='main'] > :not([data-slot])) .characterStage,
+body[data-dsh-verdandi]:has([data-slot='main'] [data-plugin-panel]) .characterStage,
+body[data-dsh-verdandi]:has([data-slot='main'] [data-plugin-detail]) .characterStage {
+  z-index: -1;
+}
+
 .characterFigure {
   position: absolute;
   bottom: clamp(10px, 1.4vh, 18px);

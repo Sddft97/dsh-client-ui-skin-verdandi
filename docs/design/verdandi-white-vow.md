@@ -619,3 +619,28 @@ body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='head
 ```
 
 它自己就是 `drag` 元素、且没有任何 `no-drag` 后代，所以贡献的是**自己完整的矩形**；位置取顶栏**正中间那 20%**（徽记所在处，抓徽记拖窗口是最自然的手势）。实测与全部控件的矩形**重叠为 0**，因此不可能再吃掉点击。测试把不变式钉住：整套 CSS 里 `-webkit-app-region: drag` 声明**有且仅有这一处**，且必须是这个选择器、这个位置。
+
+### 15.18 插件/功能页占主槽时，立绘降到页面内容之后
+
+现象：插件的设置页（例如 MCP 连接器）里，角色立绘压在页面卡片与文字之上；而像「记忆系统」那种自带背景的页面又看不到立绘——两块页面的行为不统一。
+
+原因不在图层高低，而在**绘制顺序类别**：立绘舞台是 `position: absolute; z-index: 0`，而插件页是一堆**静态流内**元素（宿主面板自身背景透明）。定位元素天然排在流内内容之后绘制，于是立绘压住了卡片。
+
+修正：主槽里出现**任何页面表面**时把舞台降到 `z-index: -1`。判据不用点任何插件类名——`[data-slot='main']` 交给槽位的那个节点，只有**会话座位**带 `data-slot`（插件管理器、插件自带页面、任务看板、记忆系统、MCP 连接器的 iframe 宿主都不带）：
+
+```css
+body[data-dsh-verdandi]:has([data-slot='main'] > :not([data-slot])) .characterStage,
+body[data-dsh-verdandi]:has([data-slot='main'] [data-plugin-panel]) .characterStage,
+body[data-dsh-verdandi]:has([data-slot='main'] [data-plugin-detail]) .characterStage {
+  z-index: -1;
+}
+```
+
+后两条是给把 `data-plugin-panel` 嵌得更深的主机兜底。实测四种页面：会话页 `z=0`、记忆系统 `z=-1`、任务看板 `z=-1`、插件管理器 `z=-1`；桌面端 MCP 连接器页 `z=-1`，iframe 内卡片处命中返回 iframe 本身。
+
+关键在于舞台所在的中列**自身就是层叠上下文**（`isolation: isolate` + 自己的背景）：`-1` 只让它掉到「该上下文的背景之上、流内内容之下」，所以结果正好是想要的规则——
+
+- 页面**有**自己的背景 → 完全盖住立绘，关键信息不被遮挡；
+- 页面**没有**独立背景 → 立绘仍在缝隙里透出，但永远在**内容之后**（卡片、文字、开关都赢）。
+
+会话页不含这两个标记，舞台保持 `z-index: 0`；已实测聊天页舞台照常显示。插件管理页实测：舞台 `z=-1`，卡片处命中返回页面元素，立绘只作水印。
