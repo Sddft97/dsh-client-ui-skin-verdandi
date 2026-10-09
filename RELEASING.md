@@ -39,11 +39,15 @@ Also check the compatibility line in both READMEs names the host versions this r
 2. Add the GitHub topic `dsh-plugin`.
 3. Enable GitHub Issues so users and rights holders have the contact path documented in the public notices.
 4. Push the full history and confirm that CI passes. Before submitting to the DSH catalog, the public repository must be at least one day old and contain at least ten commits.
-5. Create a tag that matches the `package.json` version exactly (for example `v0.1.3` for `0.1.3`) and a GitHub Release for it, with the body taken from the
-   changelog section. Backfill a tag and a Release for every version that reached
-   npm, so the history never shows an npm artifact without a matching release; a
-   version that was tagged but superseded before publishing is documented in the
-   changelog instead of released.
+5. Create a tag that matches the `package.json` version exactly (for example `v0.1.3` for `0.1.3`). `.github/workflows/publish.yml` publishes the tarball and
+   creates the GitHub Release for it, with the body taken from the changelog section --
+   so after the tag push, check that both exist rather than making the Release by hand.
+   The Release is bound to the tag object: **moving or deleting a tag deletes its
+   Release**, so re-tag a version only together with recreating it (`gh release create
+   --verify-tag`). Backfill a tag and a Release for every version that reached npm, so
+   the history never shows an npm artifact without a matching release; a version that
+   was tagged but superseded before publishing is documented in the changelog instead
+   of released.
 6. Check both README languages, screenshots, and installation commands from a logged-out browser.
 
 ## 4. npm release
@@ -56,7 +60,7 @@ release needs no credential in the repository, no `NPM_TOKEN`, and no interactiv
 
 ```sh
 git push origin main
-git tag vX.Y.Z && git push origin vX.Y.Z     # CI publishes, then prints the dist-tags
+git tag vX.Y.Z && git push origin vX.Y.Z     # CI publishes, creates the Release, then prints the dist-tags
 ```
 
 One-time setup on npmjs.com: package → Settings → Trusted Publisher → GitHub, with owner
