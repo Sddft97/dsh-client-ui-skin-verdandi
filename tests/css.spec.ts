@@ -240,6 +240,28 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/:is\(div, span\):has\(> button \+ button\):not\(\[role='tablist'\]\)/)
   })
 
+  it('keeps skin layers out of the shell window-drag region', () => {
+    // The desktop shell's top bar is an Electron drag region: the header and its rows
+    // carry `-webkit-app-region: drag` and every control opts out with `no-drag`. The
+    // property is inherited, so a skin layer mounted inside the header inherits `drag`
+    // and re-declares the whole band -- including the area over the controls -- as
+    // draggable, and a real mouse press on the overflow menu or the panel toggle starts
+    // a window drag instead of reaching the button. Nothing in-page can observe that:
+    // `elementFromPoint` skips these layers (they are `pointer-events: none`) and
+    // CDP-injected clicks never enter the native drag path.
+    // Declarations only: the rule's own comment names `-webkit-app-region: drag`.
+    const declarations = CSS.replace(/\/\*[\s\S]*?\*\//g, '')
+    const optOut = declarations.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-header\] > \[data-verdandi-decoration\],([\s\S]*?)\{([^}]*)\}/,
+    )?.[2] ?? ''
+    expect(optOut).toMatch(/-webkit-app-region:\s*no-drag/)
+    expect(declarations).toMatch(
+      /body\[data-dsh-verdandi\] \[data-verdandi-header\]::after\s*\{[^}]*-webkit-app-region:\s*no-drag/,
+    )
+    // And nothing in the skin may ever declare a drag region of its own.
+    expect(declarations).not.toMatch(/-webkit-app-region:\s*drag/)
+  })
+
   it('keeps the decorative lifts below any host overlay', () => {
     // A purely decorative layer must never outrank a popover. The composer seal did:
     // it sat at z-index 5 inside a composer that the skin had lifted to 15.

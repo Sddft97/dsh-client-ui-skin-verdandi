@@ -789,6 +789,25 @@ body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='
   border-right: 1px solid rgba(199, 168, 107, 0.44);
 }
 
+/* The shell's top bar is an Electron window-drag region: the header and its rows carry
+   `-webkit-app-region: drag` and each control opts out with `no-drag`. The property is
+   INHERITED, so every layer the skin mounts inside the header inherited `drag` and
+   re-declared the whole band -- including the area over the controls -- as draggable.
+   A real mouse press on the overflow menu or the panel toggle then started a window
+   drag instead of reaching the button; onlookers saw "the top bar is dead".
+
+   Nothing in-page can observe this: `elementFromPoint` skips these layers (they are
+   `pointer-events: none`) and CDP-injected clicks never enter the native drag path, so
+   both look perfectly healthy. The maid-atelier skin mounts the same band as a
+   body-level layer instead, which is why only this skin showed it.
+
+   The skin's own layers opt out; the shell's own drag rects are left untouched. */
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration],
+body[data-dsh-verdandi] [data-verdandi-header]::before,
+body[data-dsh-verdandi] [data-verdandi-header]::after {
+  -webkit-app-region: no-drag;
+}
+
 /* The pane lifts are deliberately in the single digits. Anything the host raises for
    an overlay lives in the tens or hundreds, so a decoration that outranks it will
    paint over the overlay -- reported once as the composer seal sitting on top of the

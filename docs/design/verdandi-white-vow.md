@@ -575,3 +575,35 @@ body[data-dsh-verdandi] [data-verdandi-header] :is(div, span):has(> button + but
 实测（把印章临时挪到弹层正中再判序）：`seal index=7` 在 `panel index=2` 之后 → 宿主弹层赢。另外把这三个值写进测试：座位与印章都必须 < 10，印章必须低于座位，座位必须高于消息节点的 2。
 
 **这一节的教训**（写进测试的断言里）：皮肤的 `z-index` 不是「越大越安全」；宿主弹层的层级随版本漂移，唯一稳的做法是**自己尽量低**，只在同一个 pane 内部竞争。
+
+### 15.17 顶栏是 Electron 窗口拖动区（`-webkit-app-region` 会继承）
+
+现象：桌面端切会话后顶栏"点不动"，web 端完全正常，Esc 无效，缩放窗口有时能让几个按钮恢复。
+
+根因不在层级，而在 Electron 的**窗口拖动区**：
+
+- 宿主把 `<header>` 和它内部的行（`titleRow` / `titleCluster` / `crumbs` / `tabs`）都标了 `-webkit-app-region: drag`，再给每个交互控件单独标 `no-drag`；
+- **该属性是可继承的**。皮肤往 header 里挂的每个装饰层（`header-veil`、`header-namecard`、`header-bridal-corners`、`header-veil-corners`、`header-vow-crest`，以及 header 自身的 `::before`/`::after`）都因此继承成 `drag`，把整条顶栏（含按钮上方那块）重新声明成拖动区；
+- 于是真实鼠标按下被浏览器进程判定为「拖窗口」，事件根本不进页面 → 按钮"点不动"。
+
+**为什么在页面里完全观测不到**（这次踩得最深的一处）：
+
+- `document.elementFromPoint` **跳过 `pointer-events: none` 的元素**，而皮肤所有装饰层都是 `pointer-events: none` —— 所以从页面看永远是"最上层就是按钮"；
+- CDP 注入的鼠标事件（`Input.dispatchMouseEvent` / Playwright `mouse.click`）**不走原生拖动判定**，注入点击全部成功；
+- 只有真实系统级点击会走那条路，而它又需要辅助功能权限（CGEvent / osascript 注入都被系统挡下）。
+
+结论写进流程里：**"命中测试正常 + 注入点击成功"不能证明可交互**，桌面端必须真手点。
+
+**佐证（同宿主 A/B）**：深海女仆皮肤没有这个问题——它的顶部饰层挂在 `document.body` 上（`position: absolute; height: 76px`），计算值 `-webkit-app-region` 为初始值，压根不进 header 子树。
+
+**修正**：皮肤自己挂进 header 的层全部显式退出拖动区，宿主自己的拖动矩形不动：
+
+```css
+body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration],
+body[data-dsh-verdandi] [data-verdandi-header]::before,
+body[data-dsh-verdandi] [data-verdandi-header]::after { -webkit-app-region: no-drag; }
+```
+
+实测方式（**遍历全部元素**读计算值，而不是命中测试）：覆盖顶栏的 `drag` 层由 12 降到 7，剩下的全是宿主自己的；皮肤各层计算值变为 `no-drag`。测试里加了一条不变式：**皮肤 CSS 里永不出现 `-webkit-app-region: drag` 声明**（先剥注释再匹配，因为规则注释里会提到这个词）。
+
+**顺带发现的宿主问题**：桌面端皮肤中心返回的 `patches` 缺少 `cache-control: no-store`（同一接口在 web 实例上是 `no-store`），CSS 改动在桌面端会被 HTTP 缓存吃掉——**改完必须硬重载**，否则测的是旧样式。前面几轮「还是没修好」里，有一部分其实是「根本没生效」。

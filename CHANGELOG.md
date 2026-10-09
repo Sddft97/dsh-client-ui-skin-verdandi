@@ -13,6 +13,17 @@ the rest.
 
 ### Fixed
 
+- The top bar is clickable again on the desktop app. Its top bar is an Electron
+  window-drag region (`-webkit-app-region: drag` on the header and its rows, `no-drag`
+  on each control) and that property is inherited, so every decoration the skin mounted
+  into the header inherited `drag` and re-declared the whole band -- over the controls
+  included -- as draggable. A real mouse press on the overflow menu or the panel toggle
+  started a window drag instead of reaching the button. Only the desktop app was
+  affected, and nothing in-page can see it: `elementFromPoint` skips
+  `pointer-events: none` layers, and injected clicks never enter the native drag path.
+  The skin's own layers opt out now, the shell's drag rects are left untouched, and a
+  test pins the invariant that no skin declaration ever says
+  `-webkit-app-region: drag`.
 - A split header control is one pill again. The shell's "open with <app>" control is
   two buttons in one box (`div > button + button`); the blanket rule that gives every
   header button a capsule gave each half its own, so the seam showed a notch and two
