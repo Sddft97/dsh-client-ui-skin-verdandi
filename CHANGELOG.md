@@ -5,11 +5,13 @@ All notable changes to this skin package are recorded here. The format follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 A version exists only when all four agree: the git tag `vX.Y.Z`, the `version` in
-`package.json`, the newest section of this file, and the tarball on npm. `.github/workflows/release-guard.yml`
+`package.json`, the newest section of this file, and the tarball on npm. `0.1.6` was
+bumped and written up but never tagged or published, so its content shipped in `0.1.7`
+and its section below is kept as the record of that. `.github/workflows/release-guard.yml`
 enforces the first two on every tag push; the checklist in `RELEASING.md` covers
 the rest.
 
-## [Unreleased]
+## [0.1.7] - 2026-10-10
 
 ### Fixed
 
@@ -65,7 +67,7 @@ the rest.
   Pinned by a test: no skin lift reaches double digits, and the seal stays under the
   seat.
 
-## [0.1.6] - 2026-10-09
+## [0.1.6] - 2026-10-09（未发布：没有 tag，也没有 npm 产物；内容并入 0.1.7）
 
 ### Fixed
 
