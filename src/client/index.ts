@@ -42,6 +42,20 @@ import {
 import css from './verdandi.module.css'
 
 const SKIN_ATTR = 'data-dsh-verdandi'
+/**
+ * Region marker the skin stamps itself.
+ *
+ * dsh 0.2.0-rc.2 removed the shell's `data-pane` region attribute outright: the
+ * frame now renders `pI_x6G_sidebarCol` / `main.conversation` / a
+ * `[data-sidebar-right-panel]` occupant, and the panes the stylesheet was built
+ * against no longer exist. Rather than bind 157 rules to a class hash or a slot
+ * name that the host may rename again, the runtime resolves each region from
+ * whatever the current shell renders and stamps this stable attribute, matching
+ * the skin's existing `data-verdandi-*` hook family. The stylesheet therefore
+ * anchors on the skin's own contract, and only the resolvers below are
+ * shell-version aware.
+ */
+const REGION_ATTR = 'data-verdandi-pane'
 const WORKSPACE_ATTR = 'data-verdandi-workspace'
 const MODAL_ATTR = 'data-verdandi-modal-open'
 const SIDEBAR_SIZE_ATTR = 'data-verdandi-sidebar-size'
@@ -139,8 +153,111 @@ const layoutProperties = [
   '--vd-conversation-header-height',
 ] as const
 
-function firstElement<T extends HTMLElement>(selector: string): T | null {
-  return document.querySelector<T>(selector)
+/**
+ * Resolve one skin region to the element that actually owns it.
+ *
+ * Each entry lists the selectors that have carried the region across shell
+ * versions, newest first, and is probed one at a time so a `display: contents`
+ * anchor can never win over the boxed element it wraps. The 0.2.0-rc.2 shell is
+ * the reason this exists: `data-pane` is gone, so the region has to be derived
+ * from the frame's column classes and the conversation/right-panel slots.
+ */
+const REGION_SELECTORS = {
+  sidebar: [
+    "[data-verdandi-pane='sidebar']",
+    "[data-pane='sidebar']",
+    "[class*='_sidebarCol']",
+    ":has(> [data-slot='sidebar'])",
+  ],
+  conversation: [
+    "[data-verdandi-pane='conversation']",
+    "[data-pane='conversation']",
+    "[data-slot='main.conversation'] > *",
+    ":has(> [data-slot='conversation.header'])",
+  ],
+  details: [
+    "[data-verdandi-pane='details']",
+    "[data-pane='details']",
+    "[data-sidebar-right-panel]",
+    "[data-slot='rightbar'] > *",
+  ],
+} as const
+
+type RegionName = keyof typeof REGION_SELECTORS
+
+/**
+ * Whether `element` owns a box of its own.
+ *
+ * The slot system wraps every seat in a `display: contents` anchor: it is
+ * addressable but paints nothing and has no box, so it can neither carry the
+ * region's background nor host its pseudo-elements. `display: contents` is read
+ * from the computed style rather than from `getClientRects()`, which stays empty
+ * outside a real layout engine.
+ * @param element - Candidate region element.
+ * @returns True when the element participates in layout as a box.
+ */
+function hasOwnBox(element: HTMLElement): boolean {
+  return window.getComputedStyle(element).display !== 'contents'
+}
+
+/**
+ * Whether a resolved details region is actually presented on screen.
+ *
+ * The 0.2.0-rc.2 right Sidebar keeps its occupant mounted at all times: the
+ * panel is an absolutely positioned, `pointer-events: none` overlay that the
+ * host hides by translating its *contents* past the frame edge and setting
+ * `visibility: hidden` on them. The panel element itself stays transparent and
+ * keeps its box, so painting it unconditionally turns a transparent overlay into
+ * an opaque slab over the right-hand side of the conversation — measured on the
+ * live app: 391px of a 1069px window, covering the composer. The host marks the
+ * presented state explicitly with `data-sidebar-right-open`, so the region is
+ * only stamped while that is present. The legacy `aside[data-pane='details']`
+ * carries neither marker and exists only when it is meant to be seen, so it
+ * stays presented by default.
+ * @param details - Candidate details region element.
+ * @returns True when the panel is presented and may be painted.
+ */
+function detailsIsPresented(details: HTMLElement | null): boolean {
+  if (!details) return false
+  if (details.getAttribute('aria-hidden') === 'true') return false
+  if (details.hasAttribute('data-sidebar-right-panel') && !details.hasAttribute('data-sidebar-right-open')) {
+    return false
+  }
+  return true
+}
+
+/**
+ * Resolve every region once per sync.
+ *
+ * A previously stamped element is preferred so the region stays put across a
+ * re-render, and the stamp is cleared from any element that no longer resolves
+ * to that region — the same reversible contract as the rest of the hooks.
+ * @returns The resolved region elements, or null when a region is absent.
+ */
+function resolveRegions(): Record<RegionName, HTMLElement | null> {
+  const resolved = {} as Record<RegionName, HTMLElement | null>
+  for (const region of Object.keys(REGION_SELECTORS) as RegionName[]) {
+    let found: HTMLElement | null = null
+    for (const selector of REGION_SELECTORS[region]) {
+      const candidate = document.querySelector<HTMLElement>(selector)
+      if (candidate && hasOwnBox(candidate)) {
+        found = candidate
+        break
+      }
+    }
+    if (region === 'details' && !detailsIsPresented(found)) found = null
+    resolved[region] = found
+  }
+
+  for (const element of document.querySelectorAll<HTMLElement>(`[${REGION_ATTR}]`)) {
+    const owner = (Object.keys(resolved) as RegionName[])
+      .find((region) => resolved[region] === element)
+    if (owner === undefined) element.removeAttribute(REGION_ATTR)
+  }
+  for (const region of Object.keys(resolved) as RegionName[]) {
+    resolved[region]?.setAttribute(REGION_ATTR, region)
+  }
+  return resolved
 }
 
 function headerElement(root: ParentNode | null): HTMLElement | null {
@@ -295,19 +412,26 @@ function decorateLegibilityRows(conversation: HTMLElement | null): void {
   }
 }
 
-function decorateStableRegions(): void {
+function decorateStableRegions(regions: Record<RegionName, HTMLElement | null>): void {
   clearOwnedHooks()
 
   const header = headerElement(document)
   header?.setAttribute('data-verdandi-header', '')
 
-  const details = firstElement<HTMLElement>("[data-pane='details']")
+  const details = regions.details
   const detailsText = (details?.textContent ?? '').replace(/\s+/g, ' ').trim()
-  if (/点击消息流中的工具行查看详情|select.+tool.+row.+details/i.test(detailsText)) {
+  // dsh 0.2.0-rc.2 replaced the details pane with the right Sidebar, whose
+  // no-selection state is the docking kit's empty host (`[data-dockkit-empty]`,
+  // "空面板" / "Empty pane") rather than the old tool-row prompt. Both shapes are
+  // accepted so the relic still appears on the empty panel.
+  if (
+    details?.querySelector('[data-dockkit-empty]') !== null
+    || /点击消息流中的工具行查看详情|select.+tool.+row.+details|^空面板$|^Empty pane$/i.test(detailsText)
+  ) {
     details?.setAttribute(DETAILS_EMPTY_ATTR, '')
   }
 
-  const sidebar = firstElement<HTMLElement>("[data-pane='sidebar']")
+  const sidebar = regions.sidebar
   if (!sidebar) return
 
   for (const button of sidebar.querySelectorAll<HTMLButtonElement>('button')) {
@@ -320,7 +444,13 @@ function decorateStableRegions(): void {
     if (/newSession/i.test(button.className) || /^(新会话|New session)$/i.test(text)) {
       button.dataset.verdandiNewSession = ''
     }
-    if (/^(任务看板|Task board|SSH|技能中心|Skill center)$/i.test(text)) button.dataset.verdandiNavEntry = ''
+    // dsh 0.2.0-rc.2 rebuilt the sidebar's global navigation as `_panelRow`
+    // entries whose titles are plugin-owned ("插件" / "全局面板"), so the old
+    // board/SSH/skill names are gone; the class suffix is the stable hook and the
+    // text rule still covers the older shells.
+    if (/panelRow/i.test(button.className) || /^(任务看板|Task board|SSH|技能中心|Skill center)$/i.test(text)) {
+      button.dataset.verdandiNavEntry = ''
+    }
     if (/搜索会话|Search sessions|视图选项|View options|添加工作区|Add workspace/i.test(label)) {
       button.dataset.verdandiSidebarAction = ''
     }
@@ -328,20 +458,27 @@ function decorateStableRegions(): void {
 }
 
 /**
- * Mark the turn-process control while its turn is actually running.
+ * Mark the live turn status while a turn is actually running.
  *
- * dsh 0.1.7 moved the live status into that control and switches its label copy
- * with the turn state (running / worked / took / failed), so the skin's copy
- * swap has to be scoped by state instead of by the removed `_turnStatus` class.
- * Only the running label is marked, so the finished states keep the host wording.
+ * The live status has moved twice. dsh 0.1.7 put it inside the turn-process
+ * control and switched that label's copy with the turn state, so the marker was
+ * scoped by the running text. dsh 0.2.0-rc.2 renders the turn-process control
+ * only for *settled* turns (`Completed` / `Failed` / `Stopped`) and gives the
+ * live status its own `[data-chat-running]` row, so that row is the running
+ * marker now. Both shapes are marked, and only the running one, so finished
+ * states keep the host's own wording.
  * @param conversation - Visible conversation pane, or null when unrendered.
  */
 function markRunningStatus(conversation: HTMLElement | null): void {
   const running = conversation
-    ? [...conversation.querySelectorAll<HTMLElement>('[data-turn-process]')].filter((node) => {
-      const text = (node.querySelector("[class*='_label']")?.textContent ?? '').trim()
-      return /^(深度求索中|Deep diving)/i.test(text)
-    })
+    ? [
+        ...conversation.querySelectorAll<HTMLElement>('[data-turn-process]'),
+        ...conversation.querySelectorAll<HTMLElement>('[data-chat-running]'),
+      ].filter((node) => {
+        const label = node.querySelector("[class*='_label'], [class*='_runningText']")
+        const text = (label?.textContent ?? '').trim()
+        return /^(深度求索中|Deep diving)/i.test(text)
+      })
     : []
 
   for (const marked of document.querySelectorAll<HTMLElement>(`[${RUNNING_ATTR}]`)) {
@@ -394,6 +531,25 @@ function setConversationView(conversation: HTMLElement): 'chat' | 'trace' {
   const view = /^(轨迹|Trace)$/i.test(label) ? 'trace' : 'chat'
   conversation.setAttribute(CONVERSATION_VIEW_ATTR, view)
   return view
+}
+
+/**
+ * Read the shell phase that drives the stage's scale.
+ *
+ * dsh 0.2.0-rc.2 puts the phase on the conversation root's own `data-phase` and
+ * mirrors it on the content region as `data-content-phase`; older shells only
+ * carried `data-phase` on a descendant. All three are probed, defaulting to
+ * `active` so the stage keeps its resting composition.
+ * @param conversation - The resolved conversation region.
+ * @returns The phase token, e.g. `hero` or `active`.
+ */
+function conversationPhase(conversation: HTMLElement): string {
+  const own = conversation.getAttribute('data-phase')
+  if (own) return own
+  const content = conversation.querySelector<HTMLElement>('[data-content-phase]')
+  const fromContent = content?.getAttribute('data-content-phase')
+  if (fromContent) return fromContent
+  return conversation.querySelector<HTMLElement>('[data-phase]')?.getAttribute('data-phase') ?? 'active'
 }
 
 function restoreAttribute(element: HTMLElement, name: string, previous: string | null): void {
@@ -450,11 +606,12 @@ export function apply(ctx: Context): void {
   const sync = () => {
     animationFrame = 0
     removeLegacyNodes()
-    decorateStableRegions()
+    const regions = resolveRegions()
+    decorateStableRegions(regions)
 
-    const sidebar = firstElement<HTMLElement>("[data-pane='sidebar']")
-    const conversation = firstElement<HTMLElement>("[data-pane='conversation']")
-    const details = firstElement<HTMLElement>("[data-pane='details']")
+    const sidebar = regions.sidebar
+    const conversation = regions.conversation
+    const details = regions.details
     const workspaceVisible = isRendered(conversation)
 
     body.toggleAttribute(WORKSPACE_ATTR, workspaceVisible)
@@ -466,7 +623,7 @@ export function apply(ctx: Context): void {
 
     if (workspaceVisible) {
       const stage = ensureCharacterStage(conversation)
-      const phase = conversation.querySelector<HTMLElement>('[data-phase]')?.getAttribute('data-phase') ?? 'active'
+      const phase = conversationPhase(conversation)
       setConversationView(conversation)
       stage.dataset.verdandiPhase = phase
       conversation.setAttribute(CONVERSATION_PHASE_ATTR, phase)
@@ -474,7 +631,7 @@ export function apply(ctx: Context): void {
       setStageWidth(stage, conversation)
     } else {
       for (const stage of document.querySelectorAll<HTMLElement>(STAGE_SELECTOR)) stage.remove()
-      for (const pane of document.querySelectorAll<HTMLElement>("[data-pane='conversation']")) {
+      for (const pane of document.querySelectorAll<HTMLElement>(`[${REGION_ATTR}='conversation']`)) {
         pane.removeAttribute(CONVERSATION_PHASE_ATTR)
         pane.removeAttribute(CONVERSATION_VIEW_ATTR)
       }
@@ -500,7 +657,10 @@ export function apply(ctx: Context): void {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['aria-expanded', 'aria-selected', 'data-phase', 'hidden'],
+    // `data-sidebar-right-open` is the host's presented-state marker for the
+    // right-hand panel, so toggling that panel has to re-resolve the details
+    // region; without it the panel would stay unstamped after being opened.
+    attributeFilter: ['aria-expanded', 'aria-selected', 'data-phase', 'hidden', 'data-sidebar-right-open'],
   })
   window.addEventListener('resize', scheduleSync)
   window.visualViewport?.addEventListener('resize', scheduleSync)
@@ -517,10 +677,13 @@ export function apply(ctx: Context): void {
     for (const decoration of document.querySelectorAll<HTMLElement>(DECORATION_SELECTOR)) decoration.remove()
     for (const slip of document.querySelectorAll<HTMLElement>(`[${SLIP_ATTR}]`)) slip.removeAttribute(SLIP_ATTR)
     for (const stage of document.querySelectorAll<HTMLElement>(STAGE_SELECTOR)) stage.remove()
-    for (const conversation of document.querySelectorAll<HTMLElement>("[data-pane='conversation']")) {
+    for (const conversation of document.querySelectorAll<HTMLElement>(`[${REGION_ATTR}='conversation']`)) {
       for (const property of layoutProperties) conversation.style.removeProperty(property)
       conversation.removeAttribute(CONVERSATION_PHASE_ATTR)
       conversation.removeAttribute(CONVERSATION_VIEW_ATTR)
+    }
+    for (const region of document.querySelectorAll<HTMLElement>(`[${REGION_ATTR}]`)) {
+      region.removeAttribute(REGION_ATTR)
     }
 
     for (const [property, previous] of previousAssetProperties) {

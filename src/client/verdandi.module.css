@@ -97,7 +97,7 @@ body[data-dsh-verdandi] ::selection {
 /* Sidebar — the deep-crimson navigation zone.                                */
 /* -------------------------------------------------------------------------- */
 
-body[data-dsh-verdandi] [data-pane='sidebar'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] {
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -118,14 +118,14 @@ body[data-dsh-verdandi] [data-pane='sidebar'] {
   --dsw-specific-sidebar-nav-item-active-accent: rgba(230, 213, 169, 0.34);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] > div {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] > div {
   position: relative;
   z-index: 2;
   background: transparent !important;
   color: inherit;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar']::before {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar']::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -138,7 +138,7 @@ body[data-dsh-verdandi] [data-pane='sidebar']::before {
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar']::after {
   content: '';
   position: absolute;
   z-index: 0;
@@ -149,12 +149,12 @@ body[data-dsh-verdandi] [data-pane='sidebar']::after {
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] {
   position: relative;
   isolation: isolate;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > :is(
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > :is(
   [data-verdandi-decoration='sidebar-veil-corners-top'],
   [data-verdandi-decoration='sidebar-veil-corners-bottom']
 ) {
@@ -165,11 +165,11 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > :is(
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > :is(
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > :is(
   [data-verdandi-decoration='sidebar-veil-corners-top'],
   [data-verdandi-decoration='sidebar-veil-corners-bottom']
 )::before,
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > :is(
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > :is(
   [data-verdandi-decoration='sidebar-veil-corners-top'],
   [data-verdandi-decoration='sidebar-veil-corners-bottom']
 )::after {
@@ -182,30 +182,30 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > :is(
   opacity: 0.92;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-veil-corners-top']::before {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-veil-corners-top']::before {
   top: -11px;
   left: -12px;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-veil-corners-top']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-veil-corners-top']::after {
   top: -11px;
   right: -12px;
   transform: scaleX(-1);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-veil-corners-bottom']::before {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-veil-corners-bottom']::before {
   bottom: -11px;
   left: -12px;
   transform: scaleY(-1);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-veil-corners-bottom']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-veil-corners-bottom']::after {
   right: -12px;
   bottom: -11px;
   transform: scale(-1);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait'] {
   position: absolute;
   z-index: -1;
   right: 10px;
@@ -229,7 +229,7 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verd
   mask-image: linear-gradient(180deg, transparent, #000 13%, #000 78%, rgba(0, 0, 0, 0.52) 94%, transparent);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait']::before {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait']::before {
   content: '';
   position: absolute;
   inset: 10px;
@@ -238,12 +238,12 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verd
   box-shadow: inset 0 0 0 1px rgba(199, 168, 107, 0.34);
 }
 
-body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait'] {
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait'] {
   opacity: 0.42;
   filter: brightness(0.78) saturate(0.74);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-sacred-tree'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-sacred-tree'] {
   position: absolute;
   z-index: -2;
   top: 25%;
@@ -258,17 +258,17 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verd
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-decoration='sidebar-rail-avatar'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-decoration='sidebar-rail-avatar'] {
   display: none;
   pointer-events: none;
 }
 
-body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::before,
-body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']::after {
+body[data-dsh-verdandi][data-verdandi-modal-open] [data-verdandi-pane='sidebar']::before,
+body[data-dsh-verdandi][data-verdandi-modal-open] [data-verdandi-pane='sidebar']::after {
   opacity: 0;
 }
 
-body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']:has(
+body[data-dsh-verdandi][data-verdandi-modal-open] [data-verdandi-pane='sidebar']:has(
   [data-slot='sidebar.settings'] [role='dialog'][aria-modal='true']
 ) {
   /* Settings is portalled below the sidebar node. The normal decorative
@@ -278,34 +278,41 @@ body[data-dsh-verdandi][data-verdandi-modal-open] [data-pane='sidebar']:has(
   overflow: visible;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] button:not(
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button:not(
   [data-slot='sidebar.settings'] *
 ) {
   color: inherit;
 }
 
-/* [P0 fix] Removed the `button[aria-label] svg > rect` / `svg > g:last-of-type
-   path` pair: both are dead selectors. The real new-session icon
-   (`NewChatOutlineArtwork`) draws with <path> only — no <rect>, no <g> — and on
-   macOS the brand is a <span> with no aria-label, so `button[aria-label]` never
-   matched it either. The icon colour is already handled by the `color: inherit`
-   rule above. */
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='新建会话'] svg > rect,
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='New session'] svg > rect {
+  fill: var(--vd-gold) !important;
+}
 
-body[data-dsh-verdandi] [data-pane='sidebar'] button[aria-label='收起侧边栏'],
-body[data-dsh-verdandi] [data-pane='sidebar'] button[aria-label='打开侧边栏'],
-body[data-dsh-verdandi] [data-pane='sidebar'] button[aria-label='Collapse sidebar'],
-body[data-dsh-verdandi] [data-pane='sidebar'] button[aria-label='Open sidebar'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='新建会话'] svg > g:last-of-type path,
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='New session'] svg > g:last-of-type path {
+  fill: var(--vd-crimson-deep) !important;
+}
+
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='收起侧边栏'],
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='展开侧边栏'],
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='打开侧边栏'],
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='Collapse sidebar'],
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='Open sidebar'],
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='Expand sidebar'] {
   border-radius: 9px;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] button[aria-label='收起侧边栏']:hover,
-body[data-dsh-verdandi] [data-pane='sidebar'] button[aria-label='打开侧边栏']:hover,
-body[data-dsh-verdandi] [data-pane='sidebar'] button[aria-label='Collapse sidebar']:hover,
-body[data-dsh-verdandi] [data-pane='sidebar'] button[aria-label='Open sidebar']:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='收起侧边栏']:hover,
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='展开侧边栏']:hover,
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='打开侧边栏']:hover,
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='Collapse sidebar']:hover,
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='Open sidebar']:hover,
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] button[aria-label='Expand sidebar']:hover {
   background: rgba(255, 255, 255, 0.11);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-new-session] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-new-session] {
   min-height: 42px;
   color: var(--vd-crimson-deep) !important;
   font-weight: 700;
@@ -322,11 +329,11 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-new-session] {
   transition: transform 150ms ease, box-shadow 150ms ease, filter 150ms ease;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-new-session] * {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-new-session] * {
   color: inherit !important;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-new-session]:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-new-session]:hover {
   filter: brightness(1.03);
   transform: translateY(-1px);
   box-shadow:
@@ -335,54 +342,54 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-new-session]:hover 
     0 9px 20px rgba(48, 6, 17, 0.26);
 }
 
-/* [darwin fix] On macOS the host paints the new-session button with its own
-   `#ffffff8c` fill (Windows has no such rule), which left a white block in the
-   sidebar's top-left corner. The platform marker gives this override the
-   specificity to win, and it also covers the inner `newSession*` wrapper in case
-   the hook has not stamped `data-verdandi-new-session` yet. */
-[data-platform='darwin'] body[data-dsh-verdandi] [data-pane='sidebar'] [class*='newSession'],
-[data-platform='darwin'] body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-new-session] {
-  background:
-    var(--vd-art-invitation-lace) center / 100% 100% no-repeat,
-    linear-gradient(180deg, #fffdf9, #f5eae2) !important;
-  color: var(--vd-crimson-deep) !important;
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-nav-entry] {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-block: 2px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  transition: background 150ms ease, border-color 150ms ease;
 }
 
-[data-platform='darwin'] body[data-dsh-verdandi] [data-pane='sidebar'] [class*='newSession']:hover,
-[data-platform='darwin'] body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-new-session]:hover {
-  filter: brightness(1.03);
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-nav-entry] > :first-child {
+  display: inline-flex;
+  flex: 0 0 24px;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
 }
 
-/* [darwin fix] The brand element is a <span> on macOS (no aria-label, no
-   <button>), so the `button[aria-label='新建会话']` rules above never match it.
-   Style it through the class-name hook instead. */
-body[data-dsh-verdandi] [data-pane='sidebar'] [class*='_brand'],
-body[data-dsh-verdandi] [data-pane='sidebar'] [class*='_brandIdentity'] {
-  color: var(--vd-gold);
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-nav-entry] > :first-child svg {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  color: var(--vd-gold-light);
+  background: rgba(255, 253, 251, 0.08);
+  border: 1px solid rgba(230, 213, 169, 0.36);
+  border-radius: 50%;
+  box-sizing: border-box;
 }
 
-/* The framed 24px gold ring on the registered panel rows (task-board /
-   skill-explorer / ssh) is gone: the hook only marked those three, so the
-   sidebar read as three ringed icons above three bare ones. The rows now keep
-   the host's own geometry (16px glyph, 8px gap, 36px row) exactly like the
-   official Plugins / Schedule rows, so the icon column, the label indent, the
-   row rhythm and the hover tint are one shape top to bottom. The
-   `data-verdandi-nav-entry` hook is still projected by src/client/index.ts; it
-   just carries no paint any more. */
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-nav-entry]:hover {
+  background: rgba(255, 255, 255, 0.095);
+  border-color: rgba(230, 213, 169, 0.28);
+}
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-sidebar-action] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-sidebar-action] {
   color: var(--vd-gold-light) !important;
   border: 1px solid transparent;
   border-radius: 8px;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-verdandi-sidebar-action]:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-verdandi-sidebar-action]:hover {
   color: #fffaf0 !important;
   background: rgba(255, 255, 255, 0.11);
   border-color: rgba(230, 213, 169, 0.3);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'] {
   position: relative;
   color: #fff7f3;
   border: 1px solid transparent;
@@ -390,12 +397,12 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'] {
   transition: background 150ms ease, border-color 150ms ease, transform 150ms ease;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'] > * {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'] > * {
   position: relative;
   z-index: 1;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded]::before {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-expanded]::before {
   content: '';
   position: absolute;
   z-index: 0;
@@ -409,23 +416,23 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded]::
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded='true']::before {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-expanded='true']::before {
   opacity: 0.38;
   filter: saturate(0.88) contrast(1.04);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem']:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem']:hover {
   background: rgba(255, 255, 255, 0.095);
   border-color: rgba(230, 213, 169, 0.28);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded='true'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-expanded='true'] {
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.17), rgba(255, 255, 255, 0.045));
   border-color: rgba(230, 213, 169, 0.5);
   box-shadow: inset 3px 0 0 var(--vd-gold);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded] > :first-child {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-expanded] > :first-child {
   display: inline-flex;
   flex: 0 0 29px;
   align-items: center;
@@ -437,15 +444,15 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded] >
   filter: drop-shadow(0 2px 3px rgba(54, 8, 20, 0.28));
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded] > :first-child svg {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-expanded] > :first-child svg {
   opacity: 0;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded] svg {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-expanded] svg {
   color: var(--vd-gold-light);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded='true']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-expanded='true']::after {
   content: '';
   position: absolute;
   right: 9px;
@@ -458,7 +465,7 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-expanded='t
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-selected='true'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-selected='true'] {
   color: var(--vd-crimson-deep) !important;
   font-weight: 700;
   background:
@@ -470,11 +477,11 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-selected='t
   transform: translateX(3px);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-selected='true'] * {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-selected='true'] * {
   color: inherit !important;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-selected='true']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [role='treeitem'][aria-selected='true']::after {
   content: '';
   position: absolute;
   z-index: 1;
@@ -488,7 +495,7 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [role='treeitem'][aria-selected='t
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar.footer.action'] {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar.footer.action'] {
   position: relative;
   z-index: 2;
   color: #fff7f3;
@@ -497,13 +504,13 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar.footer.action'
   backdrop-filter: blur(5px);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [class~='cm-bal-err'],
-body[data-dsh-verdandi] [data-pane='sidebar'] [class~='cm-bal-err'] * {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [class~='cm-bal-err'],
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [class~='cm-bal-err'] * {
   color: #fff1d6 !important;
   text-shadow: 0 1px 2px rgba(52, 7, 19, 0.7);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar.settings'] > button {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar.settings'] > button {
   color: var(--vd-crimson-deep);
   background:
     var(--vd-art-invitation-lace) center / 100% 100% no-repeat,
@@ -513,24 +520,24 @@ body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar.settings'] > b
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.055);
 }
 
-body[data-dsh-verdandi] [data-pane='sidebar'] [data-slot='sidebar.settings'] > button:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='sidebar'] [data-slot='sidebar.settings'] > button:hover {
   color: var(--vd-crimson);
   filter: brightness(1.035);
 }
 
-body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar']::after {
+body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='sidebar']::after {
   display: none;
 }
 
-body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait'] {
+body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-portrait'] {
   display: none;
 }
 
-body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-sacred-tree'] {
+body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='sidebar'] [data-slot='sidebar'] > [data-verdandi-decoration='sidebar-sacred-tree'] {
   display: none;
 }
 
-body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar'] [data-verdandi-decoration='sidebar-rail-avatar'] {
+body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='sidebar'] [data-verdandi-decoration='sidebar-rail-avatar'] {
   display: block;
   position: absolute;
   z-index: 8;
@@ -546,12 +553,12 @@ body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar']
   pointer-events: none;
 }
 
-body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar']::before {
+body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='sidebar']::before {
   inset: 5px;
   border-radius: 9px;
 }
 
-body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar'] :is(button, [role='treeitem']) {
+body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='sidebar'] :is(button, [role='treeitem']) {
   border-radius: 10px;
 }
 
@@ -559,7 +566,7 @@ body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-pane='sidebar']
 /* Conversation stage — bridal-white reading zone.                            */
 /* -------------------------------------------------------------------------- */
 
-body[data-dsh-verdandi] [data-pane='conversation'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] {
   position: relative;
   isolation: isolate;
   overflow: hidden;
@@ -597,7 +604,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] {
   --dsw-specific-input-major: rgba(255, 253, 251, 0.98);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'][data-verdandi-phase='hero'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'][data-verdandi-phase='hero'] {
   /* With no transcript to carry, the veil lifts and the stage composition
      stays as vivid as the artwork allows. */
   background:
@@ -607,7 +614,7 @@ body[data-dsh-verdandi] [data-pane='conversation'][data-verdandi-phase='hero'] {
     var(--vd-ivory-soft) !important;
 }
 
-body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] {
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-pane='conversation'] {
   background:
     linear-gradient(
       90deg,
@@ -627,7 +634,7 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] {
   --dsw-specific-input-major: rgba(38, 23, 29, 0.98);
 }
 
-body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'][data-verdandi-phase='hero'] {
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-pane='conversation'][data-verdandi-phase='hero'] {
   background:
     linear-gradient(90deg, transparent 0%, var(--vd-stage-veil-hero) 9% 91%, transparent 100%),
     linear-gradient(180deg, rgba(25, 15, 20, 0.18), rgba(16, 9, 13, 0.36)),
@@ -635,8 +642,12 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'][data-verd
     #171015 !important;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
+/* The 0.2.0-rc.2 shell registers the conversation as `main.conversation` and
+   renders its root as that slot's child, so the old bare `conversation` slot is
+   probed as well as the current pair. */
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
   [data-slot='conversation'],
+  [data-slot='main.conversation'] > *,
   [data-slot='conversation.session'],
   [data-slot='conversation.view'],
   [data-phase='active'],
@@ -655,7 +666,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
   contain: layout paint;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] > .characterStage {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] > .characterStage {
   /* DSH marks decorative nodes aria-hidden and some workspace surfaces map
      that attribute to display:none. Keep the visual stage mounted underneath
      Task Board/SSH while retaining aria-hidden for accessibility. */
@@ -750,13 +761,16 @@ body[data-dsh-verdandi] .characterStage[data-verdandi-width='compact'][data-verd
   transform: scale(0.74);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] > :not(.characterStage),
-body[data-dsh-verdandi] [data-pane='conversation'] [data-slot='conversation'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] > :not(.characterStage),
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+  [data-slot='conversation'],
+  [data-slot='main.conversation'] > *
+) {
   position: relative;
   z-index: 1;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='workspace-lace'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] > [data-verdandi-decoration='workspace-lace'] {
   position: absolute;
   z-index: 0;
   inset: var(--vd-conversation-header-height, 76px) 0 var(--vd-character-floor, 154px);
@@ -764,8 +778,8 @@ body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='workspace-lace']::before,
-body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='workspace-lace']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] > [data-verdandi-decoration='workspace-lace']::before,
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] > [data-verdandi-decoration='workspace-lace']::after {
   content: '';
   position: absolute;
   top: 16px;
@@ -779,12 +793,12 @@ body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='
   mask-image: linear-gradient(180deg, transparent, #000 12%, #000 88%, transparent);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='workspace-lace']::before {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] > [data-verdandi-decoration='workspace-lace']::before {
   left: 2px;
   border-left: 1px solid rgba(199, 168, 107, 0.44);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='workspace-lace']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] > [data-verdandi-decoration='workspace-lace']::after {
   right: 2px;
   border-right: 1px solid rgba(199, 168, 107, 0.44);
 }
@@ -1090,7 +1104,7 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] {
   color: var(--vd-ink);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [class*='_openError'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [class*='_openError'] {
   margin: 12px clamp(12px, 8vw, 110px) 8px;
   padding: 10px 14px;
   color: var(--vd-crimson-deep) !important;
@@ -1103,7 +1117,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [class*='_openError'] {
   box-shadow: 0 5px 16px rgba(66, 18, 31, 0.12);
 }
 
-body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] [class*='_openError'] {
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-pane='conversation'] [class*='_openError'] {
   color: #ffd9df !important;
   background: rgba(43, 25, 31, 0.95);
   border-color: rgba(225, 154, 169, 0.35);
@@ -1264,10 +1278,7 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] :is(
   --dsw-alias-label-tertiary: #dcbfc7;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
-  [aria-label='轨迹时间线'],
-  [aria-label='Trajectory timeline']
-) {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [aria-label='Trajectory timeline'] {
   position: relative;
   min-height: 0;
   overflow: hidden;
@@ -1280,35 +1291,11 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
   box-shadow: inset 3px 0 0 var(--vd-crimson), 0 8px 24px rgba(62, 17, 29, 0.06);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
-  [aria-label='轨迹时间线'],
-  [aria-label='Trajectory timeline']
-) button {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [aria-label='Trajectory timeline'] button {
   color: var(--vd-crimson-deep);
   background: color-mix(in srgb, var(--vd-paper-solid) 88%, var(--vd-gold) 12%);
   border: 1px solid color-mix(in srgb, var(--vd-gold) 62%, transparent);
   border-radius: 999px;
-}
-
-/* The trace panel's «earlier history» control is anchored to the left edge of
-   the lanes (the host draws it square and flush, with a left-anchored fade). A
-   pill radius here does not work: at 28px wide and 50px tall the arc ate half of
-   the top and bottom edges, so the trailing rounding pulled the fill away from
-   the panel border and left hairline gaps along both edges. Left corners stay
-   square so the control sits flush on the lane edge, the trailing side takes the
-   same 6px as the other row chips, and the top/bottom rules are dropped so the
-   fill meets the panel's border lines instead of doubling them one pixel inside. */
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
-  [aria-label='轨迹时间线'],
-  [aria-label='Trajectory timeline']
-) :is(
-  [aria-label='加载更早的历史'],
-  [aria-label='Load earlier history'],
-  [class*='earlierHistory']
-) {
-  border-top: 0;
-  border-bottom: 0;
-  border-radius: 0 6px 6px 0;
 }
 
 body[data-dsh-verdandi] [data-slot='tool.call.toolview'] {
@@ -1317,21 +1304,34 @@ body[data-dsh-verdandi] [data-slot='tool.call.toolview'] {
   box-shadow: 0 4px 14px rgba(58, 16, 28, 0.055);
 }
 
-/* [P0 fix] `[class*='codeBlock']` removed: the real CodeBlock has no such
-   class, so the selector only ever matched `pre` anyway. */
-body[data-dsh-verdandi] [data-pane='conversation'] pre {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(pre, [class*='codeBlock']) {
   color: var(--vd-ink);
   background: color-mix(in srgb, var(--vd-paper-solid) 92%, #a9938b 8%);
   border: 1px solid var(--vd-line);
   border-radius: 10px;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] code {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] code {
   color: inherit;
 }
 
-/* [P0 fix] Removed the `_producedLabel` / `_producedMore` rule: neither class
-   exists in any current dsh-client-ui-* bundle, so it painted nothing. */
+/* bare text over the stage, same treatment as the running status.
+   dsh 0.2.0-rc.2 removed the `_producedLabel` / `_producedMore` classes. The
+   deliverables family that replaced them mostly draws its own opaque card fill
+   (`_file`, `_card`), so only the two genuinely bare metadata lines need this:
+   the comparison note above a diff's hunks (`[data-diff-note]`, whose host rule
+   is `label-tertiary` with no surface) and the changed-files statistic line
+   (`_stat`, `_statCounts`) that sits outside the card's fill. */
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+  [class*='_producedLabel'],
+  [class*='_producedMore'],
+  [data-diff-note],
+  [data-diff-coarse],
+  [data-diff-truncated]
+) {
+  color: var(--vd-bare-ink);
+  -webkit-text-fill-color: var(--vd-bare-ink);
+}
 
 /* -------------------------------------------------------------------------- */
 /* Legibility guard — every bare transcript row carries its own paper.         */
@@ -1352,7 +1352,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] code {
    instead, and the context notice is marked at runtime because its row root is
    bare (`XrJvXW_root`) with only the disclosure's two semantic attributes as a
    stable hook. */
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
   [data-verdandi-slip],
   [class*='_turnErrorRow'],
   [class*='_compactionRow']
@@ -1378,7 +1378,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
    hover, so a margin, padding, border or size here re-flows them while that fade
    runs and slides their buttons under the pointer; the dedicated rules below add
    the radius, the shadow and the hover fill. */
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
   [data-clock='start'],
   [data-turn-trigger]
 ) {
@@ -1393,27 +1393,27 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
 }
 
 /* Failure / token-cap notice: crimson rule, dedicated state colour. */
-body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [class*='_turnErrorRow'] {
   padding-left: 10px;
   border-left: 3px solid var(--vd-danger);
 }
 
 /* The token-cap notice reuses the failure row, so it only re-tints the rule. */
-body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow']:has(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [class*='_turnErrorRow']:has(
   [class*='_maxTokensTitle']
 ) {
   border-left-color: var(--vd-warn);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] [class*='_turnErrorTitle'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [class*='_turnErrorRow'] [class*='_turnErrorTitle'] {
   color: var(--vd-danger) !important;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] [class*='_maxTokensTitle'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [class*='_turnErrorRow'] [class*='_maxTokensTitle'] {
   color: var(--vd-warn) !important;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] [class*='_turnErrorCode'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [class*='_turnErrorRow'] [class*='_turnErrorCode'] {
   padding: 1px 7px;
   color: var(--vd-danger);
   font-weight: 600;
@@ -1429,7 +1429,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [class*='_turnErrorRow'] [cla
    the label as the chapter's own caption and the hairline turned gold, so the
    row never reads as a floating white bar. Nothing here changes geometry on
    hover, which is what the message actions row must never do. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-process] {
   /* Paint only: the host owns this row's box, and the transcript already carries
      enough furniture without a rule under every finished turn. */
   color: var(--vd-ink-meta);
@@ -1444,12 +1444,12 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] {
 /* The running status is the one place the chapter language belongs: a gold rule
    under the live line, with the sweep riding it. Marked by the hooks, so the
    finished rows stay plain. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-verdandi-running] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-verdandi-running] {
   border-bottom: 1px solid color-mix(in srgb, var(--vd-gold) 42%, transparent);
 }
 
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_label'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-process] [class*='_label'] {
   position: relative;
   padding: 1px 18px 1px 10px;
   /* The turn-process row is the chapter that may fold many step groups inside
@@ -1489,7 +1489,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
    stays 14px, so nothing around it moves. The host ships no rotation rule for
    this chevron at all, so the expanded state is articulated here off the
    disclosure's own aria-expanded. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-process] [class*='_chevron'] {
   /* A paper disc inside a gold ring, matching the chapter pill's own ring
      grammar. The arrow stays ink-dark in both themes — dark-on-paper reads
      at ~12:1, and colouring it per-theme put near-white ink on gold in dark
@@ -1508,20 +1508,20 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
 /* Hover feedback is the ring brightening to full strength — no colour
    inversion anywhere, so nothing can blend into anything. Scoped to the
    whole chapter pill, which is the click target. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover [class*='_chevron'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-process]:hover [class*='_chevron'] {
   box-shadow: 0 0 0 2px var(--vd-gold);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_chevron'] path {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-process] [class*='_chevron'] path {
   stroke-width: 1.4px;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-process]:hover {
   color: var(--vd-ink);
   border-bottom-color: var(--vd-gold);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover [class*='_label'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-process]:hover [class*='_label'] {
   color: var(--vd-ink);
 }
 
@@ -1536,7 +1536,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process]:hover [cl
    and a hairline that cannot tell a chapter boundary from any other row is not
    worth its cost. */
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] [data-process-activity] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-step-process] [data-process-activity] {
   position: relative;
   padding: 1px 12px 1px 10px;
   color: var(--vd-ink-meta);
@@ -1557,14 +1557,14 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] [data-pro
   border-radius: 6px;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] [data-process-activity]:is(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-step-process] [data-process-activity]:is(
   :hover,
   :focus-visible
 ) {
   color: var(--vd-ink);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] :is(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-step-process] :is(
   [data-step-process-icon],
   [data-step-process-chevron]
 ) {
@@ -1576,11 +1576,11 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process] :is(
    glued to the title above and the sibling fold below. The rows inside are
    static content the user explicitly opened — not hover-revealed chrome — so a
    vertical rhythm here is safe and wanted. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process-body]:not(:empty) {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-step-process-body]:not(:empty) {
   margin-top: 4px;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process-body] > [class*='_content'] > * + * {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-step-process-body] > [class*='_content'] > * + * {
   margin-top: 7px;
 }
 
@@ -1591,7 +1591,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-step-process-body] > [c
    while that fade runs, and the two hover states then fight (the row jitters and
    the buttons slide left). Everything below is paint only: the box stays exactly
    where the host put it, and the buttons carry their own hover. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_actions']:has(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-tail] [class*='_actions']:has(
   [class*='_time']
 ) {
   position: relative;
@@ -1610,11 +1610,11 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_ac
   --dsw-alias-label-caption: var(--vd-ink-meta);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_actions'] button {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-tail] [class*='_actions'] button {
   color: var(--vd-ink-meta);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_actions'] button:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-tail] [class*='_actions'] button:hover {
   color: var(--vd-ink);
   background: color-mix(in srgb, var(--vd-gold) 24%, transparent);
 }
@@ -1627,7 +1627,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_ac
    is why the radius overrides the slip family's 10px box. Same geometry rule as
    the tail above: this row is revealed on hover too, so the skin paints it only
    and never touches its width, margin, padding or border. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-clock='start'] {
   position: relative;
   /* Constant, hover-independent padding: the host's own is 0 and the
      clock hugged the pill's round edge. Padding moves the content
@@ -1644,11 +1644,11 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] {
   --dsw-alias-label-caption: var(--vd-ink-meta);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] button {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-clock='start'] button {
   color: var(--vd-ink-meta);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] button:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-clock='start'] button:hover {
   color: var(--vd-ink);
   background: color-mix(in srgb, var(--vd-gold) 24%, transparent);
 }
@@ -1658,8 +1658,8 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] button:h
    over the transcript covered live conversation. The copy icon with its gold
    hover tint is self-explanatory, so the bubble is simply not rendered: the
    jitter mechanism and the overlay die with it. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-clock='start'] [class*='_bubble'],
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_actions'] [class*='_bubble'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-clock='start'] [class*='_bubble'],
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-tail] [class*='_actions'] [class*='_bubble'] {
   display: none;
 }
 
@@ -1670,7 +1670,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-tail] [class*='_ac
    skin gives the row its own reading surface, and the hover the same surface one
    step more solid rather than the host's tint. Painted only, like every other
    row on the stage: the host's 0.5px border, radius and padding stay theirs. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-trigger] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-trigger] {
   color: var(--vd-ink);
   background: var(--vd-slip);
   -webkit-backdrop-filter: blur(7px) saturate(1.05);
@@ -1681,7 +1681,7 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-trigger] {
   --dsw-alias-label-caption: var(--vd-ink-meta);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-trigger]:hover {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-trigger]:hover {
   background: var(--vd-slip-solid);
 }
 
@@ -1729,7 +1729,7 @@ body[data-dsh-verdandi] [data-slot='conversation.view'] nav [class*='_markPrevie
    Matching any control at any depth covers host chips, plugin seats and the
    seats added later. Menu panels are portalled to `document.body`, so opened
    menus cannot be caught by this descendant selector. */
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
   [class*='_heroWorkspaceRow'],
   [class*='_workspaceRow']
 ) :is(button, [role='button']) {
@@ -1747,49 +1747,146 @@ body[data-dsh-verdandi] [data-pane='conversation'] :is(
   --dsw-alias-label-caption: var(--vd-ink-meta);
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
   [class*='_heroWorkspaceRow'],
   [class*='_workspaceRow']
 ) :is(button, [role='button']):hover {
   border-color: var(--vd-gold);
 }
 
-/* [P0 fix] Removed the whole `_turnStatus` / `_turnStatusClock` block: the host
-   class was dropped in DSH 0.1.7, so those rules were dead. The live status now
-   rides the turn-process control plus the marker the hooks project — see
-   `[data-verdandi-running]` below — and the contrast measurements that shaped the
-   bare-ink treatment are kept in docs/design/verdandi-white-vow.md §15.7. */
-/* dsh 0.1.7 hosts the live status inside the turn-process control and switches
-   that label's copy with the turn state (running / worked / took / failed), so
-   the copy swap is scoped by the running marker the hooks project rather than by
-   the removed `_turnStatus` class. Finished states keep the host's own wording;
-   while the turn runs the label reads as ink and the gold hairline under the row
-   carries the motion, which is why no surface is involved. */
-body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='_label'] {
+/* --- Running status: plain ink, motion on a gold hairline. ---------------- */
+
+/* The "深度求索中… 2分16秒" status is the last child of the transcript flow, so it
+   floats ~90px above the composer card over an arbitrary slice of the artwork.
+   Measured in that band (day/night artwork, pane veil applied) the luminance
+   spans 0.245-0.708 in light and 0.062-0.423 in dark, so a single ink tops out
+   at 4.76:1 in light and 2.05:1 in dark.
+
+   Three cheaper ways to buy the missing contrast were tried and rejected by
+   review rather than by measurement: a text halo fabricates a local surface and
+   visibly softens 14px glyphs; a denser scrim (the composer paper fading up over
+   the band) reads as a mask over the illustration; and the host's own clipped
+   shimmer erases the glyphs whenever its near-white stop sweeps past.
+
+   What ships is therefore the honest text-only answer: plain solid ink, no
+   shadow, no outline, no clipped fill, no scene mask. Light clears AA on the
+   measured band; dark cannot, and the gap is recorded in
+   docs/design/verdandi-white-vow.md §15.7 with its two crisp remedies. Motion
+   moves to a gold hairline sweeping under the line, which cannot affect
+   contrast. The host's shimmer animation is switched off rather than overridden,
+   so the two never fight over `background-position`.
+
+   dsh 0.2.0-rc.2 removed the `_turnStatus` class: the live status now has its own
+   `[data-chat-running]` row (`EvIC1a_running`, with `_runningText` inside), while
+   `[data-turn-process]` renders only for settled turns. Both are covered, so the
+   skin keeps working on either shell. */
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+  [class*='_turnStatus'],
+  [data-chat-running]
+) {
   position: relative;
+  animation: none;
+  color: var(--vd-bare-ink);
+  -webkit-text-fill-color: currentColor;
+  background-image: none;
   text-shadow: none;
 }
 
-body[data-dsh-verdandi] [data-verdandi-running] [class*='_label'] {
-  color: var(--vd-ink);
+/* The theme says its own line. The host renders `chat.deepDiving`; the skin
+   zeroes that text node's size and re-states the copy from a pseudo-element, so
+   nothing in the DOM is mutated and dispose() restores the host wording. The
+   host drives `documentElement.lang` from the active locale, so `:lang()` keeps
+   English on English. Assistive tech still reads the host's own localized
+   string, which is why the swap stays purely visual. */
+/* `_turnStatus` also matches `_turnStatusClock`, so both rules must exclude the
+   clock or it inherits the collapsed size and gains a second copy of the label.
+   The 0.2.0-rc.2 live row carries the copy in `_runningText` instead. */
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+  [class*='_turnStatus']:not([class*='_turnStatusClock']),
+  [data-chat-running] [class*='_runningText']
+) {
   font-size: 0;
 }
 
-body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::before {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+  [class*='_turnStatus']:not([class*='_turnStatusClock']),
+  [data-chat-running] [class*='_runningText']
+)::before {
   content: '薇儿烧烤中...';
   font-size: 14px;
   font-weight: 600;
   letter-spacing: 0.01em;
 }
 
-html:lang(en) body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::before {
+html:lang(en) body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+  [class*='_turnStatus']:not([class*='_turnStatusClock']),
+  [data-chat-running] [class*='_runningText']
+)::before {
+  content: 'Verdandi is grilling...';
+}
+
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+  [class*='_turnStatus'],
+  [data-chat-running]
+)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 1px;
+  left: 0;
+  height: 2px;
+  background-color: color-mix(in srgb, var(--vd-gold) 30%, transparent);
+  background-image: linear-gradient(90deg, transparent, var(--vd-gold-light), transparent);
+  background-repeat: no-repeat;
+  background-size: 38% 100%;
+  border-radius: 2px;
+  animation: verdandi-status-sweep 1.9s linear infinite;
+  pointer-events: none;
+}
+
+/* dsh 0.1.7 hosts the live status inside the turn-process control and switches
+   that label's copy with the turn state (running / worked / took / failed), so
+   the copy swap is scoped by the running marker the hooks project rather than by
+   the removed `_turnStatus` class. Finished states keep the host's own wording;
+   while the turn runs the label reads as ink and the gold hairline under the row
+   carries the motion, which is why no surface is involved. */
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-turn-process] [class*='_label'] {
+  position: relative;
+  text-shadow: none;
+}
+
+body[data-dsh-verdandi] [data-verdandi-running] :is(
+  [class*='_label'],
+  [class*='_runningText']
+) {
+  color: var(--vd-ink);
+  font-size: 0;
+}
+
+body[data-dsh-verdandi] [data-verdandi-running] :is(
+  [class*='_label'],
+  [class*='_runningText']
+)::before {
+  content: '薇儿烧烤中...';
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+html:lang(en) body[data-dsh-verdandi] [data-verdandi-running] :is(
+  [class*='_label'],
+  [class*='_runningText']
+)::before {
   content: 'Verdandi is grilling...';
 }
 
 /* The sweep rides the row's own hairline: the button keeps `padding-bottom: 7px`
    above its border, so the label's baseline offset puts the highlight exactly on
    the gold rule rather than beside it. */
-body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
+body[data-dsh-verdandi] [data-verdandi-running] :is(
+  [class*='_label'],
+  [class*='_runningText']
+)::after {
   content: '';
   position: absolute;
   right: 0;
@@ -1814,13 +1911,23 @@ body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
   }
 }
 
-/* [P0 fix] Removed the trailing `_turnStatusClock` rule too: same dead host
-   class as the block above. */
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [class*='_turnStatusClock'] {
+  color: var(--vd-bare-ink);
+  -webkit-text-fill-color: var(--vd-bare-ink);
+}
+
+/* dsh 0.2.0-rc.2 renders the live row as a flex column whose first child is the
+   visually-hidden announcement and whose visible copy sits in `_runningContent`
+   next to a whale glyph. The skin's copy swap targets that text span, so the
+   glyph must stay on the same baseline as the re-stated label. */
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] [data-chat-running] [class*='_runningContent'] {
+  align-items: baseline;
+}
 
 /* --- Fallbacks: the slip must hold its ratio without compositing help. ----- */
 
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
-  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
     [data-verdandi-slip],
     [data-turn-process],
     [data-turn-tail] [class*='_actions']:has([class*='_time']),
@@ -1832,7 +1939,7 @@ body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
     background: var(--vd-slip-solid);
   }
 
-  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
     [class*='_heroWorkspaceRow'],
     [class*='_workspaceRow']
   ) :is(button, [role='button']) {
@@ -1841,7 +1948,7 @@ body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
 }
 
 @media (prefers-contrast: more) {
-  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
     [data-verdandi-slip],
     [data-turn-process],
     [data-turn-tail] [class*='_actions']:has([class*='_time']),
@@ -1856,19 +1963,19 @@ body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
     backdrop-filter: none;
   }
 
-  body[data-dsh-verdandi] [data-pane='conversation'] {
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] {
     --vd-stage-veil: rgba(255, 253, 251, 0.34);
     --vd-stage-veil-edge: rgba(255, 253, 251, 0.16);
     --vd-stage-veil-hero: rgba(255, 253, 251, 0.12);
   }
 
-  body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='conversation'] {
+  body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-pane='conversation'] {
     --vd-stage-veil: rgba(18, 11, 15, 0.42);
     --vd-stage-veil-edge: rgba(18, 11, 15, 0.18);
     --vd-stage-veil-hero: rgba(18, 11, 15, 0.3);
   }
 
-  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
     [class*='_heroWorkspaceRow'],
     [class*='_workspaceRow']
   ) :is(button, [role='button']) {
@@ -1881,7 +1988,7 @@ body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
 }
 
 @media (forced-colors: active) {
-  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
     [data-verdandi-slip],
     [data-turn-process],
     [data-turn-tail] [class*='_actions']:has([class*='_time']),
@@ -1894,7 +2001,7 @@ body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
     box-shadow: none;
   }
 
-  body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
     [class*='_heroWorkspaceRow'],
     [class*='_workspaceRow']
   ) :is(button, [role='button']) {
@@ -1904,7 +2011,21 @@ body[data-dsh-verdandi] [data-verdandi-running] [class*='_label']::after {
     box-shadow: none;
   }
 
-  /* [P0 fix] removed dead `_turnStatus` / `_turnStatusClock` forced-colors rules */
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+    [class*='_turnStatus'],
+    [data-chat-running]
+  )::after {
+    display: none;
+  }
+
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
+    [class*='_turnStatus'],
+    [class*='_turnStatusClock'],
+    [data-chat-running]
+  ) {
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
 }
 
 /* The archive bar's light-on-dark tokens must stop at the collapsed header.
@@ -1934,7 +2055,7 @@ body[data-dsh-verdandi] [data-composer-seat] {
   background: transparent !important;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'][data-verdandi-view='trace'] [data-composer-seat] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'][data-verdandi-view='trace'] [data-composer-seat] {
   display: none !important;
 }
 
@@ -2074,7 +2195,7 @@ body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration^='hero-
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'][data-verdandi-phase='hero'] [data-composer-card] > [data-verdandi-decoration^='hero-chibi-'] {
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'][data-verdandi-phase='hero'] [data-composer-card] > [data-verdandi-decoration^='hero-chibi-'] {
   display: block;
   animation: verdandi-chibi-arrive 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
@@ -2137,13 +2258,7 @@ body[data-dsh-verdandi] [data-composer-card] :is(
 
 body[data-dsh-verdandi] [data-composer-card] :is(
   button[aria-label='发送消息'],
-  button[aria-label='Send message'],
-  button[aria-label='停止生成'],
-  button[aria-label='Stop generating'],
-  button[aria-label='排队发送'],
-  button[aria-label='Queue message'],
-  button[aria-label='插话发送'],
-  button[aria-label='Steer message']
+  button[aria-label='Send message']
 ) {
   position: relative;
   isolation: isolate;
@@ -2156,13 +2271,7 @@ body[data-dsh-verdandi] [data-composer-card] :is(
 
 body[data-dsh-verdandi] [data-composer-card] :is(
   button[aria-label='发送消息'],
-  button[aria-label='Send message'],
-  button[aria-label='停止生成'],
-  button[aria-label='Stop generating'],
-  button[aria-label='排队发送'],
-  button[aria-label='Queue message'],
-  button[aria-label='插话发送'],
-  button[aria-label='Steer message']
+  button[aria-label='Send message']
 )::before {
   content: '';
   position: absolute;
@@ -2178,13 +2287,7 @@ body[data-dsh-verdandi] [data-composer-card] :is(
 
 body[data-dsh-verdandi] [data-composer-card] :is(
   button[aria-label='发送消息'],
-  button[aria-label='Send message'],
-  button[aria-label='停止生成'],
-  button[aria-label='Stop generating'],
-  button[aria-label='排队发送'],
-  button[aria-label='Queue message'],
-  button[aria-label='插话发送'],
-  button[aria-label='Steer message']
+  button[aria-label='Send message']
 ) > * {
   position: relative;
   z-index: 1;
@@ -2192,26 +2295,14 @@ body[data-dsh-verdandi] [data-composer-card] :is(
 
 body[data-dsh-verdandi] [data-composer-card] :is(
   button[aria-label='发送消息'],
-  button[aria-label='Send message'],
-  button[aria-label='停止生成'],
-  button[aria-label='Stop generating'],
-  button[aria-label='排队发送'],
-  button[aria-label='Queue message'],
-  button[aria-label='插话发送'],
-  button[aria-label='Steer message']
+  button[aria-label='Send message']
 ):hover:not(:disabled) {
   background: var(--vd-crimson-soft) !important;
 }
 
 body[data-dsh-verdandi] [data-composer-card] :is(
   button[aria-label='发送消息'],
-  button[aria-label='Send message'],
-  button[aria-label='停止生成'],
-  button[aria-label='Stop generating'],
-  button[aria-label='排队发送'],
-  button[aria-label='Queue message'],
-  button[aria-label='插话发送'],
-  button[aria-label='Steer message']
+  button[aria-label='Send message']
 ):hover:not(:disabled)::before {
   transform: rotate(-31deg) scale(1.02);
   opacity: 0.58;
@@ -2289,11 +2380,18 @@ body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :first-child 
   white-space: nowrap;
 }
 
-body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :not(:first-child, [role='tooltip'], [data-dsh-live-tps]) {
+body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :not(:first-child, [role='tooltip'], [data-dsh-live-tps], [data-composer-stats]) {
   text-align: left;
 }
 
-body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > [data-dsh-live-tps] {
+/* dsh 0.2.0-rc.2 dropped the `data-dsh-live-tps` badge: the throughput and cache
+   pills now arrive as the StatsPills row (`data-composer-stats`). It keeps the
+   right-hand seat the TPS badge held, so the ribbon still reads
+   "context | statistics". */
+body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :is(
+  [data-dsh-live-tps],
+  [data-composer-stats]
+) {
   justify-self: end;
   text-align: right;
 }
@@ -2322,8 +2420,16 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-composer-card] textarea::place
 /* Details, dialogs, and extension surfaces.                                   */
 /* -------------------------------------------------------------------------- */
 
-body[data-dsh-verdandi] [data-pane='details'] {
-  position: relative;
+/* The right-hand panel must not be re-positioned. dsh 0.2.0-rc.2's occupant is
+   `position: absolute; top: 0; bottom: 0; right: 0` inside the frame's right
+   column, so a `position: relative` here collapses it to its content height —
+   measured on the live app: 288px instead of the full 907px column. The panel is
+   already a positioned element, so the `::after` ornament and the record
+   decoration below anchor to it without any help. The legacy `data-pane` pane is
+   a plain static `aside` and does need the fallback, so the declaration is
+   scoped to an element that carries *both* the skin stamp and the legacy
+   attribute — which the current shell never does. */
+body[data-dsh-verdandi] [data-verdandi-pane='details'] {
   color: var(--vd-ink);
   background:
     linear-gradient(180deg, rgba(255, 253, 251, 0.94), rgba(248, 242, 237, 0.97)),
@@ -2335,7 +2441,11 @@ body[data-dsh-verdandi] [data-pane='details'] {
   --dsw-alias-brand-primary: var(--vd-crimson);
 }
 
-body[data-dsh-verdandi] [data-pane='details']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='details'][data-pane='details'] {
+  position: relative;
+}
+
+body[data-dsh-verdandi] [data-verdandi-pane='details']::after {
   content: '';
   position: absolute;
   right: 18px;
@@ -2349,12 +2459,12 @@ body[data-dsh-verdandi] [data-pane='details']::after {
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='details'] > [data-verdandi-decoration='details-record'] {
+body[data-dsh-verdandi] [data-verdandi-pane='details'] > [data-verdandi-decoration='details-record'] {
   display: none;
   pointer-events: none;
 }
 
-body[data-dsh-verdandi] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
+body[data-dsh-verdandi] [data-verdandi-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
   display: block;
   position: absolute;
   z-index: 0;
@@ -2368,7 +2478,7 @@ body[data-dsh-verdandi] [data-pane='details'][data-verdandi-details-empty] > [da
   opacity: 0.72;
 }
 
-body[data-dsh-verdandi] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
+body[data-dsh-verdandi] [data-verdandi-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
   content: '誓约档案 · VOW ARCHIVE';
   position: absolute;
   top: calc(100% + 14px);
@@ -2382,8 +2492,8 @@ body[data-dsh-verdandi] [data-pane='details'][data-verdandi-details-empty] > [da
 }
 
 body[data-dsh-verdandi]:has(
-  [data-pane='conversation'][data-verdandi-view='trace']
-) [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
+  [data-verdandi-pane='conversation'][data-verdandi-view='trace']
+) [data-verdandi-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
   width: min(42%, 112px);
   aspect-ratio: 163 / 183;
   transform: translateX(-50%) rotate(2deg);
@@ -2395,22 +2505,22 @@ body[data-dsh-verdandi]:has(
 }
 
 body[data-dsh-verdandi]:has(
-  [data-pane='conversation'][data-verdandi-view='trace']
-) [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
+  [data-verdandi-pane='conversation'][data-verdandi-view='trace']
+) [data-verdandi-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
   content: '时序之剑 · SEQUENCE RELIC';
 }
 
-body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record'] {
   filter: brightness(0.78) saturate(0.78) drop-shadow(0 14px 22px rgba(0, 0, 0, 0.34));
   opacity: 0.62;
 }
 
-body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-pane='details'][data-verdandi-details-empty] > [data-verdandi-decoration='details-record']::after {
   color: var(--vd-gold-light);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
 }
 
-body[data-dsh-verdandi][data-ds-dark-theme] [data-pane='details'] {
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-pane='details'] {
   background:
     linear-gradient(180deg, rgba(34, 21, 26, 0.94), rgba(24, 14, 18, 0.97)),
     var(--vd-art-details-dark) center / cover no-repeat !important;
@@ -2484,7 +2594,7 @@ body[data-dsh-verdandi] :global(.xterm) {
   border-radius: 8px;
 }
 
-body[data-dsh-verdandi] [data-pane='conversation'] :is(
+body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
   [data-aionui-explorer-col],
   [data-aionui-preview-col]
 ) {
@@ -2504,7 +2614,7 @@ body[data-dsh-verdandi] [role='tooltip'] {
 /* -------------------------------------------------------------------------- */
 
 @media (max-width: 840px) {
-  body[data-dsh-verdandi] [data-pane='sidebar']::after,
+  body[data-dsh-verdandi] [data-verdandi-pane='sidebar']::after,
   body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-vow-crest'],
   body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-bridal-corners'],
   body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='header-veil-corners'],
@@ -2515,7 +2625,7 @@ body[data-dsh-verdandi] [role='tooltip'] {
     display: none;
   }
 
-  body[data-dsh-verdandi] [data-pane='conversation'] > .characterStage {
+  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] > .characterStage {
     display: none !important;
   }
 
@@ -2541,8 +2651,8 @@ body[data-dsh-verdandi] [role='tooltip'] {
     height: 20px;
   }
 
-  body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :not(:first-child, [role='tooltip'], [data-dsh-live-tps]),
-  body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > [data-dsh-live-tps] {
+  body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :not(:first-child, [role='tooltip'], [data-dsh-live-tps], [data-composer-stats]),
+  body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :is([data-dsh-live-tps], [data-composer-stats]) {
     justify-self: stretch;
     text-align: center;
   }

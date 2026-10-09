@@ -11,6 +11,12 @@ the rest.
 
 ## [0.1.6] - 2026-10-09
 
+Adapted for DeepSeek Harness 0.2.0-rc.2. The runtime now resolves the host's
+current sidebar, conversation, and details regions and stamps the skin-owned
+`data-verdandi-pane` marker because the new shell no longer emits `data-pane`.
+The closed right-hand panel remains transparent; details decoration is applied
+only while `[data-sidebar-right-open]` is present.
+
 ### Fixed
 
 - The registered sidebar rows read as one list again. The rows the hooks mark

@@ -80,7 +80,7 @@ dsh plugin --profile web remove @hjbztlbr/dsh-client-ui-skin-verdandi
 
 ## 兼容性
 
-- 已在 DeepSeek Harness `0.1.5-rc.1`、`0.1.7-rc.2` 与 `0.2.0-rc.2` 的 Web profile 上测试。`0.2.0-rc.2` 下另在 macOS 桌面客户端实机复验，皮肤经皮肤中心 `0.4.5` 以资产形态（hooks 受信）加载；本插件形态由样式表测试与两形态锚点一致性检查覆盖（44 项测试全绿、`tsc --noEmit` 无错）。0.1.7 重构了会话头部（`conversation.header`）、触发行、用户时钟行、上下文提示行、工作步骤折叠与 turn-process 条带；0.2.0 的宿主下，运行状态改由 turn-process 条带承载（`_turnStatus` 类已下线），macOS 新增 `data-platform="darwin"` 平台标记，两者均已适配；旧版渲染不受影响。
+- 已在 DeepSeek Harness `0.2.0-rc.2` 的 Web profile 上实测通过（与 `0.1.5-rc.1`、`0.1.7-rc.2` 的旧渲染并行兼容）。0.2.0-rc.2 移除了宿主的 `data-pane` 区域属性：本皮肤原先锚定该属性的规则现改为由运行时从当前外壳解析每个区域并打上皮肤自有的 `data-verdandi-pane`。同时适配了右侧边栏面板（`[data-sidebar-right-panel]`）、实时运行行（`[data-chat-running]`）、输入区统计条（`data-composer-stats`）、空面板态（`[data-dockkit-empty]`）与重建后的侧边栏导航（`_newSession` / `_panelRow`）。关闭的右侧面板保持透明，打开时才应用详情装饰。
 - 对 better-sidebar、AionUI、SSH、Cordis、`.xterm` 与设置 portal 使用定向样式，避免改写终端 ANSI 调色板或全局系统 token。
 - 小尺寸窗口会隐藏装饰性头像和人物舞台，优先保证操作区域与文字可读。
 
