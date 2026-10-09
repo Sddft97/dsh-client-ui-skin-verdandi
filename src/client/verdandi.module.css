@@ -1805,18 +1805,15 @@ body[data-dsh-verdandi] [data-verdandi-running-line] {
   display: inline-flex;
 }
 
-/* The skin's own mark, carrying the motion the host's whale used to carry — and
-   built the way that whale is built: one colour behind an alpha mask, so it reads
-   as a silhouette on any artwork instead of a 14px illustration dissolving into
-   it. The colour is the skin's ink, so it follows the palette. */
+/* The skin's own mark, carrying the motion the host's whale used to carry. Plain
+   art at 14px, not a one-colour silhouette: the silhouette was built and looked
+   wrong here (it flattens the sword's own shading into a blob), so the mark keeps
+   its own drawing and only borrows the animation. */
 body[data-dsh-verdandi] [data-verdandi-running-icon] {
   flex: 0 0 auto;
   width: 14px;
   height: 14px;
-  color: var(--vd-bare-ink);
-  background: currentColor;
-  -webkit-mask: var(--vd-art-sequence-sword) center / contain no-repeat;
-  mask: var(--vd-art-sequence-sword) center / contain no-repeat;
+  background: var(--vd-art-sequence-sword) center / contain no-repeat;
   filter: drop-shadow(0 1px 2px rgba(72, 22, 36, 0.25));
   animation: vd-running-icon 2.2s ease-in-out infinite;
 }
@@ -1899,7 +1896,6 @@ body[data-dsh-verdandi] [data-verdandi-running-a11y] {
   }
 
   body[data-dsh-verdandi] [data-verdandi-running-icon] {
-    color: CanvasText;
     filter: none;
   }
 }
