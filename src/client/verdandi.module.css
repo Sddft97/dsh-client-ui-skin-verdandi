@@ -1787,6 +1787,123 @@ body[data-dsh-verdandi] [data-pane='conversation'] [data-turn-process] [class*='
 /* [P0 fix] Removed the trailing `_turnStatusClock` rule too: same dead host
    class as the block above. */
 
+/* --- Running status: the skin owns the whole line ------------------- */
+
+/* `[data-chat-running]` is the host's own marker for "a turn is running"; the
+   runtime hangs our line and its `data-verdandi-running-bar` marker off it. While
+   that marker is present the host's own pieces stand down — its whale, its
+   divider and its copy — and ours paint instead. Hiding by exclusion means no
+   host class name is named here. */
+body[data-dsh-verdandi] [data-chat-running][data-verdandi-running-bar] > :not([data-verdandi-running-line]) {
+  display: none !important;
+}
+
+body[data-dsh-verdandi] [data-verdandi-running-line] {
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  display: inline-flex;
+}
+
+/* The skin's own mark, carrying the motion the host's whale used to carry — and
+   built the way that whale is built: one colour behind an alpha mask, so it reads
+   as a silhouette on any artwork instead of a 14px illustration dissolving into
+   it. The colour is the skin's ink, so it follows the palette. */
+body[data-dsh-verdandi] [data-verdandi-running-icon] {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  color: var(--vd-bare-ink);
+  background: currentColor;
+  -webkit-mask: var(--vd-art-sequence-sword) center / contain no-repeat;
+  mask: var(--vd-art-sequence-sword) center / contain no-repeat;
+  filter: drop-shadow(0 1px 2px rgba(72, 22, 36, 0.25));
+  animation: vd-running-icon 2.2s ease-in-out infinite;
+}
+
+@keyframes vd-running-icon {
+  0%, 100% {
+    transform: rotate(-11deg) translateY(0);
+    opacity: 0.86;
+  }
+
+  50% {
+    transform: rotate(11deg) translateY(-1px);
+    opacity: 1;
+  }
+}
+
+/* One layer, so the band cannot ghost: the ink and the band are stops of the same
+   gradient painted through the glyphs. Both ends are the ink colour and the tile
+   repeats, so the glyphs always have a background to be painted from as the band
+   travels — a non-repeating gradient leaves the tail of the line unpainted once it
+   slides off the element, and `color: transparent` then renders nothing at all. */
+body[data-dsh-verdandi] [data-verdandi-running-copy] {
+  color: transparent;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+  background-image: linear-gradient(
+    100deg,
+    var(--vd-bare-ink) 0 34%,
+    var(--vd-crimson-soft) 44% 56%,
+    var(--vd-bare-ink) 66% 100%
+  );
+  background-size: 260% 100%;
+  background-repeat: repeat-x;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: vd-running-sweep 1.5s steps(48, end) infinite;
+}
+
+@keyframes vd-running-sweep {
+  from {
+    background-position: 133% 0;
+  }
+
+  to {
+    background-position: -33% 0;
+  }
+}
+
+/* The host's own running phrase, announced but never seen: the visual copy is ours,
+   so the live region has to be ours too. */
+body[data-dsh-verdandi] [data-verdandi-running-a11y] {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  position: absolute;
+  overflow: hidden;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body[data-dsh-verdandi] [data-verdandi-running-icon] {
+    animation: none;
+  }
+
+  body[data-dsh-verdandi] [data-verdandi-running-copy] {
+    animation: none;
+    background-position: 50% 0;
+  }
+}
+
+@media (forced-colors: active) {
+  body[data-dsh-verdandi] [data-verdandi-running-copy] {
+    color: CanvasText;
+    background-image: none;
+  }
+
+  body[data-dsh-verdandi] [data-verdandi-running-icon] {
+    color: CanvasText;
+    filter: none;
+  }
+}
+
 /* --- Fallbacks: the slip must hold its ratio without compositing help. ----- */
 
 @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {

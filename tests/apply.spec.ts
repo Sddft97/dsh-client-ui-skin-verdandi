@@ -247,4 +247,75 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(document.querySelector('[data-pane="conversation"]')?.hasAttribute('data-verdandi-phase')).toBe(false)
     expect(document.querySelector('[data-pane="conversation"]')?.hasAttribute('data-verdandi-view')).toBe(false)
   })
+
+  // The running line: the host mounts a node of its own and the skin takes it over.
+  // The class names below are deliberately arbitrary — nothing in the takeover may
+  // depend on them, only on `data-chat-running` and on the phrase itself.
+  const RUNNING_HOST = `
+    <div data-chat-running>
+      <span role="status" aria-live="polite" aria-atomic="true">深度求索中</span>
+      <span class="whatever_dividerHostish"></span>
+      <span class="whatever_contentHostish">
+        <span class="whatever_iconHostish"><span class="whatever_whaleHostish"></span></span>
+        <span class="whatever_textHostish"><span class="whatever_leafHostish">深度求索中，用时 20 秒 ···</span></span>
+      </span>
+    </div>`
+
+  const addRunningHost = (markup = RUNNING_HOST): HTMLElement => {
+    const pane = document.querySelector<HTMLElement>('[data-pane="conversation"]')!
+    pane.insertAdjacentHTML('beforeend', markup)
+    return pane.lastElementChild as HTMLElement
+  }
+
+  /** Let the observer + animation frame checkpoint run: the runtime falls back to
+   *  setTimeout when the environment has no requestAnimationFrame. */
+  const settle = async (): Promise<void> => {
+    for (let i = 0; i < 4; i += 1) await new Promise((resolve) => setTimeout(resolve, 5))
+  }
+
+  it('takes the running line over and keeps the host phrase with its live timer', async () => {
+    const host = addRunningHost()
+    apply(ctx as never)
+
+    const line = host.querySelector('[data-verdandi-running-line]')
+    expect(line).not.toBeNull()
+    const copy = line!.querySelector('[data-verdandi-running-copy]')
+    const live = line!.querySelector('[data-verdandi-running-a11y]')
+    // the host's phrase with the skin's leading words, and the host's own tail kept
+    // verbatim so the live timer survives the replacement
+    expect(copy?.textContent).toBe('薇儿烧烤中，用时 20 秒 ···')
+    // the host's own string is what assistive tech hears, from our live region
+    expect(live?.textContent).toBe('深度求索中')
+    expect(live?.getAttribute('role')).toBe('status')
+    expect(live?.getAttribute('aria-live')).toBe('polite')
+
+    // The takeover marker has to survive the passes that our own writes trigger:
+    // `clearOwnedHooks()` sweeps owned attributes on every sync.
+    await settle()
+    expect(host.hasAttribute('data-verdandi-running-bar')).toBe(true)
+    expect(host.querySelector('[data-verdandi-running-line]')).not.toBeNull()
+
+    // A characterData mutation is what the host's 1 Hz timer does.
+    host.querySelector('.whatever_leafHostish')!.firstChild!.nodeValue = '深度求索中，用时 1 分 07 秒 ···'
+    await settle()
+    expect(host.querySelector('[data-verdandi-running-copy]')?.textContent).toBe('薇儿烧烤中，用时 1 分 07 秒 ···')
+
+    ctx.disposeAll()
+    expect(document.querySelector('[data-verdandi-running-line]')).toBeNull()
+    expect(host.hasAttribute('data-verdandi-running-bar')).toBe(false)
+    // the host's own line is back in charge, untouched
+    expect(host.querySelector('.whatever_leafHostish')?.textContent).toBe('深度求索中，用时 1 分 07 秒 ···')
+  })
+
+  it('leaves a running line whose phrase it does not know completely alone', () => {
+    const host = addRunningHost(`
+      <div data-chat-running>
+        <span role="status">어떤 언어</span>
+        <span class="whatever_textHostish">어떤 언어，用时 20 秒</span>
+      </div>`)
+    apply(ctx as never)
+
+    expect(host.hasAttribute('data-verdandi-running-bar')).toBe(false)
+    expect(host.querySelector('[data-verdandi-running-line]')).toBeNull()
+  })
 })

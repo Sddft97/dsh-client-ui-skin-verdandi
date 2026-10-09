@@ -50,6 +50,29 @@ const CONVERSATION_VIEW_ATTR = 'data-verdandi-view'
 const DETAILS_EMPTY_ATTR = 'data-verdandi-details-empty'
 const SLIP_ATTR = 'data-verdandi-slip'
 /**
+ * The host mounts its running status as a node of its own and paints it from its
+ * own pieces (a whale mark and a TextShimmer sweep). This skin takes that line
+ * over completely — icon, copy and sweep — so every name below is the skin's; the
+ * only host identifiers involved are its `data-chat-running` marker and the
+ * running phrase itself.
+ *
+ * `RUNNING_PREFIX` is the whole contract: a phrase we know buys the replacement,
+ * an unknown one (a locale nobody wrote a prefix for) leaves the host's own line
+ * exactly as it is rather than half-replaced. The skin's phrase and the host's
+ * live-region string are the same words, so assistive tech keeps hearing the
+ * host's own localization while the paint is ours.
+ */
+const RUNNING_HOST_SELECTOR = '[data-chat-running]'
+const RUNNING_BAR_ATTR = 'data-verdandi-running-bar'
+const RUNNING_LINE_ATTR = 'data-verdandi-running-line'
+const RUNNING_ICON_ATTR = 'data-verdandi-running-icon'
+const RUNNING_COPY_ATTR = 'data-verdandi-running-copy'
+const RUNNING_LIVE_ATTR = 'data-verdandi-running-a11y'
+const RUNNING_PREFIX: Record<string, string> = {
+  '深度求索中': '薇儿烧烤中',
+  'Deep diving': 'Verdandi is grilling',
+}
+/**
  * The session header strip, in probe order. dsh 0.1.7 renders
  * `<div data-slot='conversation.header' style='display:contents'><header>` and
  * keeps `conversation.session.header` for the `display:contents` anchor that
@@ -73,6 +96,7 @@ const OWNED_HOOKS = [
   'data-verdandi-new-session',
   'data-verdandi-nav-entry',
   'data-verdandi-sidebar-action',
+  RUNNING_BAR_ATTR,
   DETAILS_EMPTY_ATTR,
 ] as const
 
@@ -154,6 +178,34 @@ function isRendered(element: HTMLElement | null): element is HTMLElement {
   if (!element || element.hidden || element.getAttribute('aria-hidden') === 'true') return false
   const style = window.getComputedStyle(element)
   return style.display !== 'none' && style.visibility !== 'hidden'
+}
+
+/**
+ * The host's own running phrase, read off the deepest element that carries it.
+ * Text, not a class name: the host's CSS-module names are build hashes and its
+ * markup is an implementation detail, while the phrase is the one thing the
+ * replacement has to recognise anyway.
+ */
+function runningPhraseNode(host: Element): { node: Element; phrase: string } | null {
+  let found: Element | null = null
+  let phrase = ''
+  for (const node of host.querySelectorAll('*')) {
+    // our own line carries the phrase too (its live region repeats it verbatim),
+    // so it must never be mistaken for the host's label
+    if (node.closest(`[${RUNNING_LINE_ATTR}]`) !== null) continue
+    if (node.children.length !== 0) continue
+    const text = (node.textContent ?? '').trim()
+    for (const candidate of Object.keys(RUNNING_PREFIX)) {
+      // the host's live region carries the bare phrase and its label carries the
+      // phrase plus the live timer, so the longest match is the label
+      const longest = found === null ? 0 : ((found.textContent ?? '').trim().length)
+      if (text.startsWith(candidate) && text.length > longest) {
+        found = node
+        phrase = candidate
+      }
+    }
+  }
+  return found === null ? null : { node: found, phrase }
 }
 
 function removeLegacyNodes(): void {
@@ -413,6 +465,66 @@ export function apply(ctx: Context): void {
     ? window.cancelAnimationFrame.bind(window)
     : window.clearTimeout.bind(window)
 
+  let runningObserver: MutationObserver | null = null
+  let runningObservedNode: Element | null = null
+  let runningFrame = 0
+
+  /**
+   * Paint the running line. Idempotent and cheap: called from the main sync and
+   * from the line's own observer, which is what keeps the host's live timer
+   * (", 用时 20 秒 ···") ticking through the replacement. Fail closed — with no
+   * known phrase nothing is painted and the host's own line stands.
+   */
+  const renderRunningLine = (): void => {
+    const host = firstElement<HTMLElement>(RUNNING_HOST_SELECTOR)
+    if (host === null) return
+    const found = runningPhraseNode(host)
+    if (found === null) return
+    const text = (found.node.textContent ?? '').trim()
+    const copy = RUNNING_PREFIX[found.phrase] + text.slice(found.phrase.length)
+
+    let line = host.querySelector<HTMLElement>(`:scope > [${RUNNING_LINE_ATTR}]`)
+    if (line === null) {
+      line = document.createElement('span')
+      line.setAttribute(RUNNING_LINE_ATTR, '')
+      const icon = document.createElement('span')
+      icon.setAttribute(RUNNING_ICON_ATTR, '')
+      const body = document.createElement('span')
+      body.setAttribute(RUNNING_COPY_ATTR, '')
+      const live = document.createElement('span')
+      live.setAttribute(RUNNING_LIVE_ATTR, '')
+      live.setAttribute('role', 'status')
+      live.setAttribute('aria-live', 'polite')
+      live.setAttribute('aria-atomic', 'true')
+      live.textContent = found.phrase
+      line.append(icon, body, live)
+      host.append(line)
+    }
+    // `clearOwnedHooks()` sweeps every owned attribute on each pass, so the marker
+    // is re-asserted here rather than only when the line is created
+    host.setAttribute(RUNNING_BAR_ATTR, '')
+
+    const body = line.querySelector<HTMLElement>(`[${RUNNING_COPY_ATTR}]`)
+    if (body !== null && body.textContent !== copy) body.textContent = copy
+    const live = line.querySelector<HTMLElement>(`[${RUNNING_LIVE_ATTR}]`)
+    if (live !== null && live.textContent !== found.phrase) live.textContent = found.phrase
+
+    if (runningObservedNode !== found.node) {
+      runningObserver?.disconnect()
+      runningObservedNode = found.node
+      runningObserver = new MutationObserver(scheduleRunningLine)
+      runningObserver.observe(found.node, { characterData: true, childList: true, subtree: true })
+    }
+  }
+
+  const scheduleRunningLine = (): void => {
+    if (runningFrame) return
+    runningFrame = requestFrame(() => {
+      runningFrame = 0
+      renderRunningLine()
+    })
+  }
+
   const syncResizeTargets = (targets: Array<HTMLElement | null>) => {
     if (!resizeObserver) return
     const next = new Set<Element>(targets.filter((target): target is HTMLElement => Boolean(target)))
@@ -437,6 +549,7 @@ export function apply(ctx: Context): void {
     setSidebarSize(body, sidebar)
     ensureWeddingDecorations(sidebar, workspaceVisible ? conversation : null, details)
     decorateLegibilityRows(workspaceVisible ? conversation : null)
+    renderRunningLine()
 
     if (workspaceVisible) {
       const stage = ensureCharacterStage(conversation)
@@ -483,6 +596,12 @@ export function apply(ctx: Context): void {
   ctx.effect(() => () => {
     mutationObserver.disconnect()
     resizeObserver?.disconnect()
+    runningObserver?.disconnect()
+    runningObserver = null
+    runningObservedNode = null
+    if (runningFrame) cancelFrame(runningFrame)
+    runningFrame = 0
+    for (const line of document.querySelectorAll<HTMLElement>(`[${RUNNING_LINE_ATTR}]`)) line.remove()
     if (animationFrame) cancelFrame(animationFrame)
     window.removeEventListener('resize', scheduleSync)
     window.visualViewport?.removeEventListener('resize', scheduleSync)
