@@ -103,7 +103,7 @@
 - Active：不依赖纯色填充，必须同时有边框/刻线，避免色觉歧义。
 - `prefers-reduced-motion`：关闭丝带、人物与 Composer 的位移动画。
 - `< 1080 px`：人物缩小并降低透明度；`< 840 px`：人物和侧栏背景角色全部隐藏。
-- 侧栏 rail 模式：隐藏文字装饰，只保留统一圆形图标按钮和金色选中环。
+- 侧栏 rail 模式：隐藏文字装饰，只保留统一的 16 px 图标按钮和金色选中环。面板行的字形不带各自的外环（见 15.13），所以展开态与 rail 态的图标尺寸一致。
 
 ## 6. 实现约束
 
@@ -421,5 +421,32 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
 ```
 
 于是 4 列表与 3 列表一样在卡片内换行，金色边框始终包住表格；代价是这个皮肤下不再保留宿主的宽表出血效果。选择器用 `[class*='md-table-wide']` 而不是 `.md-table-wide`，是因为后者是宿主全局类名，写成类选择器会在插件形态里被 CSS Modules 哈希掉，只有属性匹配能同时命中两种形态。
+
+### 15.13 侧栏面板行的图标槽与轨迹页签的形状
+
+§14 给「任务看板 / SSH / 技能中心」三行加了 24 px 图标槽，目标是「解决不同宿主图标尺寸造成的文字起始线错位」。实测下来它只把这三行彼此对齐了：官方 Plugins / Schedule 行与未被 hook 标记的插件行仍是宿主的 16 px 槽，于是同一列里两套几何共存——带环的三行 40 px 行高、10 px 间距、24 px 字形槽（含 `border-radius: 50%` 金环与 `rgba(255,253,251,.08)` 底）、标题起点 x=46+8；其余行 36 px 行高、8 px 间距、16 px 裸字形。
+
+处理：把 `[data-verdandi-nav-entry]` 那整段覆写删掉，让被标记的行回到宿主自己的几何。**环不是加给所有行，而是取消**——hook 的词汇表里只有插件行（官方行根本不可寻址），所以「统一」唯一能在六行上都成立的版本就是向宿主已有几何对齐。实测（0.2.0-rc.2 真壳，六行全部）：行高 36 px、字形 16 px 且无边框/无圆角/无底色、标题 `x = 46`。
+
+同一轮的第二个形状问题在轨迹面板。宿主把「加载更早的历史」画成方角、贴车道左沿、向右渐隐，而面板内那条兜底的 `button { border-radius: 999px }` 把它变成了胶囊：在 28×50 的盒子上 999 px 会被裁成 14 px，**弧线吃掉上下边各 14 px**，尾部圆角于是把填色从面板边框上拉走，上下各留出一条发丝白缝（像素取样：弧起始处顶边以下出现 1 设备像素纯白行）。处理：左侧方角贴车道边界，尾部与其它行 chip 同为 6 px，并去掉上下边框，让填色正好接上而不是在里侧 1 px 处叠出双层线：
+
+```css
+body[data-dsh-verdandi] [data-pane='conversation'] :is(
+  [aria-label='轨迹时间线'],
+  [aria-label='Trajectory timeline']
+) :is(
+  [aria-label='加载更早的历史'],
+  [aria-label='Load earlier history'],
+  [class*='earlierHistory']
+) {
+  border-top: 0;
+  border-bottom: 0;
+  border-radius: 0 6px 6px 0;
+}
+```
+
+两条选择器都同时写两套拼写，因为宿主会本地化该 aria 标签：只写 `Trajectory timeline` 时，`zh-CN` 下整个面板（纸面、柔金细线、页签）一条都不匹配，直接退回官方外观。`earlierHistory` 用属性子串而不是类选择器，理由同 15.12：那是宿主的 CSS Modules 类名，属性匹配才能在两种形态下都命中。
+
+两块改动的真壳对照图在 `evidence/verdandi-sidebar-rows-light-*`、`evidence/verdandi-history-tab-zoom-*`（`Sddft97/dsh-skins`）。
 
 验证：资产形态与本仓库插件形态各注入同一张 4 列表格（真实类名与祖先结构），live 实测包裹层 886px = 卡片内容宽、表格无溢出；A/B 形态对照 1600×1000 亮色与暗色各 0/1,600,000 像素差异。
