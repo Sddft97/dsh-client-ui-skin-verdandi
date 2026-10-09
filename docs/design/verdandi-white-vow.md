@@ -496,3 +496,35 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-chat-running] {
 
 代价：0.1.7 及更早的宿主没有这个组件，也没有这两个 token，那里的运行状态回到宿主原样——皮肤不再
 重写它的文案，也不再画那条细线。README 的兼容性行已注明运行状态的着色是 0.2.0 起的能力。
+
+本节记的是中间态：皮肤当时只重映射了那两个 token（把扫光染成皮肤色），文案与图标仍是宿主的。
+用户随即提出「要么全换、要么不换」，于是有了 15.15——把整条运行行接管过来。
+
+### 15.15 运行状态：整条行由皮肤接管
+
+用户的要求是「图标、文字、扫光全换，图标要有动效，且必须保留"用时 N 秒"，不能出现可见 bug」，否则宁可不做。15.14 的 token 重映射显然只算"不换"，所以这一轮把整条行接过来了。
+
+宿主的实现（0.2.0-rc.2，`dsh-client-ui-chat`）是：
+
+```jsx
+<div className={styles.running} data-chat-running={true}>
+  <span role="status" aria-live="polite">深度求索中</span>          {/* 无障碍播报 */}
+  <span className={styles.runningDivider} />
+  <span className={styles.runningContent}>
+    <RunningWhaleTail />                                            {/* 14px 盒子：静帧 SVG + APNG 掩膜 */}
+    <TextShimmer active className={styles.runningText}>{label}</TextShimmer>  {/* label = 「深度求索中，用时 20 秒 ···」 */}
+  </span>
+</div>
+```
+
+**做法**：hook 在 `[data-chat-running]` 上挂一条自己的行（`data-verdandi-running-line`：图标 + 文案 + 我们自己的 live region），并给宿主打上 `data-verdandi-running-bar`；CSS 在标记存在时把宿主原有的视觉子节点与它的 live region 全部隐藏（按**排除**写：`:not([data-verdandi-running-line])`，所以不点名任何宿主类名）。
+
+- **保留计时**：不解析时长，只把宿主那句的**已知前缀**（`深度求索中` / `Deep diving`）换成皮肤的（`薇儿烧烤中` / `Verdandi is grilling`），**后半段原样**——标点、计时、末尾 `···` 全留着。所以 `20 秒 → 1 分 07 秒` 这种多段格式也不用管。同步靠一个只盯那一行文案的 `characterData` 观察器（约 1Hz，不进主 sync 循环）。
+- **文案节点按文本找**，不按类名：遍历 `[data-chat-running]` 下的叶节点，取"以已知前缀开头且**最长**"的那个——宿主的 live region 装的是裸短语，真正带计时的那一行更长，所以取最长即可稳定命中。
+- **图标**：14px 盒子里放皮肤美术的**墨色剪影**（`background: currentColor` + `mask: var(--vd-art-sequence-sword)`），这正是宿主鲸尾的做法；写实插画在这尺寸会糊掉（对照图见 `Sddft97/dsh-skins` 的 `evidence/README.verdandi-2026-10-09.md` 同目录截图）。动效 2.2s 呼吸+微摆，尊重 `prefers-reduced-motion`。
+- **扫光**：自绘**单层**——墨色与扫光带是同一个渐变的两个色标，`background-clip: text` 直接画在字上，所以不存在两层错位重影。渐变**首尾同为墨色并 `repeat-x`**：背景永远覆盖字体，带子周期性扫过。这里踩过一个坑：用 `no-repeat` 时，渐变随 `background-position` 滑出元素后那段字**没有背景可画**，而 `color: transparent` 的字就什么都不显示——表现为"某一相位下后半句整段消失"。
+- **无障碍**：宿主的 live region 被隐藏，所以由我们自己的节点承担播报，文案就是匹配到的宿主短语（与宿主 `t('chat.deepDiving')` 同字）。这样 `role="status"` 不再是我们的依赖。
+
+**对宿主的依赖**（全部在此）：`[data-chat-running]`（宿主自己发布的运行标记）、两句前缀文案（`深度求索中` / `Deep diving`，用于拆分与播报）。**零 CSS-module 类名、零 TextShimmer 内部结构**。任一条失效都**失败关闭**：不接管、宿主原样，而不是留半成品；那种中间态由 15.14 的 token 重映射把宿主的行染成皮肤色。
+
+**验证**：夹具（真实类名 + 宿主真实样式表）逐帧比对颜色/掩膜/扫光位置；随后在真实页面上由**皮肤自己的 hook 与 CSS** 接管注入的宿主节点，实测宿主视觉子节点全部 `display:none`、标记在自身写入触发的多轮 sync 后仍在、文案 `薇儿烧烤中，用时 20 秒 ···`、live region `深度求索中`、图标掩膜指向皮肤资产且逐帧 transform 变化、一次真实 `characterData` tick 后文案跟到 `1 分 07 秒`。两条新用例把接管与失败关闭路径钉住，并做了突变验证（回退标记重申、回退"别把自己的 live region 当宿主文案"两处修复，测试各自变红）。

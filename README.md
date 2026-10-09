@@ -80,7 +80,7 @@ dsh plugin --profile web remove @hjbztlbr/dsh-client-ui-skin-verdandi
 
 ## 兼容性
 
-- 已在 DeepSeek Harness `0.1.5-rc.1`、`0.1.7-rc.2` 与 `0.2.0-rc.2` 的 Web profile 上测试。`0.2.0-rc.2` 下另在 macOS 桌面客户端实机复验，皮肤经皮肤中心 `0.4.5` 以资产形态（hooks 受信）加载；本插件形态由样式表测试与两形态锚点一致性检查覆盖（44 项测试全绿、`tsc --noEmit` 无错）。0.1.7 重构了会话头部（`conversation.header`）、触发行、用户时钟行、上下文提示行、工作步骤折叠与 turn-process 条带；0.2.0 把运行状态搬成了独立组件 `[data-chat-running]`（自带鲸尾与 `TextShimmer` 扫光），并新增 macOS 的 `data-platform="darwin"` 平台标记，两项均已适配。**运行状态的着色是 0.2.0 起的能力**：0.1.7 及更早的宿主没有这个组件、也没有它读的那两个 token，那里的运行状态保持宿主原样（皮肤不再重写它的文案，也不再画金色细线）。
+- 已在 DeepSeek Harness `0.1.5-rc.1`、`0.1.7-rc.2` 与 `0.2.0-rc.2` 的 Web profile 上测试。`0.2.0-rc.2` 下另在 macOS 桌面客户端实机复验，皮肤经皮肤中心 `0.4.5` 以资产形态（hooks 受信）加载；本插件形态由样式表测试与两形态锚点一致性检查覆盖（44 项测试全绿、`tsc --noEmit` 无错）。0.1.7 重构了会话头部（`conversation.header`）、触发行、用户时钟行、上下文提示行、工作步骤折叠与 turn-process 条带；0.2.0 把运行状态搬成了独立组件 `[data-chat-running]`（自带鲸尾与 `TextShimmer` 扫光），并新增 macOS 的 `data-platform="darwin"` 平台标记，两项均已适配。**运行状态的自定义是 0.2.0 起的能力**：0.1.7 及更早的宿主没有这个组件，那里的运行状态保持宿主原样（皮肤不再重写它的文案，也不再画金色细线）。
 - 对 better-sidebar、AionUI、SSH、Cordis、`.xterm` 与设置 portal 使用定向样式，避免改写终端 ANSI 调色板或全局系统 token。
 - 小尺寸窗口会隐藏装饰性头像和人物舞台，优先保证操作区域与文字可读。
 

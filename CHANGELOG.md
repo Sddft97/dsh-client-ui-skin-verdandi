@@ -13,20 +13,31 @@ the rest.
 
 ### Fixed
 
-- The running status is the host's own again, re-tinted rather than rewritten. dsh
-  0.2.0 mounts it as a node of its own (`[data-chat-running]`, with the whale tail
-  and a `TextShimmer` sweep) and paints it from two tokens; the skin used to
-  collapse the host's label, restate the copy (`薇儿烧烤中...` /
+- The running status is the skin's own line now. dsh 0.2.0 mounts it as a node of
+  its own (`[data-chat-running]`, with a whale tail and a `TextShimmer` sweep); the
+  skin used to collapse the host's label, restate the copy (`薇儿烧烤中...` /
   `Verdandi is grilling...`) from a pseudo-element and draw its own gold hairline
   under the row, anchored on a marker the 0.2.0 shell never grows — so the whole
-  thing was dead there and the stock blue status showed through. The copy swap and
-  the hairline are gone and the skin now only re-maps
-  `--dsw-alias-label-deep-diving` and `--dsw-alias-label-deep-diving-shimmer`: the
-  ink is the same plain-ink token the readability guard measures (5.18:1 light /
-  2.03:1 dark against the measured artwork band) and the sweeping band is the
-  skin's crimson (3.41:1 / 1.95:1). Both beat the host's own values (its light ink
-  is 1.71:1) and the base-to-band step stays at the host's own strength, so the
-  sweep reads as motion rather than as the word blinking. The `data-verdandi-running`
+  thing was dead there and the stock blue status showed through. The takeover is
+  rebuilt on the host's own marker, and it owns the whole line: the icon, the copy
+  and the sweep. The host's tail is kept verbatim, so `，用时 20 秒 ···` keeps
+  ticking through the replacement while only the leading phrase is swapped for the
+  skin's; the icon is a 14px ink silhouette behind an alpha mask (the technique the
+  host's own whale uses, which is what makes a mark readable at that size) with a
+  breathing swing; the copy is a single gradient layer whose ends are the ink
+  colour and which tiles, so the band cannot ghost and the glyphs always have a
+  background to be painted from — a non-repeating gradient leaves the tail of the
+  line unpainted once it slides off the element, and `color: transparent` then
+  renders nothing at all. The host's live region is replaced by one of ours
+  carrying the host's own phrase, so assistive tech keeps hearing the shell's own
+  localization while the paint is ours. Everything keys on `data-chat-running` and
+  on the phrase text — no host class name is involved, and the label is found by
+  its text. Fail closed: an install whose hooks are refused, or a phrase no locale
+  we know, leaves the host's line completely alone; for that middle state the two
+  deep-diving tokens are still re-mapped, so even then the shell's line is painted
+  in the skin's ink (5.18:1 light / 2.03:1 dark over the measured artwork band) and
+  its sweep in the skin's crimson (1.48:1 / 1.95:1, and the step from the ink is
+  3.5x / 4.0x against the host's own 1.68x / 1.42x). The `data-verdandi-running`
   marker and the hook that projected it are retired with it.
 - The registered sidebar rows read as one list again. The rows the hooks mark
   (`task-board` / `skill-explorer` / `ssh`) carried a 24px gold ring, a taller
@@ -83,15 +94,19 @@ the rest.
   two-form anchor parity check), `tsc --noEmit` clean, `pnpm build` reproducible
   (a second build produces identical bytes), and `npm pack --dry-run` still
   ships only `lib/` plus the manifests, docs and the five storefront previews.
-- The running status was measured against a faithful fixture of the host's own
-  node — its real class names, its real stylesheet — rather than a live turn: the
-  resolved colours, the mask and the moving sweep were read back frame by frame in
-  both palettes, and the same readback was then repeated with no override injected
-  at all, so the two colours in the built skin are the ones the host resolves
-  (light `rgb(27,17,22)` + `rgb(104,22,38)`, dark `rgb(251,243,245)` +
-  `rgb(198,83,105)`). The screenshots are the basis of the numbers above. The
-  copy-swap removal is on both forms; the sweep tint is a 0.2.0-only capability,
-  so on 0.1.7 and earlier the status keeps the host's stock look.
+- The running status was measured against a fixture of the host's own node — its
+  real class names, its real stylesheet — and then against the live page with the
+  skin's own hooks in charge: the host's visual children all compute to
+  `display: none`, the takeover marker survives the passes our own writes trigger,
+  the copy reads `薇儿烧烤中，用时 20 秒 ···`, the live region carries the shell's
+  `深度求索中`, the icon's mask resolves to the skin's own asset and its transform
+  moves frame to frame, and a real `characterData` tick (what the host's 1 Hz timer
+  does) carries the copy to `薇儿烧烤中，用时 1 分 07 秒 ···`. Two spec cases pin the
+  takeover and its fail-closed path, and both were mutation-tested: reverting the
+  marker re-assertion and reverting the "never mistake our own live region for the
+  host's label" guard each turn the suite red. The copy-swap removal and the
+  takeover are on both forms; the takeover is a 0.2.0-only capability, so on 0.1.7
+  and earlier the status keeps the host's stock look.
 
 ## [0.1.5] - 2026-09-26
 
