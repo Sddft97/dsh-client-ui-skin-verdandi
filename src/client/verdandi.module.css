@@ -789,9 +789,13 @@ body[data-dsh-verdandi] [data-pane='conversation'] > [data-verdandi-decoration='
   border-right: 1px solid rgba(199, 168, 107, 0.44);
 }
 
+/* The pane lifts are deliberately in the single digits. Anything the host raises for
+   an overlay lives in the tens or hundreds, so a decoration that outranks it will
+   paint over the overlay -- reported once as the composer seal sitting on top of the
+   model picker, which is also what put the seal below the composer's own content. */
 body[data-dsh-verdandi] [data-verdandi-header] {
   position: relative;
-  z-index: 20;
+  z-index: 4;
   /* Deliberately no `overflow: hidden`. The host renders its title-row dropdowns
      *inside* the header instead of portalling them to `document.body` (measured:
      `[role=menu]`, `position: absolute; z-index: 100`, parent chain
@@ -983,10 +987,19 @@ body[data-dsh-verdandi] [data-verdandi-header] [data-slot='conversation.session.
    row -- later in DOM order -- painting over a header menu (measured: the menu
    spans y 43-255 and the tabs cover y 50-75 of it). The title row owns the
    dropdown triggers (`_headerUtilities` sits inside it), so it has to outrank
-   the tabs. Descendant, not child: 0.1.7 wraps the title row in the
-   `conversation.session.header` anchor, which is a `display: contents` slot, so
-   a `>` rule would match nothing on the real shell. */
-body[data-dsh-verdandi] [data-verdandi-header] [class*='_titleRow'] {
+   the tabs.
+
+   Three components plus `:has()` on purpose: on 0.2.0 the row sits one slot deeper
+   (`conversation.session.header` is a `display: contents` seat), which makes the
+   blanket `z-index: 3` rule's descendant form 0-3-0 and drops a 0-2-0 title-row rule
+   below it -- and the menu then paints under the tabs. Same-specificity-later is not
+   something a skin may rely on across host versions, so the lift is spelled out at
+   0-3-0 or above and matched structurally as well as by class. */
+body[data-dsh-verdandi] [data-verdandi-header] > [class*='_titleRow'],
+body[data-dsh-verdandi] [data-verdandi-header] > :has([aria-haspopup]),
+body[data-dsh-verdandi] [data-verdandi-header] [data-slot='conversation.session.header'] > [class*='_titleRow'],
+body[data-dsh-verdandi] [data-verdandi-header] [data-slot='conversation.session.header'] > :has([aria-haspopup]),
+body[data-dsh-verdandi] [data-verdandi-header] [class*='_titleRow']:has([aria-haspopup]) {
   z-index: 5;
   font-family: Georgia, 'Noto Serif SC', 'Songti SC', serif;
   letter-spacing: 0.012em;
@@ -1013,6 +1026,37 @@ body[data-dsh-verdandi] [data-verdandi-header] button:hover {
   color: var(--vd-crimson-deep) !important;
   background: rgba(255, 253, 251, 0.9);
   border-color: var(--vd-gold);
+}
+
+/* Some header controls are really TWO buttons in one box -- the host's split control
+   ("open with <app>" plus its chevron) is `div > button + button` inside the shell.
+   The blanket button rule above gave each half its own capsule, so the pair showed a
+   notch at the seam and two inset rings butting together. A split control is one
+   control: the pair's box becomes the pill and the halves stay square, borderless and
+   transparent inside it.
+
+   Structural on purpose -- a container holding two adjacent buttons, minus the tab
+   list, which is also `button + button` but must keep its flat, unboxed look. */
+body[data-dsh-verdandi] [data-verdandi-header] :is(div, span):has(> button + button):not([role='tablist']) {
+  border: 1px solid rgba(199, 168, 107, 0.62);
+  border-radius: 999px;
+  background: rgba(255, 253, 251, 0.66);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
+    0 2px 6px rgba(67, 16, 30, 0.07);
+  overflow: hidden;
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] :is(div, span):has(> button + button):not([role='tablist']) > button {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+body[data-dsh-verdandi] [data-verdandi-header] :is(div, span):has(> button + button):not([role='tablist']) > button:hover {
+  color: var(--vd-crimson-deep) !important;
+  background: rgba(255, 253, 251, 0.9) !important;
 }
 
 body[data-dsh-verdandi] [data-verdandi-header] [role='tab'] {
@@ -1082,6 +1126,18 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] button:hover 
   box-shadow:
     inset 0 0 0 1px var(--vd-gold),
     var(--vd-slip-shadow);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] :is(div, span):has(> button + button):not([role='tablist']) {
+  background: var(--vd-slip);
+  box-shadow:
+    inset 0 0 0 1px var(--vd-slip-line),
+    var(--vd-slip-shadow);
+}
+
+body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] :is(div, span):has(> button + button):not([role='tablist']) > button:hover {
+  color: var(--vd-gold-light) !important;
+  background: var(--vd-slip-solid) !important;
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.chat.node'] {
@@ -2013,7 +2069,7 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] :is(
 
 body[data-dsh-verdandi] [data-composer-seat] {
   position: relative;
-  z-index: 15;
+  z-index: 3;
   background: transparent !important;
 }
 
@@ -2070,7 +2126,7 @@ body[data-dsh-verdandi] [data-composer-card]::after {
 
 body[data-dsh-verdandi] [data-composer-card] > [data-verdandi-decoration='composer-seal'] {
   position: absolute;
-  z-index: 5;
+  z-index: 1;
   top: -49px;
   left: 50%;
   width: 104px;

@@ -180,7 +180,13 @@ describe('verdandi compatibility guardrails', () => {
     // order at the same default z-index) painted over its top.
     const headerRule = CSS.match(/body\[data-dsh-verdandi\] \[data-verdandi-header\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(headerRule).toMatch(/position:\s*relative/)
-    expect(headerRule).toMatch(/z-index:\s*20/)
+    // The pane lifts stay in the single digits on purpose: anything the host raises for
+    // an overlay lives in the tens or hundreds, and a decoration that outranks it paints
+    // over the overlay (reported: the composer seal covering the model picker). This used
+    // to be 20, which was above the host's own in-header menu layer.
+    const zIndex = Number(/z-index:\s*(\d+)/.exec(headerRule)?.[1])
+    expect(zIndex).toBeGreaterThan(0)
+    expect(zIndex).toBeLessThan(10)
     // Match the declaration, not the prose in the comment that explains it.
     expect(headerRule).not.toMatch(/(?:^|\n)\s*overflow\s*:/)
     expect(CSS).toMatch(
@@ -198,9 +204,54 @@ describe('verdandi compatibility guardrails', () => {
     expect(liftRule).toContain('position: relative')
     // The title row hangs off that same anchor rather than sitting directly under
     // the header, so this rule is a descendant one as well; a `>` here matched
-    // nothing on the real shell.
-    expect(CSS).toMatch(/\[data-verdandi-header\] \[class\*='_titleRow'\]\s*\{[^}]*z-index:\s*5/)
-    expect(CSS).toMatch(/\[data-verdandi-header\] \[class\*='_titleRow'\]\s*\{[^}]*letter-spacing:\s*0\.012em/)
+    // nothing on the real shell. It is written as a selector list that reaches three
+    // components (and matches the trigger-bearing row structurally), because on 0.2.0
+    // the nested form of the `z-index: 3` rule above is 0-3-0 and a 0-2-0 title-row
+    // rule loses to it -- and the menu then paints under the tabs.
+    const titleRowRule = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-header\] > \[class\*='_titleRow'\],([\s\S]*?)\{([^}]*)\}/,
+    )?.[2] ?? ''
+    expect(titleRowRule).toMatch(/z-index:\s*5/)
+    expect(titleRowRule).toMatch(/letter-spacing:\s*0\.012em/)
+    expect(CSS).toMatch(
+      /\[data-verdandi-header\] \[data-slot='conversation\.session\.header'\] > \[class\*='_titleRow'\],/,
+    )
+    expect(CSS).toMatch(/\[data-verdandi-header\] > :has\(\[aria-haspopup\]\)/)
+    expect(CSS).toMatch(/\[data-verdandi-header\] \[class\*='_titleRow'\]:has\(\[aria-haspopup\]\)/)
+  })
+
+  it('draws a split header control as one pill instead of two capsules', () => {
+    // The host's split control is `div > button + button` (`open with <app>` plus its
+    // chevron). The blanket button rule gave each half its own capsule, so the seam
+    // showed a notch and two inset rings butting together.
+    const group = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-header\] :is\(div, span\):has\(> button \+ button\):not\(\[role='tablist'\]\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(group).toMatch(/border-radius:\s*999px/)
+    expect(group).toMatch(/overflow:\s*hidden/)
+    expect(group).toMatch(/background:\s*rgba\(255, 253, 251, 0\.66\)/)
+    const halves = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-header\] :is\(div, span\):has\(> button \+ button\):not\(\[role='tablist'\]\) > button\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(halves).toMatch(/border-radius:\s*0 !important/)
+    expect(halves).toMatch(/box-shadow:\s*none !important/)
+    expect(halves).toMatch(/background:\s*none !important/)
+    // The tab list is also `button + button` and must keep its flat, unboxed look.
+    expect(CSS).toMatch(/:is\(div, span\):has\(> button \+ button\):not\(\[role='tablist'\]\)/)
+  })
+
+  it('keeps the decorative lifts below any host overlay', () => {
+    // A purely decorative layer must never outrank a popover. The composer seal did:
+    // it sat at z-index 5 inside a composer that the skin had lifted to 15.
+    const seat = CSS.match(/body\[data-dsh-verdandi\] \[data-composer-seat\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    const seal = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-composer-card\] > \[data-verdandi-decoration='composer-seal'\]\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(Number(/z-index:\s*(\d+)/.exec(seat)?.[1])).toBeLessThan(10)
+    expect(Number(/z-index:\s*(\d+)/.exec(seal)?.[1])).toBeLessThan(10)
+    expect(Number(/z-index:\s*(\d+)/.exec(seal)?.[1])).toBeLessThan(Number(/z-index:\s*(\d+)/.exec(seat)?.[1]))
+    // The message nodes are lifted to 2, so the composer has to stay above them.
+    expect(Number(/z-index:\s*(\d+)/.exec(seat)?.[1])).toBeGreaterThan(2)
   })
 
   it('paints the header chips without a decorative stud and hands the dark palette a slip', () => {
