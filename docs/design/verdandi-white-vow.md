@@ -521,7 +521,7 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-chat-running] {
 
 - **保留计时**：不解析时长，只把宿主那句的**已知前缀**（`深度求索中` / `Deep diving`）换成皮肤的（`薇儿烧烤中` / `Verdandi is grilling`），**后半段原样**——标点、计时、末尾 `···` 全留着。所以 `20 秒 → 1 分 07 秒` 这种多段格式也不用管。同步靠一个只盯那一行文案的 `characterData` 观察器（约 1Hz，不进主 sync 循环）。
 - **文案节点按文本找**，不按类名：遍历 `[data-chat-running]` 下的叶节点，取"以已知前缀开头且**最长**"的那个——宿主的 live region 装的是裸短语，真正带计时的那一行更长，所以取最长即可稳定命中。
-- **图标**：14px 盒子里放皮肤美术的**墨色剪影**（`background: currentColor` + `mask: var(--vd-art-sequence-sword)`），这正是宿主鲸尾的做法；写实插画在这尺寸会糊掉（对照图见 `Sddft97/dsh-skins` 的 `evidence/README.verdandi-2026-10-09.md` 同目录截图）。动效 2.2s 呼吸+微摆，尊重 `prefers-reduced-motion`。
+- **图标**：14px 盒子里直接放皮肤美术（`--vd-art-sequence-sword`）+ 2.2s 呼吸微摆，尊重 `prefers-reduced-motion`。曾按宿主鲸尾的手法做过一版**单色剪影**（`background: currentColor` + `mask: var(--vd-art-sequence-sword)`），实机看过之后否掉：剪影把剑自身的明暗压成一坨，而这把剑的画法在 14px 下本来就清楚。记一条结论：宿主给鲸尾用剪影是因为**它的**鲸尾只有这样才立得住，不是因为剪影普适更优。
 - **扫光**：自绘**单层**——墨色与扫光带是同一个渐变的两个色标，`background-clip: text` 直接画在字上，所以不存在两层错位重影。渐变**首尾同为墨色并 `repeat-x`**：背景永远覆盖字体，带子周期性扫过。这里踩过一个坑：用 `no-repeat` 时，渐变随 `background-position` 滑出元素后那段字**没有背景可画**，而 `color: transparent` 的字就什么都不显示——表现为"某一相位下后半句整段消失"。
 - **无障碍**：宿主的 live region 被隐藏，所以由我们自己的节点承担播报，文案就是匹配到的宿主短语（与宿主 `t('chat.deepDiving')` 同字）。这样 `role="status"` 不再是我们的依赖。
 

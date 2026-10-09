@@ -22,8 +22,7 @@ the rest.
   rebuilt on the host's own marker, and it owns the whole line: the icon, the copy
   and the sweep. The host's tail is kept verbatim, so `，用时 20 秒 ···` keeps
   ticking through the replacement while only the leading phrase is swapped for the
-  skin's; the icon is a 14px ink silhouette behind an alpha mask (the technique the
-  host's own whale uses, which is what makes a mark readable at that size) with a
+  skin's; the icon is the skin's own sword mark in the host's 14px slot with a
   breathing swing; the copy is a single gradient layer whose ends are the ink
   colour and which tiles, so the band cannot ghost and the glyphs always have a
   background to be painted from — a non-repeating gradient leaves the tail of the
