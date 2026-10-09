@@ -80,7 +80,7 @@ dsh plugin --profile web remove @hjbztlbr/dsh-client-ui-skin-verdandi
 
 ## Compatibility
 
-- Tested with the DeepSeek Harness `0.1.5-rc.1` and `0.1.7-rc.2` Web profiles; on 0.1.7 both the skin-center `1.0.2` asset form (hooks trusted) and the plugin form were verified: 0.1.7 rebuilt the session header (`conversation.header`), the trigger rows, the user-echo clock row, the context notice rows, the work-steps fold and the turn-process ribbon. All are handled, and the older shell renders unchanged.
+- Tested with the DeepSeek Harness `0.1.5-rc.1`, `0.1.7-rc.2` and `0.2.0-rc.2` Web profiles. On `0.2.0-rc.2` the skin was re-verified on the macOS desktop client as well, loaded through skin-center `0.4.5` in the asset form (hooks trusted); the plugin form in this repository is covered by the stylesheet tests and the two-form anchor parity check (44 tests, `tsc --noEmit` clean). 0.1.7 rebuilt the session header (`conversation.header`), the trigger rows, the user-echo clock row, the context notice rows, the work-steps fold and the turn-process ribbon; on 0.2.0 the running status rides the turn-process ribbon (the `_turnStatus` class is gone) and macOS gained a `data-platform="darwin"` marker. Both are handled, and the older shell renders unchanged.
 - Uses scoped compatibility styles for better-sidebar, AionUI, SSH, Cordis, `.xterm`, and settings portals without replacing terminal ANSI colors or broad system tokens.
 - Decorative avatars and character artwork are hidden at smaller viewport sizes so controls and text remain usable.
 

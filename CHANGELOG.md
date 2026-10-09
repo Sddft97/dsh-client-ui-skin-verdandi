@@ -9,6 +9,66 @@ A version exists only when all four agree: the git tag `vX.Y.Z`, the `version` i
 enforces the first two on every tag push; the checklist in `RELEASING.md` covers
 the rest.
 
+## [0.1.6] - 2026-10-09
+
+### Fixed
+
+- The registered sidebar rows read as one list again. The rows the hooks mark
+  (`task-board` / `skill-explorer` / `ssh`) carried a 24px gold ring, a taller
+  row box and a wider gap, while the official Plugins / Schedule rows and the
+  unmarked plugin rows beside them stayed bare — so the column alternated
+  between ringed and bare icons at two different indents. The ring block is
+  gone and the marked rows keep the host's own geometry (16px glyph, 8px gap,
+  36px row), which is what makes every row align rather than an override that
+  lines up three of them. Measured on the live 0.2.0-rc.2 shell: all six rows
+  now compute to `height: 36px`, a 16px glyph with no border, and the label at
+  `x = 46`.
+- The trace panel's «load earlier history» tab sits on the lane edge. The host
+  draws that control square and flush with a left-anchored fade, but the skin's
+  blanket `button { border-radius: 999px }` inside the panel turned it into a
+  pill — and at 28×50 the arc ate half of the top and bottom edges, so the
+  trailing rounding pulled the fill off the panel border and left a hairline gap
+  along both. It now keeps square left corners, takes the same 6px trailing
+  radius as the other row chips, and drops its top and bottom rules so the fill
+  meets the panel's border lines instead of doubling them one pixel inside.
+- The macOS new-session button no longer takes the host's `#ffffff8c` fill over
+  the invitation card, and the brand wordmark reads in the skin's gold — the
+  brand is a bare `<span>` on macOS, so the `button[aria-label]` rules never
+  reached it. Both live behind `[data-platform='darwin']`, so Windows and the
+  web host are untouched.
+- The send button keeps its crimson-and-sword treatment through every state. The
+  host cycles the label 发送消息/Send message → 停止生成/Stop generating →
+  排队发送/Queue message → 插话发送/Steer message and only the first two were
+  matched, so the button fell back to the stock look the moment a turn started.
+- The trace panel matches both locale spellings of its aria-label
+  (`轨迹时间线` and `Trajectory timeline`). The Chinese one was missed, so under a
+  Chinese UI the panel lost its paper surface and gold hairline entirely.
+
+### Removed
+
+- Selectors nothing in the shipped host matches: `_turnStatus` /
+  `_turnStatusClock` (the class was dropped in 0.1.7 and the live status now
+  rides `[data-turn-process]` plus the running marker the hooks project, so the
+  whole block — including its `animation: none` shimmer kill and the
+  forced-colors pair — was dead), `_producedLabel` / `_producedMore`,
+  `[class*='codeBlock']` on the code-block rule, the `svg > rect` /
+  `svg > g:last-of-type` new-session icon rules, and the `展开侧边栏` /
+  `Expand sidebar` aria labels the shell never emits. Each removal is pinned by
+  a test that fails if the selector comes back, so the cleanup cannot be undone
+  by accident.
+
+### Verified
+
+- Live on the running DSH `0.2.0-rc.2` web host and the `0.2.0-rc.2` macOS
+  desktop client, with the skin installed through skin-center `0.4.5` as the
+  asset form: the sidebar rows and the trace tab were measured before and after
+  (computed styles and pixel scans, not eyeballing), and the same two changes
+  were reproduced on the plugin form in this repository.
+- Gates: 44/44 tests (the CSS guardrails, the apply/bundle specs, and the
+  two-form anchor parity check), `tsc --noEmit` clean, `pnpm build` reproducible
+  (a second build produces identical bytes), and `npm pack --dry-run` still
+  ships only `lib/` plus the manifests, docs and the five storefront previews.
+
 ## [0.1.5] - 2026-09-26
 
 ### Fixed
