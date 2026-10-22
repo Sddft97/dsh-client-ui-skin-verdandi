@@ -47,20 +47,20 @@ describe('verdandi compatibility guardrails', () => {
 
   it('releases sidebar clipping only for its active settings portal', () => {
     expect(CSS).toMatch(
-      /\[data-pane='sidebar'\]:has\([\s\S]*?\[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?\)\s*\{[\s\S]*?overflow: visible/,
+      /\[data-verdandi-pane='sidebar'\]:has\([\s\S]*?\[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?\)\s*\{[\s\S]*?overflow: visible/,
     )
   })
 
   it('does not leak sidebar button foreground into the settings portal', () => {
     expect(CSS).toMatch(
-      /\[data-pane='sidebar'\] button:not\([\s\S]*?\[data-slot='sidebar\.settings'\] \*[\s\S]*?\)\s*\{[\s\S]*?color: inherit/,
+      /\[data-verdandi-pane='sidebar'\] button:not\([\s\S]*?\[data-slot='sidebar\.settings'\] \*[\s\S]*?\)\s*\{[\s\S]*?color: inherit/,
     )
   })
 
   it('keeps the character inside the conversation stage instead of fixing it to the viewport', () => {
     const stageRule = CSS.match(/\.characterStage\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(stageRule).toContain('display: block !important')
-    expect(CSS).toMatch(/data-pane='conversation'\] > \.characterStage\s*\{[\s\S]*?display: block !important/)
+    expect(CSS).toMatch(/data-verdandi-pane='conversation'\] > \.characterStage\s*\{[\s\S]*?display: block !important/)
     const figureRule = CSS.match(/\.characterFigure\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(figureRule).toContain('position: absolute')
     expect(figureRule).not.toContain('position: fixed')
@@ -89,7 +89,7 @@ describe('verdandi compatibility guardrails', () => {
 
   it('keeps the workspace scene visible under a graduated legibility veil', () => {
     expect(CSS).toMatch(/\[data-phase='active'\],[\s\S]*?\[data-phase='hero'\][\s\S]*?background-color: transparent !important/)
-    const conversationRule = CSS.match(/\[data-pane='conversation'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    const conversationRule = CSS.match(/\[data-verdandi-pane='conversation'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     // The artwork stays the bottom layer; the veil only compresses its range.
     expect(conversationRule).toContain('--vd-art-workspace-light')
     expect(conversationRule).toMatch(/var\(--vd-stage-veil-edge\) 0%/)
@@ -106,6 +106,31 @@ describe('verdandi compatibility guardrails', () => {
     // The empty-session composition is not veiled; there is no text to carry.
     const heroRule = CSS.match(/\[data-verdandi-phase='hero'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(heroRule).toContain('--vd-stage-veil-hero')
+  })
+
+  it('keeps both conversation slot layouts transparent and above the stage', () => {
+    const transparent = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-pane='conversation'\] :is\(\s*\[data-slot='conversation'\],\s*\[data-slot='main\.conversation'\] > \*,[\s\S]*?\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(transparent).toContain('background-color: transparent !important')
+
+    const content = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-pane='conversation'\] :is\(\s*\[data-slot='conversation'\],\s*\[data-slot='main\.conversation'\] > \*\s*\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(content).toContain('position: relative')
+    expect(content).toContain('z-index: 1')
+  })
+
+  it('preserves current right-panel positioning and positions only the legacy details pane', () => {
+    const details = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-pane='details'\]\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(details).toContain('--vd-art-details-light')
+    expect(details).not.toMatch(/(?:^|[;\s])position\s*:/)
+    expect(CSS).toMatch(
+      /\[data-verdandi-pane='details'\]\[data-pane='details'\]\s*\{\s*position: relative;\s*\}/,
+    )
+    expect(CSS_NO_COMMENTS.match(/\[data-pane=[^\]]+\]/g) ?? []).toEqual(["[data-pane='details']"])
   })
 
   it('uses bridal ornaments without creating interactive overlays', () => {
@@ -376,9 +401,9 @@ describe('verdandi compatibility guardrails', () => {
   })
 
   it('keeps host load errors readable over scenic backgrounds', () => {
-    expect(CSS).toMatch(/data-pane='conversation'[^{}]*class\*='_openError'[^{}]*\{[^}]*background:/)
+    expect(CSS).toMatch(/data-verdandi-pane='conversation'[^{}]*class\*='_openError'[^{}]*\{[^}]*background:/)
     expect(CSS).toMatch(/class\*='_openError'[^{}]*\{[^}]*border-left:/)
-    expect(CSS).toMatch(/data-pane='sidebar'[^{}]*class~='cm-bal-err'[^{}]*\{[^}]*color:/)
+    expect(CSS).toMatch(/data-verdandi-pane='sidebar'[^{}]*class~='cm-bal-err'[^{}]*\{[^}]*color:/)
   })
 
   it('does not pad the collapsed reasoning row out of its fixed host height', () => {
@@ -446,7 +471,7 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/\[data-turn-process\] \[class\*='_label'\]\s*\{[^}]*text-shadow:\s*none/)
     // The rejected halo was a multi-layer glow in the paper colour.
     expect(CSS).not.toMatch(/text-shadow:[^;]*var\(--vd-slip-solid\)/)
-    expect(CSS).not.toMatch(/\[data-pane='conversation'\]::(?:before|after)/)
+    expect(CSS).not.toMatch(/\[data-verdandi-pane='conversation'\]::(?:before|after)/)
     expect(CSS).not.toMatch(/-webkit-text-stroke/)
   })
 
@@ -478,7 +503,7 @@ describe('verdandi compatibility guardrails', () => {
 
   it('carries every bare transcript row on a slip surface', () => {
     const slipRule = CSS.match(
-      /\[data-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],[\s\S]*?\)\s*\{([^}]*)\}/,
+      /\[data-verdandi-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],[\s\S]*?\)\s*\{([^}]*)\}/,
     )?.[1] ?? ''
     expect(slipRule).toContain('background: var(--vd-slip)')
     expect(slipRule).toContain('--dsw-alias-label-tertiary: var(--vd-ink-meta)')
@@ -490,10 +515,10 @@ describe('verdandi compatibility guardrails', () => {
     // own `data-turn-trigger`.
     // The trigger and the user-echo clock share the surface but not the furniture:
     // the hover-revealed rows must not carry a box the host has to re-flow.
-    const paintOnly = CSS.match(/\[data-pane='conversation'\] :is\(\s*\[data-clock='start'\],[\s\S]*?\)\s*\{([^}]*)\}/)?.[1] ?? ''
+    const paintOnly = CSS.match(/\[data-verdandi-pane='conversation'\] :is\(\s*\[data-clock='start'\],[\s\S]*?\)\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(paintOnly).toContain('background: var(--vd-slip)')
     expect(paintOnly).not.toMatch(/(margin|padding|width|height|border):/)
-    expect(CSS).toMatch(/\[data-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],\s*\[class\*='_turnErrorRow'\]/)
+    expect(CSS).toMatch(/\[data-verdandi-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],\s*\[class\*='_turnErrorRow'\]/)
 
     // Turn chrome the host draws without any surface must be covered too.
     expect(CSS).toMatch(/\[class\*='_turnErrorTitle'\]\s*\{\s*color: var\(--vd-danger\) !important/)
@@ -508,7 +533,7 @@ describe('verdandi compatibility guardrails', () => {
     // with the marker it rode (see the running-status test below), so a long
     // transcript is not cut into strips by a rule under every finished turn.
     const processRule = CSS.match(
-      /body\[data-dsh-verdandi\] \[data-pane='conversation'\] \[data-turn-process\]\s*\{([^}]*)\}/,
+      /body\[data-dsh-verdandi\] \[data-verdandi-pane='conversation'\] \[data-turn-process\]\s*\{([^}]*)\}/,
     )?.[1] ?? ''
     expect(processRule).toContain('background: none')
     expect(processRule).not.toMatch(/(margin|padding|width|height):/)
@@ -525,7 +550,7 @@ describe('verdandi compatibility guardrails', () => {
     // The user-echo clock row is the tail's twin on the other side of the turn,
     // and the reason it is painted, never resized, is the same one: the host
     // reveals it on hover, so a changed box slides the buttons under the pointer.
-    const echoRule = CSS.match(/\[data-pane='conversation'\] \[data-clock='start'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    const echoRule = CSS.match(/\[data-verdandi-pane='conversation'\] \[data-clock='start'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(echoRule).toContain('background: var(--vd-slip)')
     expect(echoRule).toContain('border-radius: 999px')
     expect(echoRule).not.toMatch(/(margin|width|height|border):/)
@@ -536,11 +561,11 @@ describe('verdandi compatibility guardrails', () => {
     // The trigger row's own hover must not fall back to the host's 7.5% tint:
     // that token replaces the host's opaque card fill, so the row would go
     // transparent exactly while the pointer is on it.
-    const triggerRule = CSS.match(/\[data-pane='conversation'\] \[data-turn-trigger\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    const triggerRule = CSS.match(/\[data-verdandi-pane='conversation'\] \[data-turn-trigger\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(triggerRule).toContain('background: var(--vd-slip)')
     expect(triggerRule).not.toMatch(/(margin|padding|width|height|border):/)
     expect(CSS).toMatch(
-      /\[data-pane='conversation'\] \[data-turn-trigger\]:hover\s*\{[^}]*background: var\(--vd-slip-solid\)/,
+      /\[data-verdandi-pane='conversation'\] \[data-turn-trigger\]:hover\s*\{[^}]*background: var\(--vd-slip-solid\)/,
     )
 
     // And the ratio has to survive without compositing help.

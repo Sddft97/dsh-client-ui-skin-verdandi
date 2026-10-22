@@ -11,6 +11,18 @@ and its section below is kept as the record of that. `.github/workflows/release-
 enforces the first two on every tag push; the checklist in `RELEASING.md` covers
 the rest.
 
+## [Unreleased]
+
+### Fixed
+
+- Adapt the standalone plugin's sidebar, conversation and right-panel detection
+  to the DSH 0.2 shell, while retaining the legacy `data-pane` layout. The skin
+  uses its own region markers and removes details decoration when the right
+  panel closes, without changing the host panel's positioning. This selectively
+  incorporates the region adapter from [PR #1](https://github.com/Sddft97/dsh-client-ui-skin-verdandi/pull/1)
+  and preserves the existing running timer, navigation, trajectory, overlay and
+  desktop drag-region fixes.
+
 ## [0.1.7] - 2026-10-10
 
 ### Fixed

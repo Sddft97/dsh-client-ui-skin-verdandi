@@ -42,6 +42,7 @@ import {
 import css from './verdandi.module.css'
 
 const SKIN_ATTR = 'data-dsh-verdandi'
+const REGION_ATTR = 'data-verdandi-pane'
 const WORKSPACE_ATTR = 'data-verdandi-workspace'
 const MODAL_ATTR = 'data-verdandi-modal-open'
 const SIDEBAR_SIZE_ATTR = 'data-verdandi-sidebar-size'
@@ -161,8 +162,31 @@ const layoutProperties = [
   '--vd-conversation-header-height',
 ] as const
 
-function firstElement<T extends HTMLElement>(selector: string): T | null {
-  return document.querySelector<T>(selector)
+const REGION_SELECTORS = {
+  sidebar: ["[data-pane='sidebar']", "[class*='_sidebarCol']", ":has(> [data-slot='sidebar'])"],
+  conversation: ["[data-pane='conversation']", "[data-slot='main.conversation'] > *", ":has(> [data-slot='conversation.header'])"],
+  details: ["[data-pane='details']", '[data-sidebar-right-panel]', "[data-slot='rightbar'] > *"],
+} as const
+type RegionName = keyof typeof REGION_SELECTORS
+type Regions = Record<RegionName, HTMLElement | null>
+
+function resolveRegions(): Regions {
+  const regions = {} as Regions
+  for (const name of Object.keys(REGION_SELECTORS) as RegionName[]) {
+    let found: HTMLElement | null = null
+    for (const selector of REGION_SELECTORS[name]) {
+      found = Array.from(document.querySelectorAll<HTMLElement>(selector))
+        .find((element) => window.getComputedStyle(element).display !== 'contents') ?? null
+      if (found) break
+    }
+    // The right panel stays mounted as a transparent overlay while closed.
+    if (name === 'details' && (!isRendered(found)
+      || (found.hasAttribute('data-sidebar-right-panel') && !found.hasAttribute('data-sidebar-right-open')))) {
+      found = null
+    }
+    regions[name] = found
+  }
+  return regions
 }
 
 function headerElement(root: ParentNode | null): HTMLElement | null {
@@ -326,12 +350,25 @@ function ensureCharacterStage(conversation: HTMLElement): HTMLElement {
   return stage
 }
 
-function clearOwnedHooks(): void {
+function clearOwnedHooks(root: Document | HTMLElement = document): void {
   for (const attribute of OWNED_HOOKS) {
-    for (const element of document.querySelectorAll<HTMLElement>(`[${attribute}]`)) {
+    if (root instanceof HTMLElement) root.removeAttribute(attribute)
+    for (const element of root.querySelectorAll<HTMLElement>(`[${attribute}]`)) {
       element.removeAttribute(attribute)
     }
   }
+}
+
+function releaseRegion(region: HTMLElement): void {
+  clearOwnedHooks(region)
+  region.removeAttribute(REGION_ATTR)
+  region.removeAttribute(CONVERSATION_PHASE_ATTR)
+  region.removeAttribute(CONVERSATION_VIEW_ATTR)
+  for (const property of layoutProperties) region.style.removeProperty(property)
+  for (const node of region.querySelectorAll<HTMLElement>(`${DECORATION_SELECTOR}, ${STAGE_SELECTOR}, [${RUNNING_LINE_ATTR}]`)) {
+    node.remove()
+  }
+  for (const node of region.querySelectorAll<HTMLElement>(`[${SLIP_ATTR}]`)) node.removeAttribute(SLIP_ATTR)
 }
 
 /**
@@ -375,19 +412,20 @@ function decorateLegibilityRows(conversation: HTMLElement | null): void {
   }
 }
 
-function decorateStableRegions(): void {
+function decorateStableRegions(regions: Regions): void {
   clearOwnedHooks()
 
-  const header = headerElement(document)
+  const header = headerElement(regions.conversation)
   header?.setAttribute('data-verdandi-header', '')
 
-  const details = firstElement<HTMLElement>("[data-pane='details']")
+  const details = regions.details
   const detailsText = (details?.textContent ?? '').replace(/\s+/g, ' ').trim()
-  if (/点击消息流中的工具行查看详情|select.+tool.+row.+details/i.test(detailsText)) {
+  if (details?.querySelector('[data-dockkit-empty]')
+    || /点击消息流中的工具行查看详情|select.+tool.+row.+details|^空面板$|^Empty pane$/i.test(detailsText)) {
     details?.setAttribute(DETAILS_EMPTY_ATTR, '')
   }
 
-  const sidebar = firstElement<HTMLElement>("[data-pane='sidebar']")
+  const sidebar = regions.sidebar
   if (!sidebar) return
 
   for (const button of sidebar.querySelectorAll<HTMLButtonElement>('button')) {
@@ -453,6 +491,13 @@ function setConversationView(conversation: HTMLElement): 'chat' | 'trace' {
   return view
 }
 
+function conversationPhase(conversation: HTMLElement): string {
+  return conversation.getAttribute('data-phase')
+    || conversation.querySelector('[data-content-phase]')?.getAttribute('data-content-phase')
+    || conversation.querySelector('[data-phase]')?.getAttribute('data-phase')
+    || 'active'
+}
+
 function restoreAttribute(element: HTMLElement, name: string, previous: string | null): void {
   if (previous === null) element.removeAttribute(name)
   else element.setAttribute(name, previous)
@@ -488,6 +533,7 @@ export function apply(ctx: Context): void {
   let resizeObserver: ResizeObserver | null = null
   let observed = new Set<Element>()
   let animationFrame = 0
+  let regions: Regions = { sidebar: null, conversation: null, details: null }
   const requestFrame = typeof window.requestAnimationFrame === 'function'
     ? window.requestAnimationFrame.bind(window)
     : (callback: FrameRequestCallback) => window.setTimeout(() => callback(Date.now()), 0)
@@ -506,7 +552,7 @@ export function apply(ctx: Context): void {
    * known phrase nothing is painted and the host's own line stands.
    */
   const renderRunningLine = (): void => {
-    const host = firstElement<HTMLElement>(RUNNING_HOST_SELECTOR)
+    const host = regions.conversation?.querySelector<HTMLElement>(RUNNING_HOST_SELECTOR) ?? null
     if (host === null) return
     const found = runningPhraseNode(host)
     if (found === null) return
@@ -567,11 +613,16 @@ export function apply(ctx: Context): void {
   const sync = () => {
     animationFrame = 0
     removeLegacyNodes()
-    decorateStableRegions()
+    const nextRegions = resolveRegions()
+    for (const name of Object.keys(nextRegions) as RegionName[]) {
+      const previous = regions[name]
+      if (previous && previous !== nextRegions[name]) releaseRegion(previous)
+      nextRegions[name]?.setAttribute(REGION_ATTR, name)
+    }
+    regions = nextRegions
+    decorateStableRegions(regions)
 
-    const sidebar = firstElement<HTMLElement>("[data-pane='sidebar']")
-    const conversation = firstElement<HTMLElement>("[data-pane='conversation']")
-    const details = firstElement<HTMLElement>("[data-pane='details']")
+    const { sidebar, conversation, details } = regions
     const workspaceVisible = isRendered(conversation)
 
     body.toggleAttribute(WORKSPACE_ATTR, workspaceVisible)
@@ -583,7 +634,7 @@ export function apply(ctx: Context): void {
 
     if (workspaceVisible) {
       const stage = ensureCharacterStage(conversation)
-      const phase = conversation.querySelector<HTMLElement>('[data-phase]')?.getAttribute('data-phase') ?? 'active'
+      const phase = conversationPhase(conversation)
       setConversationView(conversation)
       stage.dataset.verdandiPhase = phase
       conversation.setAttribute(CONVERSATION_PHASE_ATTR, phase)
@@ -591,7 +642,7 @@ export function apply(ctx: Context): void {
       setStageWidth(stage, conversation)
     } else {
       for (const stage of document.querySelectorAll<HTMLElement>(STAGE_SELECTOR)) stage.remove()
-      for (const pane of document.querySelectorAll<HTMLElement>("[data-pane='conversation']")) {
+      for (const pane of document.querySelectorAll<HTMLElement>(`[${REGION_ATTR}='conversation']`)) {
         pane.removeAttribute(CONVERSATION_PHASE_ATTR)
         pane.removeAttribute(CONVERSATION_VIEW_ATTR)
       }
@@ -617,7 +668,7 @@ export function apply(ctx: Context): void {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ['aria-expanded', 'aria-selected', 'data-phase', 'hidden'],
+    attributeFilter: ['aria-expanded', 'aria-selected', 'aria-hidden', 'data-phase', 'data-content-phase', 'hidden', 'data-sidebar-right-open'],
   })
   window.addEventListener('resize', scheduleSync)
   window.visualViewport?.addEventListener('resize', scheduleSync)
@@ -640,11 +691,7 @@ export function apply(ctx: Context): void {
     for (const decoration of document.querySelectorAll<HTMLElement>(DECORATION_SELECTOR)) decoration.remove()
     for (const slip of document.querySelectorAll<HTMLElement>(`[${SLIP_ATTR}]`)) slip.removeAttribute(SLIP_ATTR)
     for (const stage of document.querySelectorAll<HTMLElement>(STAGE_SELECTOR)) stage.remove()
-    for (const conversation of document.querySelectorAll<HTMLElement>("[data-pane='conversation']")) {
-      for (const property of layoutProperties) conversation.style.removeProperty(property)
-      conversation.removeAttribute(CONVERSATION_PHASE_ATTR)
-      conversation.removeAttribute(CONVERSATION_VIEW_ATTR)
-    }
+    for (const region of Object.values(regions)) if (region) releaseRegion(region)
 
     for (const [property, previous] of previousAssetProperties) {
       if (previous.value) body.style.setProperty(property, previous.value, previous.priority)

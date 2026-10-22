@@ -34,9 +34,11 @@ const DEAD_ANCHORS = ['data-dsh-part']
  * it; the plugin form keeps to the per-skin hooks instead. `data-dsh-verdandi` is
  * this plugin's own body scope: the asset form is scoped by the skin center's
  * injected `data-dsh-skin`, so the marker never appears in its stylesheets.
+ * `data-verdandi-pane` is the plugin's region-adapter stamp; the asset form
+ * receives its region hooks from the host's semantic adapter instead.
  */
 const V2_ONLY = ['data-dsh-surface']
-const V1_ONLY = ['data-dsh-verdandi']
+const V1_ONLY = ['data-dsh-verdandi', 'data-verdandi-pane']
 
 const anchors = (css: string): string[] =>
   [...new Set([...css.matchAll(/\[(data-[a-z0-9-]+)/g)].map((m) => m[1]))].sort()
