@@ -22,6 +22,21 @@ the rest.
   incorporates the region adapter from [PR #1](https://github.com/Sddft97/dsh-client-ui-skin-verdandi/pull/1)
   and preserves the existing running timer, navigation, trajectory, overlay and
   desktop drag-region fixes.
+- Lay the composer dock out as one flex row, like the stock shell: detailed
+  mode's two stat anchors and compact mode's single anchor share the same line
+  instead of stacking, and the live tok/s element keeps its seat at the far end.
+- Drop the gold capsule rings on session-header buttons, trace-timeline
+  buttons, workspace-row controls and composer toolbar buttons — controls the
+  stock shell leaves bare stayed bare, so plugin-mounted buttons no longer
+  inherit a shape the host never draws. The stock's one capsule, on the
+  file-manager split control, is kept, as are the chapter chevron badge and the
+  clock slip pills.
+- Size the vow avatar frame to its ring geometry so the lace wraps the portrait
+  instead of crossing inside it: the frame art's ring only spans 63% of its
+  canvas, so `contain` shrank it under the photo. The frame now scales to the
+  element with a compensated seat, and the portrait fits the ring's inner hole,
+  on the session-header crest, assistant-message avatars and the collapsed-rail
+  avatar.
 
 ## [0.1.7] - 2026-10-10
 

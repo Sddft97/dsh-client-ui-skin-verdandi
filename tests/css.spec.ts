@@ -330,21 +330,25 @@ describe('verdandi compatibility guardrails', () => {
     expect(Number(/z-index:\s*(\d+)/.exec(seat)?.[1])).toBeGreaterThan(2)
   })
 
-  it('paints the header chips without a decorative stud and hands the dark palette a slip', () => {
-    // A 2px white radial-gradient dot at `10px 50%` was invisible on the light
-    // palette but read as a stray dot on the dark one, where the ivory chip sits
-    // on the dark header. The ivory literal also left the dark palette with
-    // near-white ink on a light pill (about 1.3:1 once composited).
+  it('keeps header buttons bare like the stock shell, capsule only on the file-manager split', () => {
+    // The gold capsules wrapped controls the host leaves unboxed (and anything a
+    // plugin mounts into the header), so they are gone: ink colour only, the
+    // host's own hover and geometry apply. The stock shell draws exactly one
+    // capsule — the file-manager split control — which keeps its pill, and its
+    // halves stay square and transparent inside it.
     expect(CSS).not.toMatch(/circle at 10px 50%/)
-    const chipRule = CSS.match(/body\[data-dsh-verdandi\] \[data-verdandi-header\] button\s*\{([^}]*)\}/)?.[1] ?? ''
-    expect(chipRule).toMatch(/background:\s*rgba\(255, 253, 251, 0\.66\)/)
-    expect(chipRule).not.toMatch(/radial-gradient/)
-    expect(CSS).toMatch(
-      /\[data-dsh-verdandi\]\[data-ds-dark-theme\] \[data-verdandi-header\] button\s*\{[^}]*background:\s*var\(--vd-slip\)/,
+    expect(CSS).not.toMatch(/body\[data-dsh-verdandi\] \[data-verdandi-header\] button\s*\{/)
+    expect(CSS).not.toMatch(
+      /\[data-dsh-verdandi\]\[data-ds-dark-theme\] \[data-verdandi-header\] button\s*\{/,
     )
     expect(CSS).toMatch(
       /\[data-dsh-verdandi\]\[data-ds-dark-theme\] \[data-verdandi-header\] button:hover\s*\{[^}]*color:\s*var\(--vd-gold-light\)/,
     )
+    const splitRule = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-header\] :is\(div, span\):has\(> button \+ button\):not\(\[role='tablist'\]\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(splitRule).toContain('border-radius: 999px')
+    expect(splitRule).toContain('overflow: hidden')
   })
 
   it('reserves the second-round artwork for low-frequency interface states', () => {
@@ -377,10 +381,17 @@ describe('verdandi compatibility guardrails', () => {
     expect(earlier).toContain('border-bottom: 0')
   })
 
-  it('groups composer statistics into one compact ribbon', () => {
-    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?display: grid !important/)
+  it('lays the composer statistics out on one stock row', () => {
+    // The dock is a single flex row now, like the stock shell: detailed mode's
+    // two stat anchors and compact mode's one share the same line, and the live
+    // tps element keeps its stock seat at the far end via margin-left: auto.
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?display: flex !important/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?align-items: center/)
+    expect(CSS).not.toMatch(/display: grid !important/)
+    expect(CSS).not.toMatch(/grid-template-columns/)
+    expect(CSS).not.toMatch(/\[data-slot='conversation\.composer\.dock'\] > :first-child/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?margin: 3px auto 0[\s\S]*?border-radius: 12px 12px 14px 14px/)
-    expect(CSS).not.toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[^}]*?border-top: 0/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \[data-dsh-live-tps\]\s*\{[^}]*margin-left: auto/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > :not\(\[role='tooltip'\]\)[\s\S]*?margin: 0 !important/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > :not\(\[role='tooltip'\]\)[\s\S]*?background: transparent !important/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \[role='tooltip'\][\s\S]*?z-index: 30/)
@@ -422,23 +433,22 @@ describe('verdandi compatibility guardrails', () => {
     expect(base).toContain('padding: 5px 9px')
   })
 
-  it('carries the hero workspace chips on the slip family too', () => {
-    // The new-session workspace row is bare chrome as well: the workspace chip,
-    // the agent-preset seat and the git-graph branch chip are all transparent
-    // 28px pills coloured `label-primary`.
+  it('keeps the workspace-row controls bare with skin ink only', () => {
+    // The stock shell draws chips nowhere on the workspace rows (its own chip on
+    // the new-session row is the host's), so the slip capsule is gone: ink and
+    // label aliases only, and the backdrop-filter fallback lost its subject.
     const chipRule = CSS.match(
       /\[class\*='_heroWorkspaceRow'\],\s*\[class\*='_workspaceRow'\]\s*\)\s*:is\(button, \[role='button'\]\)\s*\{([^}]*)\}/,
     )?.[1] ?? ''
-    expect(chipRule).toContain('background: var(--vd-slip)')
+    expect(chipRule).toContain('color: var(--vd-ink) !important')
     expect(chipRule).toContain('--dsw-alias-label-primary: var(--vd-ink)')
-    expect(chipRule).toContain('border-radius: 999px')
+    expect(chipRule).not.toMatch(/border-radius: 999px/)
+    expect(chipRule).not.toMatch(/background:/)
+    expect(chipRule).not.toMatch(/backdrop-filter/)
     // Controls at any depth: the slot system wraps every seat in a
     // `display: contents` div, so a `> *` rule would paint an invisible box.
     expect(CSS).not.toMatch(/\[class\*='_heroWorkspaceRow'\][\s\S]{0,80}>\s*\*\s*\{/)
-
-    expect(CSS).toMatch(
-      /@supports not \(\(backdrop-filter[\s\S]*?_heroWorkspaceRow[\s\S]*?background: var\(--vd-slip-solid\)/,
-    )
+    expect(CSS).not.toMatch(/@supports not \(\(backdrop-filter[\s\S]*?_heroWorkspaceRow/)
   })
 
   it('re-tints the host running indicator instead of restating its copy', () => {

@@ -539,8 +539,8 @@ body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='
   left: 5px;
   aspect-ratio: 1;
   background:
-    var(--vd-art-vow-avatar-frame) center / contain no-repeat,
-    var(--vd-art-q-avatar) center 48% / 74% auto no-repeat,
+    var(--vd-art-vow-avatar-frame) 43% 49% / 152% auto no-repeat,
+    var(--vd-art-q-avatar) center 48% / 66% auto no-repeat,
     radial-gradient(circle, #fffdfb 0 48%, rgba(255, 253, 251, 0.38) 49% 55%, transparent 57%);
   filter: drop-shadow(0 4px 8px rgba(43, 5, 15, 0.3));
   pointer-events: none;
@@ -989,8 +989,8 @@ body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='head
   height: 66px;
   transform: translateX(-50%);
   background:
-    var(--vd-art-vow-avatar-frame) center / contain no-repeat,
-    var(--vd-art-wedding-avatar) center 36% / 84% auto no-repeat,
+    var(--vd-art-vow-avatar-frame) 43% 49% / 152% auto no-repeat,
+    var(--vd-art-wedding-avatar) center 36% / 68% auto no-repeat,
     radial-gradient(circle, rgba(255, 253, 251, 0.96) 0 52%, transparent 54%);
   filter: drop-shadow(0 3px 5px rgba(66, 18, 31, 0.2));
   isolation: isolate;
@@ -1060,23 +1060,12 @@ body[data-dsh-verdandi] [data-verdandi-header] :is(button, [role='tab']) {
   color: var(--vd-ink) !important;
 }
 
-/* No decorative stud on these chips. A 2px white radial-gradient dot at
-   `10px 50%` is invisible on the light palette (white on ivory) but reads as a
-   stray dot on the dark palette, where the same ivory chip sits on the dark
-   header -- and on text crumbs it lands on the first glyph. */
-body[data-dsh-verdandi] [data-verdandi-header] button {
-  border-color: rgba(199, 168, 107, 0.62);
-  border-radius: 999px;
-  background: rgba(255, 253, 251, 0.66);
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.7),
-    0 2px 6px rgba(67, 16, 30, 0.07);
-}
-
+/* Header buttons stay bare chrome, like the stock shell: the gold capsules read
+   as stray outlines on controls the host leaves unboxed, and any button a plugin
+   mounts into the header would inherit a shape the host never gave it. Ink
+   colour only; the host's own hover and geometry apply. */
 body[data-dsh-verdandi] [data-verdandi-header] button:hover {
   color: var(--vd-crimson-deep) !important;
-  background: rgba(255, 253, 251, 0.9);
-  border-color: var(--vd-gold);
 }
 
 /* Some header controls are really TWO buttons in one box -- the host's split control
@@ -1160,23 +1149,10 @@ body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] :is(button, [
   color: #fff9f4 !important;
 }
 
-/* The ivory chip above is a light-palette literal, so on the dark palette it
-   stayed a light pill while the ink above turned near-white: the title crumb
-   measured white-on-ivory (about 1.3:1 once composited over the dark header).
-   Hand the dark palette the same slip the rest of the skin uses there. */
-body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] button {
-  background: var(--vd-slip);
-  box-shadow:
-    inset 0 0 0 1px var(--vd-slip-line),
-    var(--vd-slip-shadow);
-}
-
+/* Dark header buttons stay bare too — the slip chip above was a light-palette
+   literal that read as a stray pill on controls the host leaves unboxed. */
 body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] button:hover {
   color: var(--vd-gold-light) !important;
-  background: var(--vd-slip-solid);
-  box-shadow:
-    inset 0 0 0 1px var(--vd-gold),
-    var(--vd-slip-shadow);
 }
 
 body[data-dsh-verdandi][data-ds-dark-theme] [data-verdandi-header] :is(div, span):has(> button + button):not([role='tablist']) {
@@ -1269,8 +1245,8 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
   width: 48px;
   height: 48px;
   background:
-    var(--vd-art-vow-avatar-frame) center / contain no-repeat,
-    var(--vd-art-wedding-avatar) center 29% / 78% auto no-repeat,
+    var(--vd-art-vow-avatar-frame) 43% 49% / 152% auto no-repeat,
+    var(--vd-art-wedding-avatar) center 29% / 66% auto no-repeat,
     radial-gradient(circle, #fffdfb 0 55%, rgba(255, 253, 251, 0.18) 57%, transparent 59%);
   border-radius: 50%;
   filter: drop-shadow(0 3px 5px rgba(66, 18, 31, 0.2));
@@ -1392,9 +1368,6 @@ body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
   [aria-label='Trajectory timeline']
 ) button {
   color: var(--vd-crimson-deep);
-  background: color-mix(in srgb, var(--vd-paper-solid) 88%, var(--vd-gold) 12%);
-  border: 1px solid color-mix(in srgb, var(--vd-gold) 62%, transparent);
-  border-radius: 999px;
 }
 
 /* The trace panel's «earlier history» control is anchored to the left edge of
@@ -1836,25 +1809,11 @@ body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
   [class*='_heroWorkspaceRow'],
   [class*='_workspaceRow']
 ) :is(button, [role='button']) {
-  min-height: 28px;
   color: var(--vd-ink) !important;
-  background: var(--vd-slip);
-  border: 1px solid var(--vd-slip-line);
-  border-radius: 999px;
-  box-shadow: var(--vd-slip-shadow);
-  -webkit-backdrop-filter: blur(7px) saturate(1.05);
-  backdrop-filter: blur(7px) saturate(1.05);
   --dsw-alias-label-primary: var(--vd-ink);
   --dsw-alias-label-secondary: var(--vd-ink-meta);
   --dsw-alias-label-tertiary: var(--vd-ink-meta);
   --dsw-alias-label-caption: var(--vd-ink-meta);
-}
-
-body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
-  [class*='_heroWorkspaceRow'],
-  [class*='_workspaceRow']
-) :is(button, [role='button']):hover {
-  border-color: var(--vd-gold);
 }
 
 /* [P0 fix] Removed the whole `_turnStatus` / `_turnStatusClock` block: the host
@@ -2021,13 +1980,6 @@ body[data-dsh-verdandi] [data-verdandi-running-a11y] {
   ) {
     background: var(--vd-slip-solid);
   }
-
-  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
-    [class*='_heroWorkspaceRow'],
-    [class*='_workspaceRow']
-  ) :is(button, [role='button']) {
-    background: var(--vd-slip-solid);
-  }
 }
 
 @media (prefers-contrast: more) {
@@ -2058,16 +2010,6 @@ body[data-dsh-verdandi] [data-verdandi-running-a11y] {
     --vd-stage-veil-hero: rgba(18, 11, 15, 0.3);
   }
 
-  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
-    [class*='_heroWorkspaceRow'],
-    [class*='_workspaceRow']
-  ) :is(button, [role='button']) {
-    background: var(--vd-slip-solid);
-    border-color: var(--vd-line-strong);
-    -webkit-backdrop-filter: none;
-    backdrop-filter: none;
-  }
-
 }
 
 @media (forced-colors: active) {
@@ -2078,16 +2020,6 @@ body[data-dsh-verdandi] [data-verdandi-running-a11y] {
     [class*='_turnErrorRow'],
     [class*='_compactionRow']
   ) {
-    color: CanvasText;
-    background: Canvas;
-    border-color: CanvasText;
-    box-shadow: none;
-  }
-
-  body[data-dsh-verdandi] [data-verdandi-pane='conversation'] :is(
-    [class*='_heroWorkspaceRow'],
-    [class*='_workspaceRow']
-  ) :is(button, [role='button']) {
     color: CanvasText;
     background: Canvas;
     border-color: CanvasText;
@@ -2305,24 +2237,15 @@ body[data-dsh-verdandi] [data-composer-card] textarea::placeholder {
   letter-spacing: 0.035em;
 }
 
+/* Composer toolbar buttons stay bare chrome like the stock dock: the capsule
+   ring wrapped every icon the host ships in the input slots (and anything a
+   plugin adds there), which the host never draws. Ink tint only; the host's
+   own hover and geometry apply. */
 body[data-dsh-verdandi] [data-composer-card] :is(
   [data-slot='conversation.input.left'],
   [data-slot='conversation.input.right']
 ) button {
-  border: 1px solid rgba(199, 168, 107, 0.78);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--vd-paper-solid) 90%, var(--vd-gold) 10%);
   color: var(--vd-crimson-deep);
-  box-shadow: inset 0 0 0 2px rgba(255, 253, 251, 0.7), 0 3px 8px rgba(77, 19, 33, 0.08);
-}
-
-body[data-dsh-verdandi] [data-composer-card] :is(
-  [data-slot='conversation.input.left'],
-  [data-slot='conversation.input.right']
-) button:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--vd-paper-solid) 82%, var(--vd-gold) 18%);
-  border-color: var(--vd-gold);
-  transform: translateY(-1px);
 }
 
 body[data-dsh-verdandi] [data-composer-card] :is(
@@ -2408,12 +2331,12 @@ body[data-dsh-verdandi] [data-composer-card] :is(
 }
 
 body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] {
-  display: grid !important;
+  display: flex !important;
+  align-items: center;
   position: relative;
   isolation: isolate;
   overflow: visible;
-  row-gap: 2px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
   align-self: center;
   width: min(100%, 780px);
   box-sizing: border-box;
@@ -2469,22 +2392,11 @@ body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :not([role='t
   border: 0 !important;
 }
 
-body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :first-child {
-  grid-column: 1 / -1;
-  overflow: hidden;
-  padding-bottom: 5px !important;
-  border-bottom: 1px solid color-mix(in srgb, var(--vd-gold) 30%, transparent) !important;
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :not(:first-child, [role='tooltip'], [data-dsh-live-tps]) {
-  text-align: left;
-}
-
+/* One row, like the stock dock: every stat pill sits on the same baseline
+   (detailed mode ships two anchors, compact mode one — both stay a single
+   line), and the live tps element keeps its stock seat at the far end. */
 body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > [data-dsh-live-tps] {
-  justify-self: end;
+  margin-left: auto;
   text-align: right;
 }
 
@@ -2725,7 +2637,6 @@ body[data-dsh-verdandi] [role='tooltip'] {
   }
 
   body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] {
-    grid-template-columns: 1fr;
     padding-right: 8px;
     padding-left: 34px;
   }
@@ -2736,10 +2647,9 @@ body[data-dsh-verdandi] [role='tooltip'] {
     height: 20px;
   }
 
-  body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > :not(:first-child, [role='tooltip'], [data-dsh-live-tps]),
   body[data-dsh-verdandi] [data-slot='conversation.composer.dock'] > [data-dsh-live-tps] {
-    justify-self: stretch;
-    text-align: center;
+    margin-left: auto;
+    text-align: right;
   }
 }
 
