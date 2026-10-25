@@ -31,12 +31,15 @@ the rest.
   inherit a shape the host never draws. The stock's one capsule, on the
   file-manager split control, is kept, as are the chapter chevron badge and the
   clock slip pills.
-- Size the vow avatar frame to its ring geometry so the lace wraps the portrait
-  instead of crossing inside it: the frame art's ring only spans 63% of its
-  canvas, so `contain` shrank it under the photo. The frame now scales to the
-  element with a compensated seat, and the portrait fits the ring's inner hole,
-  on the session-header crest, assistant-message avatars and the collapsed-rail
-  avatar.
+- Size the vow avatar frame to its ring geometry and fill the portrait to the
+  ring, on the session-header crest, assistant-message avatars and the
+  collapsed-rail avatar. The frame art's ring only spans 63% of its canvas, so
+  `contain` shrank it under the photo; the frame now scales to the element with
+  a compensated seat. The wedding portrait is landscape (268×184), so its old
+  `N% auto` layer floated as a small rectangle inside the ring — it now fills
+  the circle by height with the character centred, and the crest and rail
+  avatars gain a circle clip so the full-bleed photo cannot poke square corners
+  past the ring.
 
 ## [0.1.7] - 2026-10-10
 
