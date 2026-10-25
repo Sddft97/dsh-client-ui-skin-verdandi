@@ -11,7 +11,7 @@ and its section below is kept as the record of that. `.github/workflows/release-
 enforces the first two on every tag push; the checklist in `RELEASING.md` covers
 the rest.
 
-## [Unreleased]
+## [0.1.8] - 2026-10-26
 
 ### Fixed
 
