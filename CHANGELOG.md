@@ -11,6 +11,41 @@ and its section below is kept as the record of that. `.github/workflows/release-
 enforces the first two on every tag push; the checklist in `RELEASING.md` covers
 the rest.
 
+## [Unreleased]
+
+### Fixed
+
+- Adapt the standalone plugin's sidebar, conversation and right-panel detection
+  to the DSH 0.2 shell, while retaining the legacy `data-pane` layout. The skin
+  uses its own region markers and removes details decoration when the right
+  panel closes, without changing the host panel's positioning. This selectively
+  incorporates the region adapter from [PR #1](https://github.com/Sddft97/dsh-client-ui-skin-verdandi/pull/1)
+  and preserves the existing running timer, navigation, trajectory, overlay and
+  desktop drag-region fixes.
+- Lay the composer dock out as one flex row, like the stock shell: detailed
+  mode's two stat anchors and compact mode's single anchor share the same line
+  instead of stacking, and the live tok/s element keeps its seat at the far end.
+- Drop the gold capsule rings on session-header buttons, trace-timeline
+  buttons, workspace-row controls and composer toolbar buttons — controls the
+  stock shell leaves bare stayed bare, so plugin-mounted buttons no longer
+  inherit a shape the host never draws. The stock's one capsule, on the
+  file-manager split control, is kept, as are the chapter chevron badge and the
+  clock slip pills.
+- Rebuild the avatars as pre-composed framed assets, on the session-header
+  crest, assistant-message avatars and the collapsed-rail avatar. Measuring the
+  frame art showed its ring is centred on the canvas (r≈99 outer, inner hole
+  median 71 with a 55-84 angular spread) while the old CSS seat derived from a
+  decoration-biased bounding box, so the ring rendered off centre and the
+  portrait layers poked past the ring. The portrait is now a circular crop of
+  `verdandi-wedding-avatar` (character centred by a capture-centre sweep — the
+  face sits at the circle centre, radius 76 against the hole's median 71, the
+  lace resting on the rim where the hole narrows) composited into the frame
+  with a white hole matte
+  (`verdandi-bridal-avatar-framed`; the rail avatar composites
+  `verdandi-q-avatar` the same way), and each avatar draws that single asset at
+  162% — the measured ring outer edge lands on the element edge, so nothing
+  renders outside the ring.
+
 ## [0.1.7] - 2026-10-10
 
 ### Fixed

@@ -33,13 +33,20 @@ const DEAD_ANCHORS = ['data-dsh-part']
  * stamped by the dsh-web-all semantic adapter and only the asset form anchors on
  * it; the plugin form keeps to the per-skin hooks instead. `data-dsh-verdandi` is
  * this plugin's own body scope: the asset form is scoped by the skin center's
- * injected `data-dsh-skin`, so the marker never appears in its stylesheets.
+ * loader-owned `html[data-dsh-skin]`, so the marker never appears in its
+ * stylesheets. `data-verdandi-pane` was the plugin's region-adapter stamp until
+ * skin 1.0.4 ported the region adapter into the asset form's hooks — both forms
+ * stamp it now, so it is shared again.
  */
 const V2_ONLY = ['data-dsh-surface']
 const V1_ONLY = ['data-dsh-verdandi']
 
+/** Comments may narrate host attributes (e.g. a selector the 0.2 adaptation
+ * retired) without anchoring on them, so they are stripped before scanning. */
+const stripComments = (css: string): string => css.replace(/\/\*[\s\S]*?\*\//g, '')
+
 const anchors = (css: string): string[] =>
-  [...new Set([...css.matchAll(/\[(data-[a-z0-9-]+)/g)].map((m) => m[1]))].sort()
+  [...new Set([...stripComments(css).matchAll(/\[(data-[a-z0-9-]+)/g)].map((m) => m[1]))].sort()
 
 const readIfPresent = (path: string): string | null =>
   existsSync(path) ? readFileSync(path, 'utf8') : null

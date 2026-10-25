@@ -20,10 +20,7 @@ const LEGACY_HEADER = `<div data-slot="conversation.session.header" style="displ
   <div class="host_titleRow"><button role="tab" aria-selected="true">对话</button></div>
 </header></div>`
 
-describe('verdandi skin apply/dispose contract', () => {
-  let ctx: MockContext
-  beforeEach(() => {
-    document.body.innerHTML = `
+const SHELL_1X = `
       <div id="root">
         <div data-pane="sidebar">
           <button aria-label="新建会话">新会话</button>
@@ -67,6 +64,76 @@ describe('verdandi skin apply/dispose contract', () => {
         </div>
         <aside data-pane="details"><div data-slot="details">详情点击消息流中的工具行查看详情</div></aside>
       </div>`
+
+const SHELL_2X = `
+  <div id="root"><div data-slot="root" style="display:contents"><div class="pI_x6G_frame">
+    <div class="pI_x6G_sidebarCol">
+      <div data-slot="sidebar" style="display:contents"><div class="hHd-Xa_root">
+        <button class="hHd-Xa_newSession"><span class="hHd-Xa_newSessionContent">新会话</span></button>
+        <nav class="hHd-Xa_panelList"><button class="hHd-Xa_panelRow"><span class="hHd-Xa_panelTitle">插件</span></button></nav>
+        <button aria-label="搜索会话"></button>
+        <div role="treeitem" aria-expanded="true">AI</div>
+        <div role="treeitem" aria-selected="true">Current session</div>
+        <div data-slot="sidebar.settings" style="display:contents"></div>
+      </div></div>
+    </div>
+    <div class="pI_x6G_centerCol"><div data-slot="main" style="display:contents">
+      <div data-slot="main.conversation" style="display:contents">
+        <div class="wSkVaW_root" data-phase="active">
+          <div data-slot="conversation.header" style="display:contents"><header class="wSkVaW_header">
+            <div data-slot="conversation.session.header" style="display:contents">
+              <div class="wSkVaW_titleRow">
+                <button role="tab" aria-selected="true">对话</button>
+                <button role="tab" aria-selected="false">轨迹</button>
+              </div>
+            </div>
+          </header></div>
+          <div class="wSkVaW_body" data-conversation-content data-conversation-region="chat" data-content-phase="active">
+            <div data-chat-flow-kind="assistant-step"><div data-slot="conversation.chat.node">
+              <div class="host-assistant-card"><div class="host_markdown_body"><p>Assistant response</p></div></div>
+            </div></div>
+            <div data-chat-flow-kind="system-prompt" data-chat-flow-key="system-prompt">
+              <div data-slot="conversation.chat.node">
+                <div class="host_context_row">
+                  <button>系统提示词</button>
+                  <div data-system-prompt-body>PROMPT</div>
+                </div>
+              </div>
+            </div>
+            <div data-chat-flow-kind="context" data-chat-flow-key="context">
+              <div data-slot="conversation.chat.node">
+                <div class="host_notice_row">
+                  <span data-context-source>工具变更</span>
+                  <span data-context-summary>+2 / -1</span>
+                </div>
+              </div>
+            </div>
+            <div data-composer-seat data-conversation-region="composer"><div data-composer-card></div></div>
+          </div>
+        </div>
+      </div>
+    </div></div>
+    <div class="pI_x6G_rightbarCol"><div data-slot="rightbar" style="display:contents">
+      <div class="P3OORG_session"><div class="P3OORG_panel" data-sidebar-right-panel="push" data-sidebar-right-open="true">
+        <div class="P3OORG_panelBody"><div data-dockkit-empty><section data-dockkit-pane="pane1">空面板</section></div></div>
+      </div></div>
+    </div></div>
+  </div></div></div>`
+
+const sidebarPane = () => document.querySelector<HTMLElement>("[data-pane='sidebar'], .pI_x6G_sidebarCol")
+const conversationPane = () => document.querySelector<HTMLElement>("[data-pane='conversation'], .wSkVaW_root")
+const region = (name: string) => document.querySelector<HTMLElement>(`[data-verdandi-pane='${name}']`)
+
+/** Run the observer and its scheduled animation frame. */
+const settle = async (): Promise<void> => {
+  for (let i = 0; i < 4; i += 1) await new Promise((resolve) => setTimeout(resolve, 5))
+}
+
+describe.each([['0.1.x', SHELL_1X], ['0.2.0-rc.2', SHELL_2X]])('%s apply/dispose contract', (_version, shell) => {
+  let ctx: MockContext
+  beforeEach(() => {
+    document.body.removeAttribute('data-dsh-verdandi')
+    document.body.innerHTML = shell
     ctx = new MockContext()
   })
   afterEach(() => {
@@ -107,7 +174,7 @@ describe('verdandi skin apply/dispose contract', () => {
   })
 
   it('removes legacy fixed decorations and mounts the character stage inside conversation', () => {
-    document.querySelector('[data-pane="sidebar"]')?.insertAdjacentHTML(
+    sidebarPane()?.insertAdjacentHTML(
       'beforeend',
       '<div data-verdandi-sidebar-card="" aria-hidden="true"></div>',
     )
@@ -117,8 +184,9 @@ describe('verdandi skin apply/dispose contract', () => {
     )
     apply(ctx as never)
 
-    const sidebar = document.querySelector('[data-pane="sidebar"]')
-    const conversation = document.querySelector('[data-pane="conversation"]')
+    const sidebar = sidebarPane()
+    const conversation = conversationPane()
+    const sidebarRoot = sidebar?.querySelector("[data-slot='sidebar']") ?? sidebar
     expect(sidebar?.querySelector('[data-verdandi-sidebar-card]')).toBeNull()
     expect(document.querySelector('[data-verdandi-wedding]')).toBeNull()
     expect(document.querySelector('[data-verdandi-chrome]')).toBeNull()
@@ -131,11 +199,11 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(conversation?.getAttribute('data-verdandi-phase')).toBe('active')
     expect(conversation?.getAttribute('data-verdandi-view')).toBe('chat')
     expect(document.body.hasAttribute('data-verdandi-workspace')).toBe(true)
-    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-portrait']")).not.toBeNull()
-    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-sacred-tree']")).not.toBeNull()
-    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-rail-avatar']")).not.toBeNull()
-    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-veil-corners-top']")).not.toBeNull()
-    expect(sidebar?.querySelector(":scope > [data-verdandi-decoration='sidebar-veil-corners-bottom']")).not.toBeNull()
+    expect(sidebarRoot?.querySelector(":scope > [data-verdandi-decoration='sidebar-portrait']")).not.toBeNull()
+    expect(sidebarRoot?.querySelector(":scope > [data-verdandi-decoration='sidebar-sacred-tree']")).not.toBeNull()
+    expect(sidebarRoot?.querySelector(":scope > [data-verdandi-decoration='sidebar-rail-avatar']")).not.toBeNull()
+    expect(sidebarRoot?.querySelector(":scope > [data-verdandi-decoration='sidebar-veil-corners-top']")).not.toBeNull()
+    expect(sidebarRoot?.querySelector(":scope > [data-verdandi-decoration='sidebar-veil-corners-bottom']")).not.toBeNull()
     expect(conversation?.querySelector(":scope > [data-verdandi-decoration='workspace-lace']")).not.toBeNull()
     expect(conversation?.querySelector("header > [data-verdandi-decoration='header-veil']")).not.toBeNull()
     // The drag handle that gives window dragging back on the desktop shell, where the
@@ -150,8 +218,8 @@ describe('verdandi skin apply/dispose contract', () => {
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='composer-veil-inner']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-left']")).not.toBeNull()
     expect(conversation?.querySelector("[data-composer-card] > [data-verdandi-decoration='hero-chibi-right']")).not.toBeNull()
-    expect(document.querySelector("[data-pane='details'][data-verdandi-details-empty]")).not.toBeNull()
-    expect(document.querySelector("[data-pane='details'] > [data-verdandi-decoration='details-record']")).not.toBeNull()
+    expect(region('details')?.hasAttribute('data-verdandi-details-empty')).toBe(true)
+    expect(region('details')?.querySelector(":scope > [data-verdandi-decoration='details-record']")).not.toBeNull()
     expect(conversation?.querySelector("[class*='_markdown_'] > [data-verdandi-decoration='assistant-avatar']")).not.toBeNull()
 
     ctx.disposeAll()
@@ -184,7 +252,7 @@ describe('verdandi skin apply/dispose contract', () => {
   })
 
   it('selects the trajectory view without tagging host timeline content', () => {
-    const conversation = document.querySelector('[data-pane="conversation"]')
+    const conversation = conversationPane()
     conversation?.querySelector('[role="tab"][aria-selected="true"]')?.setAttribute('aria-selected', 'false')
     const traceTab = Array.from(conversation?.querySelectorAll('[role="tab"]') ?? [])
       .find((tab) => tab.textContent === '轨迹')
@@ -230,8 +298,9 @@ describe('verdandi skin apply/dispose contract', () => {
     // Older shells: the header is the child of the session-header anchor itself.
     // The legacy tree is parsed, not moved node by node: jsdom stops indexing a
     // subtree that was detached inside a `display: contents` parent.
-    const conversation = document.querySelector('[data-pane="conversation"]')
+    const conversation = conversationPane()
     expect(conversation).not.toBeNull()
+    ctx.disposeAll()
     conversation!.innerHTML = LEGACY_HEADER
 
     // A fresh context, like a second mount against the older shell's DOM.
@@ -247,11 +316,11 @@ describe('verdandi skin apply/dispose contract', () => {
     apply(ctx as never)
 
     expect(document.querySelector('button[data-verdandi-new-session]')?.textContent).toBe('新会话')
-    expect(Array.from(document.querySelectorAll('button[data-verdandi-nav-entry]')).map((button) => button.textContent)).toEqual([
+    expect(Array.from(document.querySelectorAll('button[data-verdandi-nav-entry]')).map((button) => button.textContent)).toEqual(shell === SHELL_1X ? [
       '任务看板',
       'SSH',
       '技能中心',
-    ])
+    ] : [])
     expect(document.querySelector('button[data-verdandi-sidebar-action]')?.getAttribute('aria-label')).toBe('搜索会话')
     expect(document.querySelector('[data-verdandi-header]')).not.toBeNull()
 
@@ -270,8 +339,9 @@ describe('verdandi skin apply/dispose contract', () => {
     ctx.disposeAll()
     expect(document.body.style.getPropertyValue('--vd-art-character-right')).toBe('url(previous.png)')
     expect(document.body.style.getPropertyValue('--vd-art-sidebar-bridal')).toBe('url(previous-sidebar.png)')
-    expect(document.querySelector('[data-pane="conversation"]')?.hasAttribute('data-verdandi-phase')).toBe(false)
-    expect(document.querySelector('[data-pane="conversation"]')?.hasAttribute('data-verdandi-view')).toBe(false)
+    expect(conversationPane()?.hasAttribute('data-verdandi-phase')).toBe(false)
+    expect(conversationPane()?.hasAttribute('data-verdandi-view')).toBe(false)
+    expect(document.querySelector('[data-verdandi-pane]')).toBeNull()
   })
 
   // The running line: the host mounts a node of its own and the skin takes it over.
@@ -288,15 +358,9 @@ describe('verdandi skin apply/dispose contract', () => {
     </div>`
 
   const addRunningHost = (markup = RUNNING_HOST): HTMLElement => {
-    const pane = document.querySelector<HTMLElement>('[data-pane="conversation"]')!
+    const pane = conversationPane()!
     pane.insertAdjacentHTML('beforeend', markup)
     return pane.lastElementChild as HTMLElement
-  }
-
-  /** Let the observer + animation frame checkpoint run: the runtime falls back to
-   *  setTimeout when the environment has no requestAnimationFrame. */
-  const settle = async (): Promise<void> => {
-    for (let i = 0; i < 4; i += 1) await new Promise((resolve) => setTimeout(resolve, 5))
   }
 
   it('takes the running line over and keeps the host phrase with its live timer', async () => {
@@ -343,5 +407,186 @@ describe('verdandi skin apply/dispose contract', () => {
 
     expect(host.hasAttribute('data-verdandi-running-bar')).toBe(false)
     expect(host.querySelector('[data-verdandi-running-line]')).toBeNull()
+  })
+})
+
+describe('0.2.0 region resolution', () => {
+  let ctx: MockContext
+  beforeEach(() => {
+    document.body.removeAttribute('data-dsh-verdandi')
+    document.body.innerHTML = SHELL_2X
+    ctx = new MockContext()
+  })
+  afterEach(() => ctx.disposeAll())
+
+  it('derives boxed regions without data-pane and removes its stamps on dispose', () => {
+    expect(document.querySelector('[data-pane]')).toBeNull()
+    apply(ctx as never)
+
+    expect(region('sidebar')).toBe(sidebarPane())
+    expect(region('conversation')).toBe(conversationPane())
+    expect(region('details')).toBe(document.querySelector('[data-sidebar-right-panel]'))
+    for (const pane of document.querySelectorAll<HTMLElement>('[data-verdandi-pane]')) {
+      expect(window.getComputedStyle(pane).display).not.toBe('contents')
+    }
+
+    const conversation = conversationPane()!
+    expect(conversation.style.getPropertyValue('--vd-conversation-header-height')).not.toBe('')
+    ctx.disposeAll()
+    expect(document.querySelector('[data-verdandi-pane]')).toBeNull()
+    expect(conversation.style.getPropertyValue('--vd-conversation-header-height')).toBe('')
+    expect(conversation.style.getPropertyValue('--vd-character-floor')).toBe('')
+  })
+
+  it('skips display:contents candidates instead of stamping the slot anchors', () => {
+    document.querySelector('#root')!.insertAdjacentHTML('afterbegin', `
+      <div data-pane="sidebar" style="display:contents"></div>
+      <div class="old_sidebarCol" style="display:contents"></div>
+      <div data-pane="conversation" style="display:contents"></div>`)
+    apply(ctx as never)
+
+    expect(region('sidebar')).toBe(document.querySelector('.pI_x6G_sidebarCol'))
+    expect(region('conversation')).toBe(document.querySelector('.wSkVaW_root'))
+    expect(document.querySelector('[data-verdandi-pane][style*="contents"]')).toBeNull()
+  })
+
+  it('keeps a closed right panel free of details markers and decorations', () => {
+    const panel = document.querySelector<HTMLElement>('[data-sidebar-right-panel]')!
+    panel.removeAttribute('data-sidebar-right-open')
+    apply(ctx as never)
+
+    expect(region('details')).toBeNull()
+    expect(panel.hasAttribute('data-verdandi-details-empty')).toBe(false)
+    expect(panel.querySelector('[data-verdandi-decoration]')).toBeNull()
+  })
+
+  it('cleans and restores the mounted right panel as it opens and closes', async () => {
+    const panel = document.querySelector<HTMLElement>('[data-sidebar-right-panel]')!
+    panel.removeAttribute('data-sidebar-right-open')
+    apply(ctx as never)
+    expect(region('details')).toBeNull()
+
+    panel.setAttribute('data-sidebar-right-open', 'true')
+    await settle()
+    expect(region('details')).toBe(panel)
+    expect(panel.hasAttribute('data-verdandi-details-empty')).toBe(true)
+    expect(panel.querySelectorAll("[data-verdandi-decoration='details-record']")).toHaveLength(1)
+
+    panel.removeAttribute('data-sidebar-right-open')
+    await settle()
+    expect(region('details')).toBeNull()
+    expect(panel.hasAttribute('data-verdandi-details-empty')).toBe(false)
+    expect(panel.querySelector('[data-verdandi-decoration]')).toBeNull()
+
+    panel.setAttribute('data-sidebar-right-open', 'true')
+    await settle()
+    expect(region('details')).toBe(panel)
+    expect(panel.querySelectorAll("[data-verdandi-decoration='details-record']")).toHaveLength(1)
+  })
+
+  it('responds to aria-hidden and hidden changes on an open right panel', async () => {
+    const panel = document.querySelector<HTMLElement>('[data-sidebar-right-panel]')!
+    apply(ctx as never)
+
+    panel.setAttribute('aria-hidden', 'true')
+    await settle()
+    expect(region('details')).toBeNull()
+    expect(panel.querySelector('[data-verdandi-decoration]')).toBeNull()
+
+    panel.setAttribute('aria-hidden', 'false')
+    await settle()
+    expect(region('details')).toBe(panel)
+
+    panel.hidden = true
+    await settle()
+    expect(region('details')).toBeNull()
+    panel.hidden = false
+    await settle()
+    expect(region('details')).toBe(panel)
+  })
+
+  it('releases the empty-state hook when Dockkit mounts content', async () => {
+    const panel = document.querySelector<HTMLElement>('[data-sidebar-right-panel]')!
+    apply(ctx as never)
+    expect(panel.hasAttribute('data-verdandi-details-empty')).toBe(true)
+
+    panel.querySelector('[data-dockkit-empty]')!.outerHTML = '<section data-dockkit-pane="pane1">工具详情</section>'
+    await settle()
+    expect(region('details')).toBe(panel)
+    expect(panel.hasAttribute('data-verdandi-details-empty')).toBe(false)
+  })
+
+  it('reads the root phase and observes content-phase changes when the root omits it', async () => {
+    const conversation = conversationPane()!
+    const content = conversation.querySelector('[data-content-phase]')!
+    conversation.setAttribute('data-phase', 'blank')
+    apply(ctx as never)
+    expect(conversation.getAttribute('data-verdandi-phase')).toBe('blank')
+    expect(conversation.querySelector('[data-verdandi-stage]')?.getAttribute('data-verdandi-phase')).toBe('blank')
+
+    conversation.removeAttribute('data-phase')
+    content.setAttribute('data-content-phase', 'restoring')
+    await settle()
+    expect(conversation.getAttribute('data-verdandi-phase')).toBe('restoring')
+
+    content.removeAttribute('data-content-phase')
+    content.insertAdjacentHTML('beforeend', '<div data-phase="idle"></div>')
+    await settle()
+    expect(conversation.getAttribute('data-verdandi-phase')).toBe('idle')
+  })
+
+  it('resolves replacement DOM and releases detached regions before dispose', async () => {
+    apply(ctx as never)
+    const previous = ['sidebar', 'conversation', 'details'].map((name) => region(name)!)
+    document.querySelector('#root')!.outerHTML = SHELL_2X
+    await settle()
+
+    for (const pane of previous) {
+      expect(pane.hasAttribute('data-verdandi-pane')).toBe(false)
+      expect(pane.hasAttribute('data-verdandi-phase')).toBe(false)
+      expect(pane.querySelector('[data-verdandi-decoration], [data-verdandi-stage]')).toBeNull()
+      expect(pane.querySelector('[data-verdandi-header], [data-verdandi-slip]')).toBeNull()
+    }
+    expect(region('conversation')).toBe(conversationPane())
+    expect(region('details')).not.toBeNull()
+    expect(document.querySelectorAll('[data-verdandi-stage]')).toHaveLength(1)
+
+    ctx.disposeAll()
+    expect(document.querySelector('[data-verdandi-pane], [data-verdandi-stage], [data-verdandi-decoration]')).toBeNull()
+  })
+
+  it('re-resolves host slots instead of keeping a stale skin stamp', async () => {
+    const previous = conversationPane()!
+    const slot = document.querySelector('[data-slot="main.conversation"]')!
+    previous.insertAdjacentHTML('beforeend', '<div data-chat-running><span>深度求索中，用时 10 秒</span></div>')
+    apply(ctx as never)
+    const previousRunning = previous.querySelector('[data-chat-running]')!
+    expect(previousRunning.hasAttribute('data-verdandi-running-bar')).toBe(true)
+
+    slot.setAttribute('data-slot', 'retired')
+    slot.insertAdjacentHTML('afterend', `
+      <div data-slot="main.conversation" style="display:contents">
+        <main id="replacement-conversation" data-phase="blank">
+          <div data-slot="conversation.header" style="display:contents"><header></header></div>
+          <div data-chat-running><span>深度求索中，用时 20 秒</span></div>
+        </main>
+      </div>`)
+    await settle()
+
+    const replacement = document.querySelector<HTMLElement>('#replacement-conversation')!
+    expect(region('conversation')).toBe(replacement)
+    expect(previous.hasAttribute('data-verdandi-pane')).toBe(false)
+    expect(previous.querySelector('[data-verdandi-stage], [data-verdandi-decoration], [data-verdandi-header]')).toBeNull()
+    expect(replacement.querySelector('header')?.hasAttribute('data-verdandi-header')).toBe(true)
+    expect(previousRunning.hasAttribute('data-verdandi-running-bar')).toBe(false)
+    expect(previousRunning.querySelector('[data-verdandi-running-line]')).toBeNull()
+    const running = replacement.querySelector('[data-chat-running]')!
+    expect(running.hasAttribute('data-verdandi-running-bar')).toBe(true)
+    expect(running.querySelector('[data-verdandi-running-copy]')?.textContent).toBe('薇儿烧烤中，用时 20 秒')
+
+    running.querySelector('span')!.firstChild!.nodeValue = '深度求索中，用时 21 秒'
+    await settle()
+    expect(running.querySelector('[data-verdandi-running-copy]')?.textContent).toBe('薇儿烧烤中，用时 21 秒')
+    expect(previousRunning.querySelector('[data-verdandi-running-line]')).toBeNull()
   })
 })

@@ -47,20 +47,20 @@ describe('verdandi compatibility guardrails', () => {
 
   it('releases sidebar clipping only for its active settings portal', () => {
     expect(CSS).toMatch(
-      /\[data-pane='sidebar'\]:has\([\s\S]*?\[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?\)\s*\{[\s\S]*?overflow: visible/,
+      /\[data-verdandi-pane='sidebar'\]:has\([\s\S]*?\[data-slot='sidebar\.settings'\] \[role='dialog'\]\[aria-modal='true'\][\s\S]*?\)\s*\{[\s\S]*?overflow: visible/,
     )
   })
 
   it('does not leak sidebar button foreground into the settings portal', () => {
     expect(CSS).toMatch(
-      /\[data-pane='sidebar'\] button:not\([\s\S]*?\[data-slot='sidebar\.settings'\] \*[\s\S]*?\)\s*\{[\s\S]*?color: inherit/,
+      /\[data-verdandi-pane='sidebar'\] button:not\([\s\S]*?\[data-slot='sidebar\.settings'\] \*[\s\S]*?\)\s*\{[\s\S]*?color: inherit/,
     )
   })
 
   it('keeps the character inside the conversation stage instead of fixing it to the viewport', () => {
     const stageRule = CSS.match(/\.characterStage\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(stageRule).toContain('display: block !important')
-    expect(CSS).toMatch(/data-pane='conversation'\] > \.characterStage\s*\{[\s\S]*?display: block !important/)
+    expect(CSS).toMatch(/data-verdandi-pane='conversation'\] > \.characterStage\s*\{[\s\S]*?display: block !important/)
     const figureRule = CSS.match(/\.characterFigure\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(figureRule).toContain('position: absolute')
     expect(figureRule).not.toContain('position: fixed')
@@ -89,7 +89,7 @@ describe('verdandi compatibility guardrails', () => {
 
   it('keeps the workspace scene visible under a graduated legibility veil', () => {
     expect(CSS).toMatch(/\[data-phase='active'\],[\s\S]*?\[data-phase='hero'\][\s\S]*?background-color: transparent !important/)
-    const conversationRule = CSS.match(/\[data-pane='conversation'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    const conversationRule = CSS.match(/\[data-verdandi-pane='conversation'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     // The artwork stays the bottom layer; the veil only compresses its range.
     expect(conversationRule).toContain('--vd-art-workspace-light')
     expect(conversationRule).toMatch(/var\(--vd-stage-veil-edge\) 0%/)
@@ -108,6 +108,31 @@ describe('verdandi compatibility guardrails', () => {
     expect(heroRule).toContain('--vd-stage-veil-hero')
   })
 
+  it('keeps both conversation slot layouts transparent and above the stage', () => {
+    const transparent = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-pane='conversation'\] :is\(\s*\[data-slot='conversation'\],\s*\[data-slot='main\.conversation'\] > \*,[\s\S]*?\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(transparent).toContain('background-color: transparent !important')
+
+    const content = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-pane='conversation'\] :is\(\s*\[data-slot='conversation'\],\s*\[data-slot='main\.conversation'\] > \*\s*\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(content).toContain('position: relative')
+    expect(content).toContain('z-index: 1')
+  })
+
+  it('preserves current right-panel positioning and positions only the legacy details pane', () => {
+    const details = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-pane='details'\]\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(details).toContain('--vd-art-details-light')
+    expect(details).not.toMatch(/(?:^|[;\s])position\s*:/)
+    expect(CSS).toMatch(
+      /\[data-verdandi-pane='details'\]\[data-pane='details'\]\s*\{\s*position: relative;\s*\}/,
+    )
+    expect(CSS_NO_COMMENTS.match(/\[data-pane=[^\]]+\]/g) ?? []).toEqual(["[data-pane='details']"])
+  })
+
   it('uses bridal ornaments without creating interactive overlays', () => {
     expect(CSS).toMatch(/data-verdandi-decoration='sidebar-portrait'[\s\S]*?--vd-art-sidebar-bridal/)
     expect(CSS).not.toMatch(
@@ -117,8 +142,7 @@ describe('verdandi compatibility guardrails', () => {
       /data-verdandi-modal-open[^{}]*data-verdandi-decoration\^='sidebar-veil-corners-'[^{}]*\{[^}]*opacity:\s*0/,
     )
     expect(CSS).toMatch(/data-verdandi-decoration='header-veil'[\s\S]*?--vd-art-header-veil/)
-    expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-vow-avatar-frame/)
-    expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-wedding-avatar/)
+    expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-bridal-avatar-framed/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-namecard'[\s\S]*?--vd-art-vow-namecard/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-bridal-corners'[\s\S]*?--vd-art-bridal-floral-corner/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-veil-corners'[\s\S]*?--vd-art-bridal-veil-corner/)
@@ -146,8 +170,7 @@ describe('verdandi compatibility guardrails', () => {
   })
 
   it('hangs the framed wedding portrait in a responsive gutter without shortening the paper card', () => {
-    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
-    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-wedding-avatar/)
+    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-bridal-avatar-framed/)
     expect(CSS).toMatch(/conversation\.chat\.node'\] \[class\*='_markdown_'\]:has\([\s\S]*?assistant-avatar'[\s\S]*?margin-left: 0/)
     expect(CSS).not.toMatch(/assistant-avatar'[\s\S]*?margin-left:\s*[1-9]\d*px/)
     expect(CSS).toMatch(/assistant-avatar'[\s\S]*?left: -60px/)
@@ -305,26 +328,29 @@ describe('verdandi compatibility guardrails', () => {
     expect(Number(/z-index:\s*(\d+)/.exec(seat)?.[1])).toBeGreaterThan(2)
   })
 
-  it('paints the header chips without a decorative stud and hands the dark palette a slip', () => {
-    // A 2px white radial-gradient dot at `10px 50%` was invisible on the light
-    // palette but read as a stray dot on the dark one, where the ivory chip sits
-    // on the dark header. The ivory literal also left the dark palette with
-    // near-white ink on a light pill (about 1.3:1 once composited).
+  it('keeps header buttons bare like the stock shell, capsule only on the file-manager split', () => {
+    // The gold capsules wrapped controls the host leaves unboxed (and anything a
+    // plugin mounts into the header), so they are gone: ink colour only, the
+    // host's own hover and geometry apply. The stock shell draws exactly one
+    // capsule — the file-manager split control — which keeps its pill, and its
+    // halves stay square and transparent inside it.
     expect(CSS).not.toMatch(/circle at 10px 50%/)
-    const chipRule = CSS.match(/body\[data-dsh-verdandi\] \[data-verdandi-header\] button\s*\{([^}]*)\}/)?.[1] ?? ''
-    expect(chipRule).toMatch(/background:\s*rgba\(255, 253, 251, 0\.66\)/)
-    expect(chipRule).not.toMatch(/radial-gradient/)
-    expect(CSS).toMatch(
-      /\[data-dsh-verdandi\]\[data-ds-dark-theme\] \[data-verdandi-header\] button\s*\{[^}]*background:\s*var\(--vd-slip\)/,
+    expect(CSS).not.toMatch(/body\[data-dsh-verdandi\] \[data-verdandi-header\] button\s*\{/)
+    expect(CSS).not.toMatch(
+      /\[data-dsh-verdandi\]\[data-ds-dark-theme\] \[data-verdandi-header\] button\s*\{/,
     )
     expect(CSS).toMatch(
       /\[data-dsh-verdandi\]\[data-ds-dark-theme\] \[data-verdandi-header\] button:hover\s*\{[^}]*color:\s*var\(--vd-gold-light\)/,
     )
+    const splitRule = CSS.match(
+      /body\[data-dsh-verdandi\] \[data-verdandi-header\] :is\(div, span\):has\(> button \+ button\):not\(\[role='tablist'\]\)\s*\{([^}]*)\}/,
+    )?.[1] ?? ''
+    expect(splitRule).toContain('border-radius: 999px')
+    expect(splitRule).toContain('overflow: hidden')
   })
 
   it('reserves the second-round artwork for low-frequency interface states', () => {
-    expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
-    expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-q-avatar/)
+    expect(CSS).toMatch(/sidebar-rail-avatar'[\s\S]*?--vd-art-q-avatar-framed/)
     expect(CSS).toMatch(/data-verdandi-details-empty[\s\S]*?details-record'[\s\S]*?--vd-art-childhood-record/)
     expect(CSS).toMatch(/aria-label='发送消息'[\s\S]*?--vd-art-sequence-sword/)
   })
@@ -352,10 +378,17 @@ describe('verdandi compatibility guardrails', () => {
     expect(earlier).toContain('border-bottom: 0')
   })
 
-  it('groups composer statistics into one compact ribbon', () => {
-    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?display: grid !important/)
+  it('lays the composer statistics out on one stock row', () => {
+    // The dock is a single flex row now, like the stock shell: detailed mode's
+    // two stat anchors and compact mode's one share the same line, and the live
+    // tps element keeps its stock seat at the far end via margin-left: auto.
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?display: flex !important/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?align-items: center/)
+    expect(CSS).not.toMatch(/display: grid !important/)
+    expect(CSS).not.toMatch(/grid-template-columns/)
+    expect(CSS).not.toMatch(/\[data-slot='conversation\.composer\.dock'\] > :first-child/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[\s\S]*?margin: 3px auto 0[\s\S]*?border-radius: 12px 12px 14px 14px/)
-    expect(CSS).not.toMatch(/\[data-slot='conversation\.composer\.dock'\]\s*\{[^}]*?border-top: 0/)
+    expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \[data-dsh-live-tps\]\s*\{[^}]*margin-left: auto/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > :not\(\[role='tooltip'\]\)[\s\S]*?margin: 0 !important/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > :not\(\[role='tooltip'\]\)[\s\S]*?background: transparent !important/)
     expect(CSS).toMatch(/\[data-slot='conversation\.composer\.dock'\] > \[role='tooltip'\][\s\S]*?z-index: 30/)
@@ -376,9 +409,9 @@ describe('verdandi compatibility guardrails', () => {
   })
 
   it('keeps host load errors readable over scenic backgrounds', () => {
-    expect(CSS).toMatch(/data-pane='conversation'[^{}]*class\*='_openError'[^{}]*\{[^}]*background:/)
+    expect(CSS).toMatch(/data-verdandi-pane='conversation'[^{}]*class\*='_openError'[^{}]*\{[^}]*background:/)
     expect(CSS).toMatch(/class\*='_openError'[^{}]*\{[^}]*border-left:/)
-    expect(CSS).toMatch(/data-pane='sidebar'[^{}]*class~='cm-bal-err'[^{}]*\{[^}]*color:/)
+    expect(CSS).toMatch(/data-verdandi-pane='sidebar'[^{}]*class~='cm-bal-err'[^{}]*\{[^}]*color:/)
   })
 
   it('does not pad the collapsed reasoning row out of its fixed host height', () => {
@@ -397,23 +430,22 @@ describe('verdandi compatibility guardrails', () => {
     expect(base).toContain('padding: 5px 9px')
   })
 
-  it('carries the hero workspace chips on the slip family too', () => {
-    // The new-session workspace row is bare chrome as well: the workspace chip,
-    // the agent-preset seat and the git-graph branch chip are all transparent
-    // 28px pills coloured `label-primary`.
+  it('keeps the workspace-row controls bare with skin ink only', () => {
+    // The stock shell draws chips nowhere on the workspace rows (its own chip on
+    // the new-session row is the host's), so the slip capsule is gone: ink and
+    // label aliases only, and the backdrop-filter fallback lost its subject.
     const chipRule = CSS.match(
       /\[class\*='_heroWorkspaceRow'\],\s*\[class\*='_workspaceRow'\]\s*\)\s*:is\(button, \[role='button'\]\)\s*\{([^}]*)\}/,
     )?.[1] ?? ''
-    expect(chipRule).toContain('background: var(--vd-slip)')
+    expect(chipRule).toContain('color: var(--vd-ink) !important')
     expect(chipRule).toContain('--dsw-alias-label-primary: var(--vd-ink)')
-    expect(chipRule).toContain('border-radius: 999px')
+    expect(chipRule).not.toMatch(/border-radius: 999px/)
+    expect(chipRule).not.toMatch(/background:/)
+    expect(chipRule).not.toMatch(/backdrop-filter/)
     // Controls at any depth: the slot system wraps every seat in a
     // `display: contents` div, so a `> *` rule would paint an invisible box.
     expect(CSS).not.toMatch(/\[class\*='_heroWorkspaceRow'\][\s\S]{0,80}>\s*\*\s*\{/)
-
-    expect(CSS).toMatch(
-      /@supports not \(\(backdrop-filter[\s\S]*?_heroWorkspaceRow[\s\S]*?background: var\(--vd-slip-solid\)/,
-    )
+    expect(CSS).not.toMatch(/@supports not \(\(backdrop-filter[\s\S]*?_heroWorkspaceRow/)
   })
 
   it('re-tints the host running indicator instead of restating its copy', () => {
@@ -446,7 +478,7 @@ describe('verdandi compatibility guardrails', () => {
     expect(CSS).toMatch(/\[data-turn-process\] \[class\*='_label'\]\s*\{[^}]*text-shadow:\s*none/)
     // The rejected halo was a multi-layer glow in the paper colour.
     expect(CSS).not.toMatch(/text-shadow:[^;]*var\(--vd-slip-solid\)/)
-    expect(CSS).not.toMatch(/\[data-pane='conversation'\]::(?:before|after)/)
+    expect(CSS).not.toMatch(/\[data-verdandi-pane='conversation'\]::(?:before|after)/)
     expect(CSS).not.toMatch(/-webkit-text-stroke/)
   })
 
@@ -478,7 +510,7 @@ describe('verdandi compatibility guardrails', () => {
 
   it('carries every bare transcript row on a slip surface', () => {
     const slipRule = CSS.match(
-      /\[data-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],[\s\S]*?\)\s*\{([^}]*)\}/,
+      /\[data-verdandi-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],[\s\S]*?\)\s*\{([^}]*)\}/,
     )?.[1] ?? ''
     expect(slipRule).toContain('background: var(--vd-slip)')
     expect(slipRule).toContain('--dsw-alias-label-tertiary: var(--vd-ink-meta)')
@@ -490,10 +522,10 @@ describe('verdandi compatibility guardrails', () => {
     // own `data-turn-trigger`.
     // The trigger and the user-echo clock share the surface but not the furniture:
     // the hover-revealed rows must not carry a box the host has to re-flow.
-    const paintOnly = CSS.match(/\[data-pane='conversation'\] :is\(\s*\[data-clock='start'\],[\s\S]*?\)\s*\{([^}]*)\}/)?.[1] ?? ''
+    const paintOnly = CSS.match(/\[data-verdandi-pane='conversation'\] :is\(\s*\[data-clock='start'\],[\s\S]*?\)\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(paintOnly).toContain('background: var(--vd-slip)')
     expect(paintOnly).not.toMatch(/(margin|padding|width|height|border):/)
-    expect(CSS).toMatch(/\[data-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],\s*\[class\*='_turnErrorRow'\]/)
+    expect(CSS).toMatch(/\[data-verdandi-pane='conversation'\] :is\(\s*\[data-verdandi-slip\],\s*\[class\*='_turnErrorRow'\]/)
 
     // Turn chrome the host draws without any surface must be covered too.
     expect(CSS).toMatch(/\[class\*='_turnErrorTitle'\]\s*\{\s*color: var\(--vd-danger\) !important/)
@@ -508,7 +540,7 @@ describe('verdandi compatibility guardrails', () => {
     // with the marker it rode (see the running-status test below), so a long
     // transcript is not cut into strips by a rule under every finished turn.
     const processRule = CSS.match(
-      /body\[data-dsh-verdandi\] \[data-pane='conversation'\] \[data-turn-process\]\s*\{([^}]*)\}/,
+      /body\[data-dsh-verdandi\] \[data-verdandi-pane='conversation'\] \[data-turn-process\]\s*\{([^}]*)\}/,
     )?.[1] ?? ''
     expect(processRule).toContain('background: none')
     expect(processRule).not.toMatch(/(margin|padding|width|height):/)
@@ -525,7 +557,7 @@ describe('verdandi compatibility guardrails', () => {
     // The user-echo clock row is the tail's twin on the other side of the turn,
     // and the reason it is painted, never resized, is the same one: the host
     // reveals it on hover, so a changed box slides the buttons under the pointer.
-    const echoRule = CSS.match(/\[data-pane='conversation'\] \[data-clock='start'\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    const echoRule = CSS.match(/\[data-verdandi-pane='conversation'\] \[data-clock='start'\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(echoRule).toContain('background: var(--vd-slip)')
     expect(echoRule).toContain('border-radius: 999px')
     expect(echoRule).not.toMatch(/(margin|width|height|border):/)
@@ -536,11 +568,11 @@ describe('verdandi compatibility guardrails', () => {
     // The trigger row's own hover must not fall back to the host's 7.5% tint:
     // that token replaces the host's opaque card fill, so the row would go
     // transparent exactly while the pointer is on it.
-    const triggerRule = CSS.match(/\[data-pane='conversation'\] \[data-turn-trigger\]\s*\{([^}]*)\}/)?.[1] ?? ''
+    const triggerRule = CSS.match(/\[data-verdandi-pane='conversation'\] \[data-turn-trigger\]\s*\{([^}]*)\}/)?.[1] ?? ''
     expect(triggerRule).toContain('background: var(--vd-slip)')
     expect(triggerRule).not.toMatch(/(margin|padding|width|height|border):/)
     expect(CSS).toMatch(
-      /\[data-pane='conversation'\] \[data-turn-trigger\]:hover\s*\{[^}]*background: var\(--vd-slip-solid\)/,
+      /\[data-verdandi-pane='conversation'\] \[data-turn-trigger\]:hover\s*\{[^}]*background: var\(--vd-slip-solid\)/,
     )
 
     // And the ratio has to survive without compositing help.
