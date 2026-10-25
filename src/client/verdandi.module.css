@@ -539,8 +539,8 @@ body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='
   left: 5px;
   aspect-ratio: 1;
   background:
-    var(--vd-art-vow-avatar-frame) 43% 49% / 152% auto no-repeat,
-    var(--vd-art-q-avatar) center 30% / 108% auto no-repeat,
+    var(--vd-art-vow-avatar-frame) 43% 49% / 159% auto no-repeat,
+    var(--vd-art-q-avatar) center 30% / 100% auto no-repeat,
     radial-gradient(circle, #fffdfb 0 48%, rgba(255, 253, 251, 0.38) 49% 55%, transparent 57%);
   /* Same circle-clip reasoning as the header crest: the chibi fills the box. */
   border-radius: 50%;
@@ -995,8 +995,8 @@ body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='head
   border-radius: 50%;
   transform: translateX(-50%);
   background:
-    var(--vd-art-vow-avatar-frame) 43% 49% / 152% auto no-repeat,
-    var(--vd-art-wedding-avatar) 55% 50% / auto 100% no-repeat,
+    var(--vd-art-vow-avatar-frame) 43% 49% / 159% auto no-repeat,
+    var(--vd-art-bridal-avatar-square) center / 100% auto no-repeat,
     radial-gradient(circle, rgba(255, 253, 251, 0.96) 0 52%, transparent 54%);
   filter: drop-shadow(0 3px 5px rgba(66, 18, 31, 0.2));
   isolation: isolate;
@@ -1251,8 +1251,8 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
   width: 48px;
   height: 48px;
   background:
-    var(--vd-art-vow-avatar-frame) 43% 49% / 152% auto no-repeat,
-    var(--vd-art-wedding-avatar) 55% 50% / auto 100% no-repeat,
+    var(--vd-art-vow-avatar-frame) 43% 49% / 159% auto no-repeat,
+    var(--vd-art-bridal-avatar-square) center / 100% auto no-repeat,
     radial-gradient(circle, #fffdfb 0 55%, rgba(255, 253, 251, 0.18) 57%, transparent 59%);
   border-radius: 50%;
   filter: drop-shadow(0 3px 5px rgba(66, 18, 31, 0.2));

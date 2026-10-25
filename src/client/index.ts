@@ -12,6 +12,7 @@ import {
   SWORD_CREST,
 } from './art.js'
 import {
+  BRIDAL_AVATAR_SQUARE,
   BRIDAL_FLORAL_CORNER,
   BRIDAL_VEIL_CORNER,
   CHILDHOOD_RECORD,
@@ -142,6 +143,7 @@ const ASSET_PROPERTIES = {
   '--vd-art-official-sacred-tree': OFFICIAL_SACRED_TREE,
   '--vd-art-vow-avatar-frame': VOW_AVATAR_FRAME,
   '--vd-art-wedding-avatar': WEDDING_AVATAR,
+  '--vd-art-bridal-avatar-square': BRIDAL_AVATAR_SQUARE,
   '--vd-art-vow-rings': VOW_RINGS,
   '--vd-art-ring-tag': RING_TAG,
   '--vd-art-vow-namecard': VOW_NAMECARD,

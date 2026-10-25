@@ -143,7 +143,7 @@ describe('verdandi compatibility guardrails', () => {
     )
     expect(CSS).toMatch(/data-verdandi-decoration='header-veil'[\s\S]*?--vd-art-header-veil/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-vow-avatar-frame/)
-    expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-wedding-avatar/)
+    expect(CSS).toMatch(/data-verdandi-decoration='header-vow-crest'[\s\S]*?--vd-art-bridal-avatar-square/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-namecard'[\s\S]*?--vd-art-vow-namecard/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-bridal-corners'[\s\S]*?--vd-art-bridal-floral-corner/)
     expect(CSS).toMatch(/data-verdandi-decoration='header-veil-corners'[\s\S]*?--vd-art-bridal-veil-corner/)
@@ -172,7 +172,7 @@ describe('verdandi compatibility guardrails', () => {
 
   it('hangs the framed wedding portrait in a responsive gutter without shortening the paper card', () => {
     expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-vow-avatar-frame/)
-    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-wedding-avatar/)
+    expect(CSS).toMatch(/assistant-avatar'[\s\S]*?--vd-art-bridal-avatar-square/)
     expect(CSS).toMatch(/conversation\.chat\.node'\] \[class\*='_markdown_'\]:has\([\s\S]*?assistant-avatar'[\s\S]*?margin-left: 0/)
     expect(CSS).not.toMatch(/assistant-avatar'[\s\S]*?margin-left:\s*[1-9]\d*px/)
     expect(CSS).toMatch(/assistant-avatar'[\s\S]*?left: -60px/)

@@ -35,11 +35,13 @@ the rest.
   ring, on the session-header crest, assistant-message avatars and the
   collapsed-rail avatar. The frame art's ring only spans 63% of its canvas, so
   `contain` shrank it under the photo; the frame now scales to the element with
-  a compensated seat. The wedding portrait is landscape (268×184), so its old
-  `N% auto` layer floated as a small rectangle inside the ring — it now fills
-  the circle by height with the character centred, and the crest and rail
-  avatars gain a circle clip so the full-bleed photo cannot poke square corners
-  past the ring.
+  a compensated seat, and the ring's outer edge lands on the element edge so no
+  photo band shows outside it. The wedding portrait was a landscape 268×184
+  crop that floated as a small rectangle inside the ring — the avatars now use
+  a dedicated square crop of the same bridal CG
+  (`verdandi-bridal-avatar-square`, face-centred) that fills the circle with
+  the character centred, and the crest and rail avatars gain a circle clip so
+  the full-bleed photo cannot poke square corners past the ring.
 
 ## [0.1.7] - 2026-10-10
 

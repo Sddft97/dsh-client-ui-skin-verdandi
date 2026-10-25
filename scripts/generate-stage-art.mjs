@@ -17,6 +17,7 @@ const entries = [
   ['HERO_CHIBI_RIGHT', 'assets/generated/verdandi-chibi-right.webp'],
   ['VOW_NAMECARD', 'assets/generated/verdandi-vow-namecard.webp'],
   ['WEDDING_AVATAR', 'assets/generated/verdandi-wedding-avatar.webp'],
+  ['BRIDAL_AVATAR_SQUARE', 'assets/generated/verdandi-bridal-avatar-square.webp'],
   ['CHILDHOOD_RECORD', 'assets/generated/verdandi-childhood-record.webp'],
   ['SEQUENCE_SWORD', 'assets/generated/verdandi-sequence-sword.webp'],
   ['Q_AVATAR', 'assets/generated/verdandi-q-avatar.webp'],
