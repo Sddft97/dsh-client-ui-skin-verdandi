@@ -33,44 +33,20 @@ const DEAD_ANCHORS = ['data-dsh-part']
  * stamped by the dsh-web-all semantic adapter and only the asset form anchors on
  * it; the plugin form keeps to the per-skin hooks instead. `data-dsh-verdandi` is
  * this plugin's own body scope: the asset form is scoped by the skin center's
- * injected `data-dsh-skin`, so the marker never appears in its stylesheets.
- * `data-verdandi-pane` is the plugin's region-adapter stamp; the asset form
- * receives its region hooks from the host's semantic adapter instead.
- *
- * The `pending-port` group is a tracked debt, not a permanent exemption: these
- * anchors are the plugin form's DSH 0.2-shell adaptations (the running-line
- * takeover on the shell's `[data-chat-running]` node, the platform-gated drag
- * handle, the plugin pages) that the asset form has not ported yet — the local
- * dsh-skins clone predates that work and upstream has no port either (verified
- * 2026-10-26). When the asset form is ported to 0.2, its copy gains these
- * anchors and every entry here must be pruned.
+ * loader-owned `html[data-dsh-skin]`, so the marker never appears in its
+ * stylesheets. `data-verdandi-pane` was the plugin's region-adapter stamp until
+ * skin 1.0.4 ported the region adapter into the asset form's hooks — both forms
+ * stamp it now, so it is shared again.
  */
-const V2_ONLY = [
-  'data-dsh-surface',
-  // pending-port: anchors the stale v2 copy still carries from its pre-0.2 port;
-  // the plugin form replaced both in the 0.2 adaptation (the running line moved
-  // to the `[data-chat-running]` takeover, the nav rail to the region adapter's
-  // hooks), and the asset-form port retires them the same way.
-  'data-verdandi-nav-entry',
-  'data-verdandi-running',
-]
-const V1_ONLY = [
-  'data-dsh-verdandi',
-  'data-verdandi-pane',
-  // pending-port: asset form has not received the 0.2-shell adaptation
-  'data-chat-running',
-  'data-platform',
-  'data-plugin-detail',
-  'data-plugin-panel',
-  'data-verdandi-running-a11y',
-  'data-verdandi-running-bar',
-  'data-verdandi-running-copy',
-  'data-verdandi-running-icon',
-  'data-verdandi-running-line',
-]
+const V2_ONLY = ['data-dsh-surface']
+const V1_ONLY = ['data-dsh-verdandi']
+
+/** Comments may narrate host attributes (e.g. a selector the 0.2 adaptation
+ * retired) without anchoring on them, so they are stripped before scanning. */
+const stripComments = (css: string): string => css.replace(/\/\*[\s\S]*?\*\//g, '')
 
 const anchors = (css: string): string[] =>
-  [...new Set([...css.matchAll(/\[(data-[a-z0-9-]+)/g)].map((m) => m[1]))].sort()
+  [...new Set([...stripComments(css).matchAll(/\[(data-[a-z0-9-]+)/g)].map((m) => m[1]))].sort()
 
 const readIfPresent = (path: string): string | null =>
   existsSync(path) ? readFileSync(path, 'utf8') : null
