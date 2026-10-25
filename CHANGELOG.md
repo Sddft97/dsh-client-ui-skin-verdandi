@@ -31,17 +31,20 @@ the rest.
   inherit a shape the host never draws. The stock's one capsule, on the
   file-manager split control, is kept, as are the chapter chevron badge and the
   clock slip pills.
-- Size the vow avatar frame to its ring geometry and fill the portrait to the
-  ring, on the session-header crest, assistant-message avatars and the
-  collapsed-rail avatar. The frame art's ring only spans 63% of its canvas, so
-  `contain` shrank it under the photo; the frame now scales to the element with
-  a compensated seat, and the ring's outer edge lands on the element edge so no
-  photo band shows outside it. The wedding portrait was a landscape 268×184
-  crop that floated as a small rectangle inside the ring — the avatars now use
-  a dedicated square crop of the same bridal CG
-  (`verdandi-bridal-avatar-square`, face-centred) that fills the circle with
-  the character centred, and the crest and rail avatars gain a circle clip so
-  the full-bleed photo cannot poke square corners past the ring.
+- Rebuild the avatars as pre-composed framed assets, on the session-header
+  crest, assistant-message avatars and the collapsed-rail avatar. Measuring the
+  frame art showed its ring is centred on the canvas (r≈99 outer, inner hole
+  median 71 with a 55-84 angular spread) while the old CSS seat derived from a
+  decoration-biased bounding box, so the ring rendered off centre and the
+  portrait layers poked past the ring. The portrait is now a circular crop of
+  `verdandi-wedding-avatar` (character centred by a capture-centre sweep — the
+  face sits at the circle centre, radius 76 against the hole's median 71, the
+  lace resting on the rim where the hole narrows) composited into the frame
+  with a white hole matte
+  (`verdandi-bridal-avatar-framed`; the rail avatar composites
+  `verdandi-q-avatar` the same way), and each avatar draws that single asset at
+  162% — the measured ring outer edge lands on the element edge, so nothing
+  renders outside the ring.
 
 ## [0.1.7] - 2026-10-10
 

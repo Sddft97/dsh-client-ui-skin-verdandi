@@ -538,10 +538,8 @@ body[data-dsh-verdandi][data-verdandi-sidebar-size='rail'] [data-verdandi-pane='
   bottom: 154px;
   left: 5px;
   aspect-ratio: 1;
-  background:
-    var(--vd-art-vow-avatar-frame) 43% 49% / 159% auto no-repeat,
-    var(--vd-art-q-avatar) center 30% / 100% auto no-repeat,
-    radial-gradient(circle, #fffdfb 0 48%, rgba(255, 253, 251, 0.38) 49% 55%, transparent 57%);
+  /* Same framed composition, with the rail chibi baked in. */
+  background: var(--vd-art-q-avatar-framed) 50% 50% / 162% auto no-repeat;
   /* Same circle-clip reasoning as the header crest: the chibi fills the box. */
   border-radius: 50%;
   filter: drop-shadow(0 4px 8px rgba(43, 5, 15, 0.3));
@@ -994,10 +992,12 @@ body[data-dsh-verdandi] [data-verdandi-header] > [data-verdandi-decoration='head
      ribbon wings are separate pseudo boxes and keep their own shapes. */
   border-radius: 50%;
   transform: translateX(-50%);
-  background:
-    var(--vd-art-vow-avatar-frame) 43% 49% / 159% auto no-repeat,
-    var(--vd-art-bridal-avatar-square) center / 100% auto no-repeat,
-    radial-gradient(circle, rgba(255, 253, 251, 0.96) 0 52%, transparent 54%);
+  /* The avatar is one pre-composed asset: white hole matte, circular portrait
+     (face centred, cut from verdandi-wedding-avatar) and the lace ring baked
+     together, the ring's canvas centre being the true ring centre. 162% puts
+     the measured ring outer edge (r≈99/320) on the element edge, so nothing
+     renders outside the ring. */
+  background: var(--vd-art-bridal-avatar-framed) 50% 50% / 162% auto no-repeat;
   filter: drop-shadow(0 3px 5px rgba(66, 18, 31, 0.2));
   isolation: isolate;
   pointer-events: none;
@@ -1250,10 +1250,8 @@ body[data-dsh-verdandi] [data-slot='conversation.chat.node'] [class*='_markdown_
   left: -60px;
   width: 48px;
   height: 48px;
-  background:
-    var(--vd-art-vow-avatar-frame) 43% 49% / 159% auto no-repeat,
-    var(--vd-art-bridal-avatar-square) center / 100% auto no-repeat,
-    radial-gradient(circle, #fffdfb 0 55%, rgba(255, 253, 251, 0.18) 57%, transparent 59%);
+  /* Same pre-composed framed portrait as the header crest. */
+  background: var(--vd-art-bridal-avatar-framed) 50% 50% / 162% auto no-repeat;
   border-radius: 50%;
   filter: drop-shadow(0 3px 5px rgba(66, 18, 31, 0.2));
   pointer-events: none;

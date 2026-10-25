@@ -12,7 +12,7 @@ import {
   SWORD_CREST,
 } from './art.js'
 import {
-  BRIDAL_AVATAR_SQUARE,
+  BRIDAL_AVATAR_FRAMED,
   BRIDAL_FLORAL_CORNER,
   BRIDAL_VEIL_CORNER,
   CHILDHOOD_RECORD,
@@ -20,6 +20,7 @@ import {
   HERO_CHIBI_RIGHT,
   OFFICIAL_SACRED_TREE,
   Q_AVATAR,
+  Q_AVATAR_FRAMED,
   RING_TAG,
   SEQUENCE_SWORD,
   SIDEBAR_BRIDAL_CG,
@@ -143,7 +144,7 @@ const ASSET_PROPERTIES = {
   '--vd-art-official-sacred-tree': OFFICIAL_SACRED_TREE,
   '--vd-art-vow-avatar-frame': VOW_AVATAR_FRAME,
   '--vd-art-wedding-avatar': WEDDING_AVATAR,
-  '--vd-art-bridal-avatar-square': BRIDAL_AVATAR_SQUARE,
+  '--vd-art-bridal-avatar-framed': BRIDAL_AVATAR_FRAMED,
   '--vd-art-vow-rings': VOW_RINGS,
   '--vd-art-ring-tag': RING_TAG,
   '--vd-art-vow-namecard': VOW_NAMECARD,
@@ -152,6 +153,7 @@ const ASSET_PROPERTIES = {
   '--vd-art-childhood-record': CHILDHOOD_RECORD,
   '--vd-art-sequence-sword': SEQUENCE_SWORD,
   '--vd-art-q-avatar': Q_AVATAR,
+  '--vd-art-q-avatar-framed': Q_AVATAR_FRAMED,
   '--vd-art-bridal-floral-corner': BRIDAL_FLORAL_CORNER,
   '--vd-art-bridal-veil-corner': BRIDAL_VEIL_CORNER,
   '--vd-art-vow-folder': VOW_FOLDER_ICON,

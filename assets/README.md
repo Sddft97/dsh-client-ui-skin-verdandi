@@ -11,7 +11,8 @@
 - `verdandi-library-day`、`verdandi-library-night`: 亮色与暗色工作区场景。
 - `verdandi-bridal-cg-portrait`: 侧边栏下方婚纱 CG。
 - `verdandi-vow-avatar-frame`、`verdandi-wedding-avatar`: 助手消息头像组合。
-- `verdandi-bridal-avatar-square`: 助手头像用方形裁剪，取自 `verdandi-bridal-cg-portrait` 同源的婚纱 CG（脸部居中重新构图）。
+- `verdandi-bridal-avatar-framed`: 头像框组合素材 —— 以 `verdandi-wedding-avatar` 为源，截取人物居中的圆形头像（capture 半径 74px，头像层半径 76px，实测蕾丝环内孔中位半径 71px），与 `verdandi-vow-avatar-frame` 预合成为单图。
+- `verdandi-q-avatar-framed`: 侧边栏 rail 头像组合素材 —— `verdandi-q-avatar` 整体内切圆与同一头像框的预合成。
 - `verdandi-vow-rings`: 输入区中央戒指装饰。
 - `verdandi-ring-tag`、`verdandi-vow-namecard`: 会话与工作区选中态。
 - `verdandi-sacred-tree-white`: 圣树水印。
